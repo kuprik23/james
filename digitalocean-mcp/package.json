@@ -1,0 +1,24 @@
+{
+  "name": "digitalocean-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for Digital Ocean integration with James AI Cybersecurity Agent",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1"
+  },
+  "keywords": [
+    "mcp",
+    "digitalocean",
+    "api",
+    "server"
+  ],
+  "author": "kuprik23",
+  "license": "MIT"
+}
