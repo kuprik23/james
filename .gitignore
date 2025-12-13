@@ -134,8 +134,17 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
-# Environments
+# Environments - SECURITY: Never commit secrets
 .env
+.env.*
+.env.local
+.env.production
+**/.env
+**/secrets/
+*.secret
+*.key
+*.pem
+credentials.json
 .envrc
 .venv
 env/

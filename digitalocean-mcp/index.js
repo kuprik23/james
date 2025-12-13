@@ -8,9 +8,68 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import axios from 'axios';
 import dotenv from 'dotenv';
+import { execSync } from 'child_process';
+import { existsSync, readFileSync } from 'fs';
+import { join } from 'path';
 
-// Load environment variables
+// Load environment variables (fallback for development)
 dotenv.config();
+
+/**
+ * Secure Token Retrieval
+ * Priority: 1. DPAPI Secure Storage, 2. Environment Variable, 3. .env file
+ */
+function getSecureToken() {
+  // Method 1: Try DPAPI encrypted storage (most secure)
+  try {
+    const credPath = join(
+      process.env.LOCALAPPDATA || '',
+      'James',
+      'credentials',
+      'JamesAI_DigitalOcean.enc'
+    );
+
+    if (existsSync(credPath)) {
+      // Read encrypted data directly and use PowerShell for decryption
+      const encryptedData = readFileSync(credPath, 'utf8').trim();
+      
+      // Create a temporary PowerShell script for reliable execution
+      const psScript = `
+[System.Reflection.Assembly]::LoadWithPartialName('System.Security') | Out-Null
+$encryptedData = '${encryptedData}'
+$decryptedBytes = [System.Security.Cryptography.ProtectedData]::Unprotect(
+  [Convert]::FromBase64String($encryptedData),
+  $null,
+  [System.Security.Cryptography.DataProtectionScope]::CurrentUser
+)
+[System.Text.Encoding]::UTF8.GetString($decryptedBytes)
+`;
+
+      const token = execSync(`powershell -NoProfile -NonInteractive -Command "${psScript.replace(/"/g, '\\"').replace(/\n/g, ' ')}"`, {
+        encoding: 'utf8',
+        windowsHide: true,
+        stdio: ['pipe', 'pipe', 'pipe']
+      }).trim();
+
+      if (token && token.startsWith('dop_')) {
+        console.error('[SECURITY] Token loaded from DPAPI secure storage');
+        return token;
+      }
+    }
+  } catch (error) {
+    console.error('[SECURITY] DPAPI retrieval failed:', error.message);
+  }
+
+  // Method 2: Environment variable
+  if (process.env.DIGITALOCEAN_API_TOKEN) {
+    console.error('[SECURITY] Token loaded from environment variable');
+    return process.env.DIGITALOCEAN_API_TOKEN;
+  }
+
+  // Method 3: .env file (development only)
+  console.error('[SECURITY] No secure token found. Run security/store-token.bat to store securely.');
+  return null;
+}
 
 class DigitalOceanMCPServer {
   constructor() {
@@ -26,7 +85,8 @@ class DigitalOceanMCPServer {
       }
     );
 
-    this.apiToken = process.env.DIGITALOCEAN_API_TOKEN;
+    // Use secure token retrieval
+    this.apiToken = getSecureToken();
     this.baseURL = 'https://api.digitalocean.com/v2';
     
     this.setupHandlers();
