@@ -1,0 +1,39 @@
+# LangGraph Agent Dependencies
+langgraph>=0.0.40
+langchain>=0.1.0
+langchain-openai>=0.0.5
+langchain-anthropic>=0.1.0
+langchain-community>=0.0.20
+
+# API and Web Framework
+fastapi>=0.109.0
+uvicorn>=0.27.0
+pydantic>=2.5.0
+python-dotenv>=1.0.0
+
+# Security Analysis Tools
+scapy>=2.5.0
+python-nmap>=0.7.1
+requests>=2.31.0
+aiohttp>=3.9.0
+dnspython>=2.4.0
+whois>=0.9.27
+shodan>=1.30.0
+
+# System Monitoring
+psutil>=5.9.0
+netifaces>=0.11.0
+
+# Data Processing
+pandas>=2.1.0
+numpy>=1.26.0
+
+# Utilities
+rich>=13.7.0
+typer>=0.9.0
+httpx>=0.26.0
+asyncio-throttle>=1.0.2
+
+# Database (optional)
+sqlalchemy>=2.0.0
+aiosqlite>=0.19.0

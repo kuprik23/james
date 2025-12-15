@@ -2,7 +2,8 @@
  * ════════════════════════════════════════════════════════════════════════════
  * CYBERCAT - Cyber Analysis & Threat Detection System
  * James Ultimate Cybersecurity Platform - Main Server
- * Copyright © 2024 Emersa Ltd. All Rights Reserved.
+ * Copyright © 2025 Emersa Ltd. All Rights Reserved.
+ * Made in California, USA 🇺🇸
  * ════════════════════════════════════════════════════════════════════════════
  *
  * CONFIDENTIAL AND PROPRIETARY

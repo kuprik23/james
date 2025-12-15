@@ -1,0 +1,49 @@
+# James Ultimate - Ingress Configuration
+# For Rancher/SUSE Linux with Traefik or Nginx Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: james-ultimate
+  labels:
+    app: james-ultimate
+  annotations:
+    # For Nginx Ingress Controller
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    nginx.ingress.kubernetes.io/websocket-services: "james-ultimate"
+    # For Traefik (Rancher default)
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    # SSL redirect
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx  # Change to "traefik" for Rancher default
+  tls:
+  - hosts:
+    - james.example.com
+    secretName: james-tls
+  rules:
+  - host: james.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: james-ultimate
+            port:
+              number: 80
+---
+# Certificate for TLS (if using cert-manager)
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: james-tls
+spec:
+  secretName: james-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - james.example.com

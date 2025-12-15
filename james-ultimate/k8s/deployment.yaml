@@ -1,0 +1,130 @@
+# James Ultimate - Kubernetes Deployment
+# Compatible with Rancher and SUSE Linux Enterprise
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: james-ultimate
+  labels:
+    app: james-ultimate
+    version: v2.0.0
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: james-ultimate
+  template:
+    metadata:
+      labels:
+        app: james-ultimate
+        version: v2.0.0
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+      containers:
+      - name: james-ultimate
+        image: james-ultimate:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+          name: http
+          protocol: TCP
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3000"
+        - name: HOST
+          value: "0.0.0.0"
+        envFrom:
+        - secretRef:
+            name: james-secrets
+            optional: true
+        - configMapRef:
+            name: james-config
+            optional: true
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+      volumes:
+      - name: config-volume
+        emptyDir: {}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - james-ultimate
+              topologyKey: kubernetes.io/hostname
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: james-ultimate
+  labels:
+    app: james-ultimate
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 3000
+    protocol: TCP
+    name: http
+  selector:
+    app: james-ultimate
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: james-config
+data:
+  LOG_LEVEL: "info"
+  ENABLE_AUTH: "false"
+  OLLAMA_HOST: "http://ollama:11434"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: james-secrets
+type: Opaque
+stringData:
+  OPENAI_API_KEY: ""
+  ANTHROPIC_API_KEY: ""
+  GROQ_API_KEY: ""
+  DIGITALOCEAN_API_TOKEN: ""

@@ -12,7 +12,8 @@
 # 🛡️ CYBERCAT - James AI Security Platform
 ## Cyber Analysis & Threat Detection System
 
-**Copyright © 2024 Emersa Ltd. All Rights Reserved.**
+**Copyright © 2025 Emersa Ltd. All Rights Reserved.**
+**Made in California, USA 🇺🇸**
 
 A state-of-the-art, military-grade cybersecurity platform powered by artificial intelligence with comprehensive threat detection, malware protection, and real-time security monitoring.
 
@@ -477,4 +478,4 @@ All rights reserved. For licensing inquiries, contact Emersa Ltd.
 
 **CYBERCAT - Protecting Systems for Generations to Come**
 
-*Copyright © 2024 Emersa Ltd. All Rights Reserved.*
+*Copyright © 2025 Emersa Ltd. All Rights Reserved. Made in California, USA 🇺🇸*
