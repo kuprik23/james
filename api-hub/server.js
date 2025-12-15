@@ -504,6 +504,9 @@ async function executeSystemMonitorTool(toolName, args) {
 // Execute CyberCAT tools
 async function executeCyberCatTool(toolName, args) {
   const si = await import('systeminformation');
+  const { exec } = await import('child_process');
+  const { promisify } = await import('util');
+  const execAsync = promisify(exec);
   
   switch (toolName) {
     case 'analyze_network':
@@ -592,9 +595,662 @@ async function executeCyberCatTool(toolName, args) {
         timestamp: new Date().toISOString()
       };
       
+    case 'vulnerability_scan':
+      // Comprehensive vulnerability scan
+      const vulnResults = await performVulnerabilityScan();
+      return vulnResults;
+      
+    case 'port_scan':
+      // Scan common ports
+      const targetHost = args.host || '127.0.0.1';
+      const portResults = await scanPorts(targetHost);
+      return portResults;
+      
+    case 'firewall_check':
+      // Check firewall status
+      const firewallStatus = await checkFirewall();
+      return firewallStatus;
+      
+    case 'malware_scan':
+      // Scan for suspicious processes and files
+      const malwareResults = await scanForMalware();
+      return malwareResults;
+      
+    case 'password_audit':
+      // Check for weak password policies
+      const passwordAudit = await auditPasswordPolicies();
+      return passwordAudit;
+      
+    case 'ssl_check':
+      // Check SSL/TLS configuration
+      const sslTarget = args.url || 'https://localhost';
+      const sslResults = await checkSSL(sslTarget);
+      return sslResults;
+      
+    case 'system_hardening':
+      // Check system hardening status
+      const hardeningResults = await checkSystemHardening();
+      return hardeningResults;
+      
+    case 'full_sweep':
+      // Complete security sweep
+      const sweepResults = await performFullSecuritySweep();
+      return sweepResults;
+      
     default:
       return { error: `Unknown tool: ${toolName}` };
   }
+}
+
+// Vulnerability Scan
+async function performVulnerabilityScan() {
+  const si = await import('systeminformation');
+  const vulnerabilities = [];
+  const recommendations = [];
+  
+  // Check OS updates
+  const osInfo = await si.default.osInfo();
+  
+  // Check for outdated software indicators
+  const services = await si.default.services('*');
+  const runningServices = services.filter(s => s.running);
+  
+  // Check open ports
+  const connections = await si.default.networkConnections();
+  const listeningPorts = connections.filter(c => c.state === 'LISTEN');
+  
+  // Common vulnerable ports
+  const riskyPorts = [21, 23, 25, 110, 135, 139, 445, 1433, 3306, 3389, 5432];
+  const openRiskyPorts = listeningPorts.filter(c => riskyPorts.includes(c.localPort));
+  
+  if (openRiskyPorts.length > 0) {
+    vulnerabilities.push({
+      severity: 'HIGH',
+      type: 'OPEN_RISKY_PORTS',
+      description: `Found ${openRiskyPorts.length} potentially risky ports open`,
+      ports: openRiskyPorts.map(p => p.localPort),
+      recommendation: 'Close unnecessary ports or restrict access via firewall'
+    });
+  }
+  
+  // Check for services running as SYSTEM/root
+  const systemServices = runningServices.filter(s =>
+    s.user === 'SYSTEM' || s.user === 'root' || s.user === 'LocalSystem'
+  );
+  
+  if (systemServices.length > 20) {
+    vulnerabilities.push({
+      severity: 'MEDIUM',
+      type: 'EXCESSIVE_SYSTEM_SERVICES',
+      description: `${systemServices.length} services running with elevated privileges`,
+      recommendation: 'Review and minimize services running with system privileges'
+    });
+  }
+  
+  // Check memory usage (potential memory leak or crypto miner)
+  const mem = await si.default.mem();
+  const memUsagePercent = (mem.used / mem.total) * 100;
+  
+  if (memUsagePercent > 90) {
+    vulnerabilities.push({
+      severity: 'MEDIUM',
+      type: 'HIGH_MEMORY_USAGE',
+      description: `Memory usage at ${memUsagePercent.toFixed(1)}%`,
+      recommendation: 'Investigate high memory usage - possible memory leak or malicious process'
+    });
+  }
+  
+  // Check CPU usage
+  const cpuLoad = await si.default.currentLoad();
+  if (cpuLoad.currentLoad > 80) {
+    vulnerabilities.push({
+      severity: 'LOW',
+      type: 'HIGH_CPU_USAGE',
+      description: `CPU usage at ${cpuLoad.currentLoad.toFixed(1)}%`,
+      recommendation: 'Investigate high CPU usage - possible crypto miner or malicious process'
+    });
+  }
+  
+  // Generate recommendations
+  recommendations.push('Enable automatic security updates');
+  recommendations.push('Implement network segmentation');
+  recommendations.push('Use strong authentication (MFA)');
+  recommendations.push('Regular security audits');
+  recommendations.push('Implement least privilege access');
+  
+  return {
+    scanTime: new Date().toISOString(),
+    vulnerabilitiesFound: vulnerabilities.length,
+    severityCounts: {
+      critical: vulnerabilities.filter(v => v.severity === 'CRITICAL').length,
+      high: vulnerabilities.filter(v => v.severity === 'HIGH').length,
+      medium: vulnerabilities.filter(v => v.severity === 'MEDIUM').length,
+      low: vulnerabilities.filter(v => v.severity === 'LOW').length
+    },
+    vulnerabilities,
+    recommendations,
+    overallRisk: vulnerabilities.some(v => v.severity === 'CRITICAL') ? 'CRITICAL' :
+                 vulnerabilities.some(v => v.severity === 'HIGH') ? 'HIGH' :
+                 vulnerabilities.some(v => v.severity === 'MEDIUM') ? 'MEDIUM' : 'LOW'
+  };
+}
+
+// Port Scanner
+async function scanPorts(host) {
+  const net = await import('net');
+  const commonPorts = [
+    { port: 21, service: 'FTP' },
+    { port: 22, service: 'SSH' },
+    { port: 23, service: 'Telnet' },
+    { port: 25, service: 'SMTP' },
+    { port: 53, service: 'DNS' },
+    { port: 80, service: 'HTTP' },
+    { port: 110, service: 'POP3' },
+    { port: 135, service: 'RPC' },
+    { port: 139, service: 'NetBIOS' },
+    { port: 143, service: 'IMAP' },
+    { port: 443, service: 'HTTPS' },
+    { port: 445, service: 'SMB' },
+    { port: 993, service: 'IMAPS' },
+    { port: 995, service: 'POP3S' },
+    { port: 1433, service: 'MSSQL' },
+    { port: 1521, service: 'Oracle' },
+    { port: 3306, service: 'MySQL' },
+    { port: 3389, service: 'RDP' },
+    { port: 5432, service: 'PostgreSQL' },
+    { port: 5900, service: 'VNC' },
+    { port: 6379, service: 'Redis' },
+    { port: 8080, service: 'HTTP-Alt' },
+    { port: 8443, service: 'HTTPS-Alt' },
+    { port: 27017, service: 'MongoDB' }
+  ];
+  
+  const results = [];
+  
+  for (const { port, service } of commonPorts) {
+    const isOpen = await checkPort(host, port);
+    if (isOpen) {
+      results.push({ port, service, status: 'OPEN' });
+    }
+  }
+  
+  return {
+    host,
+    scanTime: new Date().toISOString(),
+    openPorts: results.length,
+    ports: results,
+    riskLevel: results.some(p => [23, 135, 139, 445].includes(p.port)) ? 'HIGH' :
+               results.some(p => [21, 3389, 5900].includes(p.port)) ? 'MEDIUM' : 'LOW'
+  };
+}
+
+// Check single port
+function checkPort(host, port) {
+  return new Promise((resolve) => {
+    const net = require('net');
+    const socket = new net.Socket();
+    socket.setTimeout(1000);
+    
+    socket.on('connect', () => {
+      socket.destroy();
+      resolve(true);
+    });
+    
+    socket.on('timeout', () => {
+      socket.destroy();
+      resolve(false);
+    });
+    
+    socket.on('error', () => {
+      resolve(false);
+    });
+    
+    socket.connect(port, host);
+  });
+}
+
+// Check Firewall Status
+async function checkFirewall() {
+  const { exec } = await import('child_process');
+  const { promisify } = await import('util');
+  const execAsync = promisify(exec);
+  
+  try {
+    // Windows firewall check
+    const { stdout } = await execAsync('netsh advfirewall show allprofiles state');
+    const profiles = stdout.split('\n').filter(line => line.includes('State'));
+    
+    const firewallStatus = {
+      enabled: stdout.toLowerCase().includes('on'),
+      profiles: profiles.map(p => p.trim()),
+      recommendation: ''
+    };
+    
+    if (!firewallStatus.enabled) {
+      firewallStatus.recommendation = 'CRITICAL: Enable Windows Firewall immediately';
+      firewallStatus.risk = 'CRITICAL';
+    } else {
+      firewallStatus.recommendation = 'Firewall is enabled - review rules periodically';
+      firewallStatus.risk = 'LOW';
+    }
+    
+    return firewallStatus;
+  } catch (e) {
+    return {
+      enabled: 'unknown',
+      error: 'Could not determine firewall status',
+      recommendation: 'Manually verify firewall configuration'
+    };
+  }
+}
+
+// Scan for Malware indicators
+async function scanForMalware() {
+  const si = await import('systeminformation');
+  const suspiciousIndicators = [];
+  
+  // Get all processes
+  const processes = await si.default.processes();
+  
+  // Known suspicious process names (simplified list)
+  const suspiciousNames = [
+    'cryptominer', 'xmrig', 'minerd', 'cgminer', 'bfgminer',
+    'coinhive', 'cryptonight', 'stratum', 'nicehash',
+    'mimikatz', 'pwdump', 'procdump', 'lazagne',
+    'netcat', 'ncat', 'nc.exe', 'psexec',
+    'keylogger', 'spyware', 'trojan'
+  ];
+  
+  // Check for suspicious processes
+  const suspiciousProcesses = processes.list.filter(p =>
+    suspiciousNames.some(name => p.name.toLowerCase().includes(name))
+  );
+  
+  if (suspiciousProcesses.length > 0) {
+    suspiciousIndicators.push({
+      type: 'SUSPICIOUS_PROCESS',
+      severity: 'CRITICAL',
+      details: suspiciousProcesses.map(p => ({ name: p.name, pid: p.pid, cpu: p.cpu }))
+    });
+  }
+  
+  // Check for processes with high CPU (potential miners)
+  const highCpuProcesses = processes.list.filter(p => p.cpu > 50);
+  if (highCpuProcesses.length > 0) {
+    suspiciousIndicators.push({
+      type: 'HIGH_CPU_PROCESS',
+      severity: 'MEDIUM',
+      details: highCpuProcesses.map(p => ({ name: p.name, pid: p.pid, cpu: `${p.cpu.toFixed(1)}%` }))
+    });
+  }
+  
+  // Check for unusual network connections
+  const connections = await si.default.networkConnections();
+  const unusualPorts = connections.filter(c =>
+    c.state === 'ESTABLISHED' &&
+    c.peerPort &&
+    (c.peerPort > 49151 || [4444, 5555, 6666, 7777, 8888, 9999].includes(c.peerPort))
+  );
+  
+  if (unusualPorts.length > 0) {
+    suspiciousIndicators.push({
+      type: 'UNUSUAL_CONNECTIONS',
+      severity: 'HIGH',
+      details: unusualPorts.map(c => ({
+        remote: `${c.peerAddress}:${c.peerPort}`,
+        process: c.process || 'unknown'
+      }))
+    });
+  }
+  
+  return {
+    scanTime: new Date().toISOString(),
+    indicatorsFound: suspiciousIndicators.length,
+    status: suspiciousIndicators.some(i => i.severity === 'CRITICAL') ? 'INFECTED' :
+            suspiciousIndicators.some(i => i.severity === 'HIGH') ? 'SUSPICIOUS' : 'CLEAN',
+    indicators: suspiciousIndicators,
+    recommendation: suspiciousIndicators.length > 0 ?
+      'Run a full antivirus scan and investigate flagged processes' :
+      'No obvious malware indicators found'
+  };
+}
+
+// Audit Password Policies
+async function auditPasswordPolicies() {
+  const { exec } = await import('child_process');
+  const { promisify } = await import('util');
+  const execAsync = promisify(exec);
+  
+  try {
+    const { stdout } = await execAsync('net accounts');
+    const lines = stdout.split('\n');
+    
+    const policies = {};
+    lines.forEach(line => {
+      if (line.includes(':')) {
+        const [key, value] = line.split(':').map(s => s.trim());
+        policies[key] = value;
+      }
+    });
+    
+    const issues = [];
+    
+    // Check minimum password length
+    const minLength = parseInt(policies['Minimum password length']) || 0;
+    if (minLength < 12) {
+      issues.push({
+        issue: 'Weak minimum password length',
+        current: minLength,
+        recommended: 12,
+        severity: 'HIGH'
+      });
+    }
+    
+    // Check password history
+    const history = parseInt(policies['Length of password history maintained']) || 0;
+    if (history < 5) {
+      issues.push({
+        issue: 'Insufficient password history',
+        current: history,
+        recommended: 5,
+        severity: 'MEDIUM'
+      });
+    }
+    
+    // Check lockout threshold
+    const lockout = parseInt(policies['Lockout threshold']) || 0;
+    if (lockout === 0 || lockout > 5) {
+      issues.push({
+        issue: 'Weak account lockout policy',
+        current: lockout === 0 ? 'Never' : lockout,
+        recommended: '3-5 attempts',
+        severity: 'HIGH'
+      });
+    }
+    
+    return {
+      policies,
+      issues,
+      overallRating: issues.some(i => i.severity === 'HIGH') ? 'POOR' :
+                     issues.some(i => i.severity === 'MEDIUM') ? 'FAIR' : 'GOOD',
+      recommendations: [
+        'Enforce minimum 12 character passwords',
+        'Enable password complexity requirements',
+        'Set account lockout after 3-5 failed attempts',
+        'Implement multi-factor authentication'
+      ]
+    };
+  } catch (e) {
+    return {
+      error: 'Could not audit password policies',
+      recommendation: 'Manually review password policies'
+    };
+  }
+}
+
+// Check SSL/TLS
+async function checkSSL(url) {
+  const https = await import('https');
+  const tls = await import('tls');
+  
+  return new Promise((resolve) => {
+    try {
+      const urlObj = new URL(url);
+      const options = {
+        host: urlObj.hostname,
+        port: urlObj.port || 443,
+        method: 'GET',
+        rejectUnauthorized: false
+      };
+      
+      const req = https.request(options, (res) => {
+        const cert = res.socket.getPeerCertificate();
+        const cipher = res.socket.getCipher();
+        const protocol = res.socket.getProtocol();
+        
+        const issues = [];
+        
+        // Check protocol version
+        if (protocol === 'TLSv1' || protocol === 'TLSv1.1') {
+          issues.push({
+            issue: 'Outdated TLS version',
+            current: protocol,
+            recommended: 'TLSv1.2 or TLSv1.3',
+            severity: 'HIGH'
+          });
+        }
+        
+        // Check certificate expiry
+        if (cert.valid_to) {
+          const expiryDate = new Date(cert.valid_to);
+          const daysUntilExpiry = Math.floor((expiryDate - new Date()) / (1000 * 60 * 60 * 24));
+          
+          if (daysUntilExpiry < 0) {
+            issues.push({
+              issue: 'Certificate expired',
+              severity: 'CRITICAL'
+            });
+          } else if (daysUntilExpiry < 30) {
+            issues.push({
+              issue: 'Certificate expiring soon',
+              daysRemaining: daysUntilExpiry,
+              severity: 'HIGH'
+            });
+          }
+        }
+        
+        resolve({
+          url,
+          protocol,
+          cipher: cipher ? cipher.name : 'unknown',
+          certificate: {
+            subject: cert.subject,
+            issuer: cert.issuer,
+            validFrom: cert.valid_from,
+            validTo: cert.valid_to
+          },
+          issues,
+          rating: issues.some(i => i.severity === 'CRITICAL') ? 'F' :
+                  issues.some(i => i.severity === 'HIGH') ? 'C' :
+                  issues.some(i => i.severity === 'MEDIUM') ? 'B' : 'A'
+        });
+      });
+      
+      req.on('error', (e) => {
+        resolve({
+          url,
+          error: e.message,
+          rating: 'F'
+        });
+      });
+      
+      req.setTimeout(5000, () => {
+        req.destroy();
+        resolve({
+          url,
+          error: 'Connection timeout',
+          rating: 'F'
+        });
+      });
+      
+      req.end();
+    } catch (e) {
+      resolve({
+        url,
+        error: e.message,
+        rating: 'F'
+      });
+    }
+  });
+}
+
+// Check System Hardening
+async function checkSystemHardening() {
+  const si = await import('systeminformation');
+  const { exec } = await import('child_process');
+  const { promisify } = await import('util');
+  const execAsync = promisify(exec);
+  
+  const checks = [];
+  
+  // Check if Windows Defender is running
+  try {
+    const services = await si.default.services('WinDefend');
+    const defender = services.find(s => s.name === 'WinDefend');
+    checks.push({
+      check: 'Windows Defender',
+      status: defender && defender.running ? 'ENABLED' : 'DISABLED',
+      severity: defender && defender.running ? 'OK' : 'CRITICAL'
+    });
+  } catch (e) {
+    checks.push({ check: 'Windows Defender', status: 'UNKNOWN', severity: 'MEDIUM' });
+  }
+  
+  // Check UAC status
+  try {
+    const { stdout } = await execAsync('reg query "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System" /v EnableLUA');
+    const uacEnabled = stdout.includes('0x1');
+    checks.push({
+      check: 'User Account Control (UAC)',
+      status: uacEnabled ? 'ENABLED' : 'DISABLED',
+      severity: uacEnabled ? 'OK' : 'HIGH'
+    });
+  } catch (e) {
+    checks.push({ check: 'UAC', status: 'UNKNOWN', severity: 'MEDIUM' });
+  }
+  
+  // Check Remote Desktop
+  try {
+    const { stdout } = await execAsync('reg query "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server" /v fDenyTSConnections');
+    const rdpDisabled = stdout.includes('0x1');
+    checks.push({
+      check: 'Remote Desktop',
+      status: rdpDisabled ? 'DISABLED' : 'ENABLED',
+      severity: rdpDisabled ? 'OK' : 'MEDIUM',
+      note: rdpDisabled ? 'Good - RDP is disabled' : 'RDP is enabled - ensure it is secured'
+    });
+  } catch (e) {
+    checks.push({ check: 'Remote Desktop', status: 'UNKNOWN', severity: 'LOW' });
+  }
+  
+  // Check auto-login
+  try {
+    const { stdout } = await execAsync('reg query "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon" /v AutoAdminLogon');
+    const autoLogin = stdout.includes('1');
+    checks.push({
+      check: 'Auto-Login',
+      status: autoLogin ? 'ENABLED' : 'DISABLED',
+      severity: autoLogin ? 'HIGH' : 'OK'
+    });
+  } catch (e) {
+    checks.push({ check: 'Auto-Login', status: 'DISABLED', severity: 'OK' });
+  }
+  
+  const criticalIssues = checks.filter(c => c.severity === 'CRITICAL').length;
+  const highIssues = checks.filter(c => c.severity === 'HIGH').length;
+  
+  return {
+    scanTime: new Date().toISOString(),
+    checks,
+    summary: {
+      total: checks.length,
+      passed: checks.filter(c => c.severity === 'OK').length,
+      failed: criticalIssues + highIssues
+    },
+    overallScore: criticalIssues > 0 ? 'CRITICAL' :
+                  highIssues > 0 ? 'NEEDS_IMPROVEMENT' : 'HARDENED',
+    recommendations: [
+      'Enable Windows Defender real-time protection',
+      'Keep UAC enabled at highest level',
+      'Disable Remote Desktop if not needed',
+      'Never enable auto-login on shared systems'
+    ]
+  };
+}
+
+// Full Security Sweep
+async function performFullSecuritySweep() {
+  console.log('🐱 CyberCAT: Starting full security sweep...');
+  
+  const results = {
+    sweepTime: new Date().toISOString(),
+    modules: {}
+  };
+  
+  // Run all security checks
+  try {
+    results.modules.vulnerabilities = await performVulnerabilityScan();
+  } catch (e) {
+    results.modules.vulnerabilities = { error: e.message };
+  }
+  
+  try {
+    results.modules.malware = await scanForMalware();
+  } catch (e) {
+    results.modules.malware = { error: e.message };
+  }
+  
+  try {
+    results.modules.firewall = await checkFirewall();
+  } catch (e) {
+    results.modules.firewall = { error: e.message };
+  }
+  
+  try {
+    results.modules.hardening = await checkSystemHardening();
+  } catch (e) {
+    results.modules.hardening = { error: e.message };
+  }
+  
+  try {
+    results.modules.passwords = await auditPasswordPolicies();
+  } catch (e) {
+    results.modules.passwords = { error: e.message };
+  }
+  
+  try {
+    results.modules.ports = await scanPorts('127.0.0.1');
+  } catch (e) {
+    results.modules.ports = { error: e.message };
+  }
+  
+  // Calculate overall security score
+  let score = 100;
+  
+  if (results.modules.vulnerabilities?.overallRisk === 'CRITICAL') score -= 40;
+  else if (results.modules.vulnerabilities?.overallRisk === 'HIGH') score -= 25;
+  else if (results.modules.vulnerabilities?.overallRisk === 'MEDIUM') score -= 10;
+  
+  if (results.modules.malware?.status === 'INFECTED') score -= 50;
+  else if (results.modules.malware?.status === 'SUSPICIOUS') score -= 20;
+  
+  if (results.modules.firewall?.risk === 'CRITICAL') score -= 30;
+  
+  if (results.modules.hardening?.overallScore === 'CRITICAL') score -= 25;
+  else if (results.modules.hardening?.overallScore === 'NEEDS_IMPROVEMENT') score -= 10;
+  
+  if (results.modules.passwords?.overallRating === 'POOR') score -= 15;
+  else if (results.modules.passwords?.overallRating === 'FAIR') score -= 5;
+  
+  results.securityScore = Math.max(0, score);
+  results.grade = score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F';
+  results.status = score >= 80 ? 'SECURE' : score >= 60 ? 'AT_RISK' : 'VULNERABLE';
+  
+  results.priorityActions = [];
+  if (results.modules.malware?.status !== 'CLEAN') {
+    results.priorityActions.push('🚨 Run full antivirus scan immediately');
+  }
+  if (results.modules.firewall?.risk === 'CRITICAL') {
+    results.priorityActions.push('🔥 Enable firewall immediately');
+  }
+  if (results.modules.vulnerabilities?.overallRisk === 'HIGH' || results.modules.vulnerabilities?.overallRisk === 'CRITICAL') {
+    results.priorityActions.push('⚠️ Address high-severity vulnerabilities');
+  }
+  if (results.modules.hardening?.overallScore !== 'HARDENED') {
+    results.priorityActions.push('🔒 Implement system hardening measures');
+  }
+  
+  return results;
 }
 
 function formatBytes(bytes) {
@@ -638,7 +1294,17 @@ async function executeCommand(command) {
           { cmd: 'procs', desc: 'Analyze running processes' },
           { cmd: 'sessions', desc: 'Check user sessions' },
           { cmd: 'website <url>', desc: 'Check website status' },
-          { cmd: 'ping <host>', desc: 'Ping a host' }
+          { cmd: 'ping <host>', desc: 'Ping a host' },
+          { cmd: '', desc: '' },
+          { cmd: '--- Security Sweep ---', desc: '' },
+          { cmd: 'sweep', desc: '🔍 Full security sweep (all checks)' },
+          { cmd: 'vulnscan', desc: '🔎 Vulnerability scan' },
+          { cmd: 'portscan [host]', desc: '🔌 Port scan (default: localhost)' },
+          { cmd: 'firewall', desc: '🔥 Check firewall status' },
+          { cmd: 'malware', desc: '🦠 Scan for malware indicators' },
+          { cmd: 'passwords', desc: '🔑 Audit password policies' },
+          { cmd: 'sslcheck <url>', desc: '🔒 Check SSL/TLS configuration' },
+          { cmd: 'hardening', desc: '🛡️ Check system hardening' }
         ]
       };
       
@@ -792,6 +1458,34 @@ async function executeCommand(command) {
         return { type: 'error', message: 'Usage: ping <host>' };
       }
       return await callMcpTool('system-monitor', 'ping_host', { host: args[0] });
+      
+    // Security Sweep Commands
+    case 'sweep':
+      return await callMcpTool('cybercat', 'full_sweep', {});
+      
+    case 'vulnscan':
+      return await callMcpTool('cybercat', 'vulnerability_scan', {});
+      
+    case 'portscan':
+      return await callMcpTool('cybercat', 'port_scan', { host: args[0] || '127.0.0.1' });
+      
+    case 'firewall':
+      return await callMcpTool('cybercat', 'firewall_check', {});
+      
+    case 'malware':
+      return await callMcpTool('cybercat', 'malware_scan', {});
+      
+    case 'passwords':
+      return await callMcpTool('cybercat', 'password_audit', {});
+      
+    case 'sslcheck':
+      if (args.length === 0) {
+        return { type: 'error', message: 'Usage: sslcheck <url>' };
+      }
+      return await callMcpTool('cybercat', 'ssl_check', { url: args[0] });
+      
+    case 'hardening':
+      return await callMcpTool('cybercat', 'system_hardening', {});
       
     default:
       return { type: 'error', message: `Unknown command: ${cmd}. Type "help" for available commands.` };
