@@ -46,10 +46,14 @@
                         </pre>
                     </div>
                     <div class="quick-actions">
-                        <button class="btn-mcp btn-security" onclick="hub.executeCommand('security')">🛡️ Security Scan</button>
+                        <button class="btn-mcp btn-security" onclick="hub.executeCommand('sweep')">🔍 Full Sweep</button>
+                        <button class="btn-mcp" onclick="hub.executeCommand('security')">🛡️ Security</button>
                         <button class="btn-mcp" onclick="hub.executeCommand('netstat')">🌐 Network</button>
-                        <button class="btn-mcp" onclick="hub.executeCommand('procs')">⚙️ Processes</button>
-                        <button class="btn-mcp" onclick="hub.executeCommand('sessions')">👤 Sessions</button>
+                        <button class="btn-mcp" onclick="hub.executeCommand('portscan localhost')">🔌 Ports</button>
+                        <button class="btn-mcp" onclick="hub.executeCommand('firewall')">🧱 Firewall</button>
+                        <button class="btn-mcp" onclick="hub.executeCommand('malware')">🦠 Malware</button>
+                        <button class="btn-mcp" onclick="hub.executeCommand('passwords')">🔑 Passwords</button>
+                        <button class="btn-mcp" onclick="hub.executeCommand('hardening')">🔒 Hardening</button>
                     </div>
                 </div>
                 
@@ -60,8 +64,9 @@
                     </div>
                     <div class="quick-actions">
                         <button class="btn-mcp btn-monitor" onclick="hub.executeCommand('sysinfo')">💻 System Info</button>
+                        <button class="btn-mcp" onclick="hub.executeCommand('procs')">⚙️ Processes</button>
+                        <button class="btn-mcp" onclick="hub.executeCommand('sessions')">👤 Sessions</button>
                         <button class="btn-mcp" onclick="hub.executeCommand('website google.com')">🌍 Check Site</button>
-                        <button class="btn-mcp" onclick="hub.executeCommand('ping 8.8.8.8')">📡 Ping</button>
                     </div>
                 </div>
                 
@@ -89,27 +94,148 @@
                         <button class="btn-icon" id="historyBtn" title="History">📜</button>
                     </div>
                 </div>
+                
+                <!-- Scanning Visualization Panel -->
+                <div class="scan-visualization" id="scanVisualization" style="display: none;">
+                    <div class="scan-header">
+                        <span class="scan-title" id="scanTitle">🔍 EXAMINATION IN PROGRESS...</span>
+                        <span class="scan-status" id="scanStatus">Initializing...</span>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progressBar">
+                            <div class="progress-fill" id="progressFill"></div>
+                            <span class="progress-text" id="progressText">0%</span>
+                        </div>
+                    </div>
+                    
+                    <!-- EQ Visualizer -->
+                    <div class="eq-visualizer" id="eqVisualizer">
+                        <div class="eq-bar" style="--delay: 0"></div>
+                        <div class="eq-bar" style="--delay: 1"></div>
+                        <div class="eq-bar" style="--delay: 2"></div>
+                        <div class="eq-bar" style="--delay: 3"></div>
+                        <div class="eq-bar" style="--delay: 4"></div>
+                        <div class="eq-bar" style="--delay: 5"></div>
+                        <div class="eq-bar" style="--delay: 6"></div>
+                        <div class="eq-bar" style="--delay: 7"></div>
+                        <div class="eq-bar" style="--delay: 8"></div>
+                        <div class="eq-bar" style="--delay: 9"></div>
+                        <div class="eq-bar" style="--delay: 10"></div>
+                        <div class="eq-bar" style="--delay: 11"></div>
+                        <div class="eq-bar" style="--delay: 12"></div>
+                        <div class="eq-bar" style="--delay: 13"></div>
+                        <div class="eq-bar" style="--delay: 14"></div>
+                        <div class="eq-bar" style="--delay: 15"></div>
+                        <div class="eq-bar" style="--delay: 16"></div>
+                        <div class="eq-bar" style="--delay: 17"></div>
+                        <div class="eq-bar" style="--delay: 18"></div>
+                        <div class="eq-bar" style="--delay: 19"></div>
+                    </div>
+                    
+                    <!-- Scan Details -->
+                    <div class="scan-details" id="scanDetails">
+                        <div class="scan-item">
+                            <span class="scan-label">Target:</span>
+                            <span class="scan-value" id="scanTarget">localhost</span>
+                        </div>
+                        <div class="scan-item">
+                            <span class="scan-label">Phase:</span>
+                            <span class="scan-value" id="scanPhase">Initializing</span>
+                        </div>
+                        <div class="scan-item">
+                            <span class="scan-label">Found:</span>
+                            <span class="scan-value" id="scanFound">0 issues</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Matrix Rain Effect -->
+                    <div class="matrix-rain" id="matrixRain"></div>
+                </div>
+                
                 <div class="terminal" id="terminal">
                     <div class="terminal-output" id="terminalOutput">
                         <div class="output-line system">
                             <span class="timestamp">[System]</span>
-                            <span class="message">Welcome to James API Hub</span>
+                            <span class="message">Welcome to CyberCAT Hub - Security & API Command Center</span>
                         </div>
                         <div class="output-line system">
                             <span class="timestamp">[System]</span>
                             <span class="message">Type "help" for available commands</span>
                         </div>
+                        <div class="output-line cybercat">
+                            <span class="timestamp">[CyberCAT]</span>
+                            <span class="message">🐱 Meow! Ready to hunt for vulnerabilities...</span>
+                        </div>
                     </div>
                 </div>
                 <div class="terminal-input-container">
-                    <span class="prompt">❯</span>
+                    <span class="prompt">🐱❯</span>
                     <input type="text" id="terminalInput" class="terminal-input" placeholder="Enter command..." autocomplete="off">
                     <button class="btn-send" id="sendBtn">Send</button>
                 </div>
             </main>
 
-            <!-- Right Panel - Request Builder -->
+            <!-- Right Panel - Request Builder & Live Stats -->
             <aside class="request-panel">
+                <!-- Live Security Stats -->
+                <div class="live-stats">
+                    <div class="panel-header">
+                        <h2>📊 Live Stats</h2>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card threat">
+                            <div class="stat-icon">🛡️</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="threatLevel">SECURE</span>
+                                <span class="stat-label">Threat Level</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🔌</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="openPorts">--</span>
+                                <span class="stat-label">Open Ports</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🌐</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="connections">--</span>
+                                <span class="stat-label">Connections</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">⚠️</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="alerts">0</span>
+                                <span class="stat-label">Alerts</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Security Score Gauge -->
+                    <div class="security-gauge">
+                        <div class="gauge-container">
+                            <svg viewBox="0 0 100 50" class="gauge-svg">
+                                <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#333" stroke-width="8"/>
+                                <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="url(#gaugeGradient)" stroke-width="8" 
+                                      stroke-dasharray="125.6" stroke-dashoffset="125.6" id="gaugeArc"/>
+                                <defs>
+                                    <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#ef4444"/>
+                                        <stop offset="50%" style="stop-color:#f59e0b"/>
+                                        <stop offset="100%" style="stop-color:#00ff88"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="gauge-value" id="securityScore">--</div>
+                            <div class="gauge-label">Security Score</div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="panel-header">
                     <h2>🛠️ Request Builder</h2>
                 </div>
@@ -158,7 +284,7 @@
 
         <!-- Footer -->
         <footer class="footer">
-            <span>🐱 CyberCAT Hub v1.0.0 | Security & API Command Center</span>
+            <span>🐱 CyberCAT Hub v2.0.0 | Security & API Command Center</span>
             <span id="requestCount">0 requests</span>
             <span id="uptime">Uptime: 0s</span>
         </footer>

@@ -1,5 +1,6 @@
 /**
- * James API Hub - Frontend Application
+ * CyberCAT Hub - Enhanced Frontend Application
+ * With animated visualizations and real-time scanning display
  */
 
 class APIHub {
@@ -10,6 +11,9 @@ class APIHub {
         this.commandHistory = [];
         this.historyIndex = -1;
         this.startTime = Date.now();
+        this.isScanning = false;
+        this.scanProgress = 0;
+        this.matrixChars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
         
         this.init();
     }
@@ -18,6 +22,33 @@ class APIHub {
         this.connectWebSocket();
         this.bindEvents();
         this.startUptimeTimer();
+        this.initMatrixRain();
+    }
+    
+    // Initialize Matrix Rain Effect
+    initMatrixRain() {
+        const container = document.getElementById('matrixRain');
+        if (!container) return;
+        
+        for (let i = 0; i < 30; i++) {
+            setTimeout(() => this.createMatrixChar(container), i * 200);
+        }
+    }
+    
+    createMatrixChar(container) {
+        const char = document.createElement('span');
+        char.className = 'matrix-char';
+        char.textContent = this.matrixChars[Math.floor(Math.random() * this.matrixChars.length)];
+        char.style.left = Math.random() * 100 + '%';
+        char.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        container.appendChild(char);
+        
+        char.addEventListener('animationend', () => {
+            char.remove();
+            if (this.isScanning) {
+                this.createMatrixChar(container);
+            }
+        });
     }
     
     // WebSocket Connection
@@ -29,7 +60,8 @@ class APIHub {
         
         this.ws.onopen = () => {
             this.updateConnectionStatus('connected');
-            this.log('Connected to API Hub server', 'success');
+            this.log('Connected to CyberCAT Hub server', 'success');
+            this.log('🐱 Meow! Ready to hunt for vulnerabilities...', 'cybercat');
         };
         
         this.ws.onclose = () => {
@@ -68,6 +100,7 @@ class APIHub {
                 
             case 'error':
                 this.log(data.message, 'error');
+                this.stopScanning();
                 break;
                 
             case 'response':
@@ -97,6 +130,14 @@ class APIHub {
                 
             case 'mcpResult':
                 this.displayMcpResult(data);
+                break;
+                
+            case 'scanProgress':
+                this.updateScanProgress(data);
+                break;
+                
+            case 'scanComplete':
+                this.completeScan(data);
                 break;
         }
     }
@@ -176,6 +217,154 @@ class APIHub {
         });
     }
     
+    // Start scanning visualization
+    startScanning(title = 'EXAMINATION IN PROGRESS...', target = 'localhost') {
+        this.isScanning = true;
+        this.scanProgress = 0;
+        
+        const visualization = document.getElementById('scanVisualization');
+        const scanTitle = document.getElementById('scanTitle');
+        const scanTarget = document.getElementById('scanTarget');
+        const eqVisualizer = document.getElementById('eqVisualizer');
+        
+        visualization.style.display = 'block';
+        scanTitle.textContent = `🔍 ${title}`;
+        scanTarget.textContent = target;
+        
+        eqVisualizer.classList.add('active');
+        document.body.classList.add('scanning');
+        
+        // Start matrix rain
+        this.initMatrixRain();
+        
+        // Simulate progress
+        this.progressInterval = setInterval(() => {
+            if (this.scanProgress < 95) {
+                this.scanProgress += Math.random() * 5;
+                this.updateProgressBar(Math.min(this.scanProgress, 95));
+            }
+        }, 200);
+        
+        // Update phases
+        this.updateScanPhase('Initializing scan...');
+        setTimeout(() => this.updateScanPhase('Scanning ports...'), 1000);
+        setTimeout(() => this.updateScanPhase('Analyzing services...'), 3000);
+        setTimeout(() => this.updateScanPhase('Checking vulnerabilities...'), 5000);
+        setTimeout(() => this.updateScanPhase('Generating report...'), 7000);
+    }
+    
+    // Stop scanning visualization
+    stopScanning() {
+        this.isScanning = false;
+        
+        if (this.progressInterval) {
+            clearInterval(this.progressInterval);
+        }
+        
+        const visualization = document.getElementById('scanVisualization');
+        const eqVisualizer = document.getElementById('eqVisualizer');
+        
+        eqVisualizer.classList.remove('active');
+        document.body.classList.remove('scanning');
+        
+        // Fade out
+        setTimeout(() => {
+            visualization.style.display = 'none';
+        }, 500);
+    }
+    
+    // Update progress bar
+    updateProgressBar(percent) {
+        const fill = document.getElementById('progressFill');
+        const text = document.getElementById('progressText');
+        
+        fill.style.width = percent + '%';
+        text.textContent = Math.round(percent) + '%';
+    }
+    
+    // Update scan phase
+    updateScanPhase(phase) {
+        const phaseEl = document.getElementById('scanPhase');
+        const statusEl = document.getElementById('scanStatus');
+        
+        if (phaseEl) phaseEl.textContent = phase;
+        if (statusEl) statusEl.textContent = phase;
+    }
+    
+    // Update scan found count
+    updateScanFound(count) {
+        const foundEl = document.getElementById('scanFound');
+        if (foundEl) foundEl.textContent = count + ' issues';
+    }
+    
+    // Update scan progress from server
+    updateScanProgress(data) {
+        this.updateProgressBar(data.progress);
+        if (data.phase) this.updateScanPhase(data.phase);
+        if (data.found !== undefined) this.updateScanFound(data.found);
+    }
+    
+    // Complete scan
+    completeScan(data) {
+        this.updateProgressBar(100);
+        this.updateScanPhase('Scan complete!');
+        
+        setTimeout(() => {
+            this.stopScanning();
+            
+            // Update stats
+            if (data.stats) {
+                this.updateSecurityStats(data.stats);
+            }
+        }, 1000);
+    }
+    
+    // Update security stats
+    updateSecurityStats(stats) {
+        if (stats.threatLevel) {
+            const threatEl = document.getElementById('threatLevel');
+            threatEl.textContent = stats.threatLevel;
+            threatEl.className = 'stat-value threat-' + stats.threatLevel.toLowerCase();
+        }
+        
+        if (stats.openPorts !== undefined) {
+            document.getElementById('openPorts').textContent = stats.openPorts;
+        }
+        
+        if (stats.connections !== undefined) {
+            document.getElementById('connections').textContent = stats.connections;
+        }
+        
+        if (stats.alerts !== undefined) {
+            document.getElementById('alerts').textContent = stats.alerts;
+        }
+        
+        if (stats.score !== undefined) {
+            this.updateSecurityGauge(stats.score);
+        }
+    }
+    
+    // Update security gauge
+    updateSecurityGauge(score) {
+        const arc = document.getElementById('gaugeArc');
+        const value = document.getElementById('securityScore');
+        
+        // Calculate stroke-dashoffset (125.6 is full arc length)
+        const offset = 125.6 - (125.6 * score / 100);
+        arc.style.strokeDashoffset = offset;
+        
+        value.textContent = score;
+        
+        // Set color class based on score
+        let gradeClass = 'grade-f';
+        if (score >= 90) gradeClass = 'grade-a';
+        else if (score >= 80) gradeClass = 'grade-b';
+        else if (score >= 70) gradeClass = 'grade-c';
+        else if (score >= 60) gradeClass = 'grade-d';
+        
+        value.className = 'gauge-value ' + gradeClass;
+    }
+    
     // Execute terminal command
     executeCommand(command) {
         if (!command.trim()) return;
@@ -186,6 +375,22 @@ class APIHub {
         
         // Display command
         this.log(command, 'command');
+        
+        // Check if it's a scanning command
+        const scanCommands = ['sweep', 'vulnscan', 'portscan', 'security', 'hardening', 'malware'];
+        const cmdLower = command.toLowerCase().split(' ')[0];
+        
+        if (scanCommands.includes(cmdLower)) {
+            const titles = {
+                'sweep': 'FULL SECURITY SWEEP',
+                'vulnscan': 'VULNERABILITY SCAN',
+                'portscan': 'PORT SCAN',
+                'security': 'SECURITY ASSESSMENT',
+                'hardening': 'SYSTEM HARDENING CHECK',
+                'malware': 'MALWARE SCAN'
+            };
+            this.startScanning(titles[cmdLower] || 'SCANNING...', command.split(' ')[1] || 'localhost');
+        }
         
         // Send to server
         this.sendCommand(command);
@@ -217,12 +422,19 @@ class APIHub {
     
     // Display command result
     displayCommandResult(result) {
+        // Stop scanning animation when result arrives
+        if (this.isScanning) {
+            this.completeScan({ stats: result.stats });
+        }
+        
         switch (result.type) {
             case 'help':
-                let helpText = 'Available commands:\n';
+                let helpText = '🐱 CyberCAT Hub Commands:\n\n';
+                helpText += '═══════════════════════════════════════\n';
                 result.commands.forEach(cmd => {
-                    helpText += `  ${cmd.cmd.padEnd(30)} - ${cmd.desc}\n`;
+                    helpText += `  ${cmd.cmd.padEnd(25)} ${cmd.desc}\n`;
                 });
+                helpText += '═══════════════════════════════════════\n';
                 this.log(helpText, 'system');
                 break;
                 
@@ -230,7 +442,7 @@ class APIHub {
                 if (result.apis.length === 0) {
                     this.log('No APIs configured. Use "add <name> <url>" to add one.', 'system');
                 } else {
-                    let listText = 'Configured APIs:\n';
+                    let listText = '📡 Configured APIs:\n';
                     result.apis.forEach(api => {
                         const auth = api.hasAuth ? '🔐' : '🔓';
                         listText += `  ${auth} ${api.name.padEnd(20)} ${api.baseUrl}\n`;
@@ -251,7 +463,7 @@ class APIHub {
                 if (result.data.length === 0) {
                     this.log('No request history', 'system');
                 } else {
-                    let historyText = 'Recent requests:\n';
+                    let historyText = '📜 Recent requests:\n';
                     result.data.forEach(req => {
                         const status = req.success ? '✓' : '✗';
                         historyText += `  ${status} [${req.method}] ${req.apiName}${req.url ? ' - ' + req.url : ''} (${req.duration})\n`;
@@ -264,7 +476,7 @@ class APIHub {
                 const status = result.data;
                 const uptime = this.formatUptime(status.uptime);
                 const mem = (status.memory.heapUsed / 1024 / 1024).toFixed(2);
-                this.log(`Hub Status:
+                this.log(`🐱 Hub Status:
   Uptime: ${uptime}
   APIs: ${status.apis}
   Clients: ${status.clients}
@@ -284,6 +496,11 @@ class APIHub {
                 this.log(result.message, 'system');
                 break;
                 
+            case 'securitySweep':
+            case 'vulnerabilityScan':
+                this.displaySecuritySweep(result);
+                break;
+                
             default:
                 // API response or MCP result
                 if (result.success !== undefined) {
@@ -294,6 +511,53 @@ class APIHub {
                     // Format MCP results nicely
                     this.displayMcpData(result);
                 }
+        }
+    }
+    
+    // Display security sweep results
+    displaySecuritySweep(result) {
+        const data = result.data || result;
+        
+        let text = `\n╔════════════════════════════════════════════════════════════╗\n`;
+        text += `║           🐱 CYBERCAT SECURITY SWEEP RESULTS              ║\n`;
+        text += `╠════════════════════════════════════════════════════════════╣\n`;
+        
+        if (data.grade) {
+            text += `║  Security Grade: ${data.grade.padEnd(40)} ║\n`;
+        }
+        if (data.score !== undefined) {
+            text += `║  Security Score: ${(data.score + '/100').padEnd(40)} ║\n`;
+        }
+        
+        text += `╠════════════════════════════════════════════════════════════╣\n`;
+        
+        if (data.vulnerabilities) {
+            text += `║  VULNERABILITIES FOUND:                                    ║\n`;
+            data.vulnerabilities.forEach(v => {
+                const icon = v.severity === 'HIGH' ? '🔴' : v.severity === 'MEDIUM' ? '🟡' : '🟢';
+                text += `║  ${icon} ${v.name.substring(0, 50).padEnd(50)} ║\n`;
+            });
+        }
+        
+        if (data.recommendations) {
+            text += `╠════════════════════════════════════════════════════════════╣\n`;
+            text += `║  RECOMMENDATIONS:                                          ║\n`;
+            data.recommendations.forEach(r => {
+                text += `║  • ${r.substring(0, 52).padEnd(52)} ║\n`;
+            });
+        }
+        
+        text += `╚════════════════════════════════════════════════════════════╝\n`;
+        
+        this.log(text, data.grade === 'A' || data.grade === 'B' ? 'success' : 'warning');
+        
+        // Update stats
+        if (data.score !== undefined) {
+            this.updateSecurityStats({
+                score: data.score,
+                threatLevel: data.grade === 'A' ? 'SECURE' : data.grade === 'F' ? 'CRITICAL' : 'MEDIUM',
+                alerts: data.vulnerabilities ? data.vulnerabilities.length : 0
+            });
         }
     }
     
@@ -363,14 +627,8 @@ class APIHub {
     
     // Display security assessment
     displaySecurityAssessment(data) {
-        const statusColors = {
-            'SECURE': '#00ff88',
-            'REVIEW_RECOMMENDED': '#ffaa00',
-            'ALERT': '#ff4444'
-        };
-        
         let text = `\n🛡️ SECURITY ASSESSMENT\n`;
-        text += `${'═'.repeat(40)}\n`;
+        text += `${'═'.repeat(50)}\n`;
         text += `Status: ${data.status}\n`;
         text += `Time: ${data.timestamp}\n\n`;
         
@@ -391,12 +649,19 @@ class APIHub {
         }
         
         this.log(text, data.status === 'SECURE' ? 'success' : 'warning');
+        
+        // Update stats
+        this.updateSecurityStats({
+            threatLevel: data.status,
+            connections: data.summary.totalConnections,
+            alerts: data.alerts.length
+        });
     }
     
     // Display network analysis
     displayNetworkAnalysis(data) {
         let text = `\n🌐 NETWORK ANALYSIS\n`;
-        text += `${'═'.repeat(40)}\n`;
+        text += `${'═'.repeat(50)}\n`;
         text += `Total Connections: ${data.totalConnections}\n`;
         text += `Established: ${data.established}\n`;
         text += `Listening: ${data.listening}\n`;
@@ -410,12 +675,17 @@ class APIHub {
         }
         
         this.log(text, 'system');
+        
+        // Update stats
+        this.updateSecurityStats({
+            connections: data.totalConnections
+        });
     }
     
     // Display process analysis
     displayProcessAnalysis(data) {
         let text = `\n⚙️ PROCESS ANALYSIS\n`;
-        text += `${'═'.repeat(40)}\n`;
+        text += `${'═'.repeat(50)}\n`;
         text += `Total: ${data.total} | Running: ${data.running} | Blocked: ${data.blocked}\n\n`;
         
         text += `Top CPU:\n`;
@@ -436,7 +706,7 @@ class APIHub {
     // Display system info
     displaySystemInfo(data) {
         let text = `\n💻 SYSTEM INFORMATION\n`;
-        text += `${'═'.repeat(40)}\n`;
+        text += `${'═'.repeat(50)}\n`;
         text += `OS: ${data.os.distro} ${data.os.release} (${data.os.platform})\n`;
         text += `CPU: ${data.cpu.brand} (${data.cpu.cores} cores)\n`;
         text += `Memory: ${data.memory.used} / ${data.memory.total} (${data.memory.free} free)\n`;
@@ -541,6 +811,7 @@ class APIHub {
         
         const msg = document.createElement('span');
         msg.className = 'message';
+        msg.style.whiteSpace = 'pre-wrap';
         msg.textContent = message;
         
         if (type !== 'command') {
