@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EMERSA - AI Workspace</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loader">
+            <div class="loader-ring"></div>
+            <div class="loader-text">EMERSA</div>
+            <div class="loader-subtitle">Initializing AI Workspace...</div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div id="app">
+        <!-- 3D Canvas Container -->
+        <div id="canvas-container"></div>
+
+        <!-- Top Header -->
+        <header id="header">
+            <div class="logo">
+                <span class="logo-icon">◈</span>
+                <span class="logo-text">EMERSA</span>
+            </div>
+            <div class="header-center">
+                <div class="workspace-tabs">
+                    <button class="tab-btn active" data-tab="workspace">Workspace</button>
+                    <button class="tab-btn" data-tab="analysis">Analysis</button>
+                    <button class="tab-btn" data-tab="connections">Connections</button>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="status-indicator">
+                    <span class="status-dot online"></span>
+                    <span class="status-text">ONLINE</span>
+                </div>
+                <button id="menu-toggle" class="menu-btn">☰</button>
+            </div>
+        </header>
+
+        <!-- Main Workspace Grid -->
+        <div id="workspace-container">
+            <!-- Left Panel - Module Connectors -->
+            <div id="left-panel" class="workspace-panel">
+                <div class="panel-title">
+                    <span class="panel-icon">🔌</span>
+                    CONNECTORS
+                </div>
+                
+                <!-- Gen AI Module -->
+                <div class="module-card" data-module="gen-ai">
+                    <div class="module-header">
+                        <span class="module-icon">🤖</span>
+                        <span class="module-name">GEN AI</span>
+                        <span class="module-status connected"></span>
+                    </div>
+                    <div class="module-desc">Create & Generate Content</div>
+                    <div class="module-actions">
+                        <button class="module-btn" data-action="gen-text">Text</button>
+                        <button class="module-btn" data-action="gen-image">Image</button>
+                        <button class="module-btn" data-action="gen-code">Code</button>
+                    </div>
+                </div>
+
+                <!-- Ambient / Digital Twin -->
+                <div class="module-card" data-module="ambient">
+                    <div class="module-header">
+                        <span class="module-icon">🌳</span>
+                        <span class="module-name">AMBIENT</span>
+                        <span class="module-status connected"></span>
+                    </div>
+                    <div class="module-desc">Digital Twin & System Monitor</div>
+                    <div class="module-actions">
+                        <button class="module-btn" data-action="connect-system">Connect</button>
+                        <button class="module-btn" data-action="monitor">Monitor</button>
+                    </div>
+                </div>
+
+                <!-- API Connector -->
+                <div class="module-card" data-module="api">
+                    <div class="module-header">
+                        <span class="module-icon">🔗</span>
+                        <span class="module-name">API</span>
+                        <span class="module-status connected"></span>
+                    </div>
+                    <div class="module-desc">External Service Integration</div>
+                    <div class="module-actions">
+                        <button class="module-btn" data-action="api-list">Services</button>
+                        <button class="module-btn" data-action="api-add">+ Add</button>
+                    </div>
+                    <div class="connected-apis">
+                        <span class="api-tag">Digital Ocean</span>
+                        <span class="api-tag">OpenAI</span>
+                    </div>
+                </div>
+
+                <!-- Memory Connector -->
+                <div class="module-card" data-module="memory">
+                    <div class="module-header">
+                        <span class="module-icon">💾</span>
+                        <span class="module-name">MEMORY</span>
+                        <span class="module-status connected"></span>
+                    </div>
+                    <div class="module-desc">Context & Knowledge Base</div>
+                    <div class="module-actions">
+                        <button class="module-btn" data-action="memory-view">View</button>
+                        <button class="module-btn" data-action="memory-add">+ Add</button>
+                    </div>
+                    <div class="memory-stats">
+                        <span>📊 1.2GB stored</span>
+                        <span>📝 847 entries</span>
+                    </div>
+                </div>
+
+                <!-- Multi-Agent -->
+                <div class="module-card" data-module="agents">
+                    <div class="module-header">
+                        <span class="module-icon">👥</span>
+                        <span class="module-name">AGENTS</span>
+                        <span class="module-status connected"></span>
+                    </div>
+                    <div class="module-desc">Multi-Agent Orchestration</div>
+                    <div class="module-actions">
+                        <button class="module-btn" data-action="agents-list">List</button>
+                        <button class="module-btn" data-action="agents-deploy">Deploy</button>
+                    </div>
+                </div>
+
+                <!-- Security / Quantum -->
+                <div class="module-card" data-module="security">
+                    <div class="module-header">
+                        <span class="module-icon">🔐</span>
+                        <span class="module-name">SECURITY</span>
+                        <span class="module-status connected"></span>
+                    </div>
+                    <div class="module-desc">Quantum-Proof Encryption</div>
+                    <div class="module-actions">
+                        <button class="module-btn" data-action="pentest">Pentest</button>
+                        <button class="module-btn" data-action="scan">Scan</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Panel - Chat & Workspace -->
+            <div id="center-panel" class="workspace-panel">
+                <!-- Chat Display (VR-style floating) -->
+                <div id="chat-container">
+                    <div class="chat-header">
+                        <span class="chat-title">💬 AI WORKSPACE CHAT</span>
+                        <div class="chat-controls">
+                            <button class="chat-ctrl-btn" id="clear-chat" title="Clear">🗑️</button>
+                            <button class="chat-ctrl-btn" id="export-chat" title="Export">📥</button>
+                            <button class="chat-ctrl-btn" id="fullscreen-chat" title="Fullscreen">⛶</button>
+                        </div>
+                    </div>
+                    <div id="chat-messages">
+                        <div class="chat-message system">
+                            <div class="message-content">
+                                <p>Welcome to EMERSA AI Workspace. I can help you:</p>
+                                <ul>
+                                    <li>🤖 Generate content (text, images, code)</li>
+                                    <li>🔍 Analyze websites and data</li>
+                                    <li>🔗 Connect to external APIs</li>
+                                    <li>🔐 Perform security assessments</li>
+                                    <li>💾 Store and retrieve knowledge</li>
+                                </ul>
+                                <p>Upload files, paste URLs, or type your request below.</p>
+                            </div>
+                            <button class="copy-btn" title="Copy">📋</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div id="input-container">
+                    <!-- File Upload Zone -->
+                    <div id="upload-zone" class="upload-zone">
+                        <input type="file" id="file-input" multiple accept="image/*,.pdf,.txt,.json,.csv,.doc,.docx,.xls,.xlsx">
+                        <div class="upload-content">
+                            <span class="upload-icon">📁</span>
+                            <span class="upload-text">Drop files here or click to upload</span>
+                            <span class="upload-formats">Images, PDF, TXT, JSON, CSV, DOC, XLS</span>
+                        </div>
+                    </div>
+
+                    <!-- Uploaded Files Preview -->
+                    <div id="uploaded-files" class="uploaded-files hidden">
+                        <!-- Files will be added here dynamically -->
+                    </div>
+
+                    <!-- URL Input -->
+                    <div id="url-input-container" class="url-input-container hidden">
+                        <input type="url" id="url-input" placeholder="Enter website URL to analyze...">
+                        <button id="analyze-url-btn" class="analyze-btn">🔍 Analyze</button>
+                        <button id="close-url-btn" class="close-btn">✕</button>
+                    </div>
+
+                    <!-- Main Text Input -->
+                    <div class="main-input-wrapper">
+                        <div class="input-toolbar">
+                            <button class="toolbar-btn" id="attach-file-btn" title="Attach File">📎</button>
+                            <button class="toolbar-btn" id="add-url-btn" title="Add URL">🔗</button>
+                            <button class="toolbar-btn" id="add-image-btn" title="Add Image">🖼️</button>
+                            <button class="toolbar-btn" id="code-mode-btn" title="Code Mode">💻</button>
+                            <div class="toolbar-divider"></div>
+                            <select id="ai-model-select" class="model-select">
+                                <option value="gpt-4">GPT-4</option>
+                                <option value="claude">Claude</option>
+                                <option value="local">Local LLM</option>
+                            </select>
+                        </div>
+                        <div class="text-input-container">
+                            <textarea id="main-input" placeholder="Ask EMERSA anything... Describe what you want to create, analyze, or connect to." rows="3"></textarea>
+                            <div class="input-actions">
+                                <button id="voice-input-btn" class="action-btn voice" title="Voice Input">🎤</button>
+                                <button id="send-btn" class="action-btn send" title="Send">▶</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <button class="quick-btn" data-action="analyze-website">🔍 Analyze Website</button>
+                        <button class="quick-btn" data-action="generate-report">📊 Generate Report</button>
+                        <button class="quick-btn" data-action="security-scan">🔐 Security Scan</button>
+                        <button class="quick-btn" data-action="create-content">✨ Create Content</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Output & Results -->
+            <div id="right-panel" class="workspace-panel">
+                <div class="panel-title">
+                    <span class="panel-icon">📊</span>
+                    OUTPUT & RESULTS
+                </div>
+
+                <!-- Analysis Results -->
+                <div id="results-container">
+                    <div class="result-card" id="website-analysis">
+                        <div class="result-header">
+                            <span class="result-icon">🌐</span>
+                            <span class="result-title">Website Analysis</span>
+                            <button class="result-copy" title="Copy">📋</button>
+                        </div>
+                        <div class="result-content">
+                            <p class="result-placeholder">No analysis yet. Enter a URL or upload data to analyze.</p>
+                        </div>
+                    </div>
+
+                    <div class="result-card" id="generated-content">
+                        <div class="result-header">
+                            <span class="result-icon">✨</span>
+                            <span class="result-title">Generated Content</span>
+                            <button class="result-copy" title="Copy">📋</button>
+                        </div>
+                        <div class="result-content">
+                            <p class="result-placeholder">Generated content will appear here.</p>
+                        </div>
+                    </div>
+
+                    <div class="result-card" id="code-output">
+                        <div class="result-header">
+                            <span class="result-icon">💻</span>
+                            <span class="result-title">Code Output</span>
+                            <button class="result-copy" title="Copy">📋</button>
+                        </div>
+                        <div class="result-content">
+                            <pre class="code-block"><code class="result-placeholder">// Code output will appear here</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="result-card" id="security-results">
+                        <div class="result-header">
+                            <span class="result-icon">🔐</span>
+                            <span class="result-title">Security Report</span>
+                            <button class="result-copy" title="Copy">📋</button>
+                        </div>
+                        <div class="result-content">
+                            <p class="result-placeholder">Security scan results will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connected Systems Status -->
+                <div id="systems-status">
+                    <div class="status-header">
+                        <span>🖥️ Connected Systems</span>
+                    </div>
+                    <div class="system-item">
+                        <span class="system-icon">☁️</span>
+                        <span class="system-name">Digital Ocean</span>
+                        <span class="system-status online">● Online</span>
+                    </div>
+                    <div class="system-item">
+                        <span class="system-icon">🤖</span>
+                        <span class="system-name">AI Engine</span>
+                        <span class="system-status online">● Ready</span>
+                    </div>
+                    <div class="system-item">
+                        <span class="system-icon">💾</span>
+                        <span class="system-name">Memory Store</span>
+                        <span class="system-status online">● Active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Avatar Info -->
+        <div id="avatar-info">
+            <div class="avatar-name">EMERSA</div>
+            <div class="avatar-subtitle">AI WORKSPACE</div>
+        </div>
+
+        <!-- Mobile Bottom Navigation -->
+        <nav id="mobile-nav">
+            <button class="nav-btn active" data-panel="center">
+                <span class="nav-icon">💬</span>
+                <span class="nav-label">Chat</span>
+            </button>
+            <button class="nav-btn" data-panel="left">
+                <span class="nav-icon">🔌</span>
+                <span class="nav-label">Connect</span>
+            </button>
+            <button class="nav-btn" data-panel="right">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Output</span>
+            </button>
+            <button class="nav-btn" data-panel="3d">
+                <span class="nav-icon">🌐</span>
+                <span class="nav-label">3D View</span>
+            </button>
+        </nav>
+
+        <!-- Toast Notifications -->
+        <div id="toast-container"></div>
+
+        <!-- Modal Container -->
+        <div id="modal-container"></div>
+    </div>
+
+    <!-- Three.js and Dependencies -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
