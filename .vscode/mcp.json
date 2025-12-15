@@ -9,6 +9,11 @@
       "command": "node",
       "args": ["system-monitor-mcp/index.js"],
       "cwd": "${workspaceFolder}"
+    },
+    "cybercat": {
+      "command": "node",
+      "args": ["cybercat-mcp/index.js"],
+      "cwd": "${workspaceFolder}"
     }
   }
 }
