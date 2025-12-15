@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EMERSA - AI Workspace</title>
+    <title>CyberCAT - Multi-Agent Security Command Center</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
@@ -11,332 +11,437 @@
     <!-- Loading Screen -->
     <div id="loading-screen">
         <div class="loader">
+            <div class="cat-loader">
+                <pre class="ascii-cat">
+    /\_____/\
+   /  o   o  \
+  ( ==  ^  == )
+   )         (
+  (           )
+ ( (  )   (  ) )
+(__(__)___(__)__)
+                </pre>
+            </div>
             <div class="loader-ring"></div>
-            <div class="loader-text">EMERSA</div>
-            <div class="loader-subtitle">Initializing AI Workspace...</div>
+            <div class="loader-text">CYBERCAT</div>
+            <div class="loader-subtitle">Initializing Multi-Agent Security System...</div>
+            <div class="loader-progress">
+                <div class="loader-progress-bar"></div>
+            </div>
         </div>
     </div>
 
     <!-- Main Container -->
     <div id="app">
-        <!-- 3D Canvas Container -->
-        <div id="canvas-container"></div>
+        <!-- Matrix Rain Background -->
+        <canvas id="matrix-canvas"></canvas>
 
         <!-- Top Header -->
         <header id="header">
             <div class="logo">
-                <span class="logo-icon">◈</span>
-                <span class="logo-text">EMERSA</span>
+                <div class="cat-icon">🐱</div>
+                <span class="logo-text">CYBER<span class="highlight">CAT</span></span>
+                <span class="logo-version">v2.0</span>
             </div>
             <div class="header-center">
                 <div class="workspace-tabs">
-                    <button class="tab-btn active" data-tab="workspace">Workspace</button>
-                    <button class="tab-btn" data-tab="analysis">Analysis</button>
-                    <button class="tab-btn" data-tab="connections">Connections</button>
+                    <button class="tab-btn active" data-tab="command">🎮 Command</button>
+                    <button class="tab-btn" data-tab="agents">🤖 Agents</button>
+                    <button class="tab-btn" data-tab="security">🔐 Security</button>
+                    <button class="tab-btn" data-tab="network">🌐 Network</button>
                 </div>
             </div>
             <div class="header-right">
+                <div class="system-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">CPU</span>
+                        <span class="stat-value" id="cpu-stat">45%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">MEM</span>
+                        <span class="stat-value" id="mem-stat">62%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">NET</span>
+                        <span class="stat-value" id="net-stat">125Mb</span>
+                    </div>
+                </div>
                 <div class="status-indicator">
                     <span class="status-dot online"></span>
-                    <span class="status-text">ONLINE</span>
+                    <span class="status-text">SECURE</span>
                 </div>
-                <button id="menu-toggle" class="menu-btn">☰</button>
             </div>
         </header>
 
         <!-- Main Workspace Grid -->
         <div id="workspace-container">
-            <!-- Left Panel - Module Connectors -->
+            <!-- Left Panel - Agent Control -->
             <div id="left-panel" class="workspace-panel">
                 <div class="panel-title">
-                    <span class="panel-icon">🔌</span>
-                    CONNECTORS
+                    <span class="panel-icon">🤖</span>
+                    MULTI-AGENT SYSTEM
                 </div>
                 
-                <!-- Gen AI Module -->
-                <div class="module-card" data-module="gen-ai">
-                    <div class="module-header">
-                        <span class="module-icon">🤖</span>
-                        <span class="module-name">GEN AI</span>
-                        <span class="module-status connected"></span>
+                <!-- LangGraph Agent Status -->
+                <div class="agent-grid">
+                    <div class="agent-card active" data-agent="scanner">
+                        <div class="agent-avatar">🔍</div>
+                        <div class="agent-info">
+                            <span class="agent-name">Scanner</span>
+                            <span class="agent-status running">Running</span>
+                        </div>
+                        <div class="agent-pulse"></div>
                     </div>
-                    <div class="module-desc">Create & Generate Content</div>
-                    <div class="module-actions">
-                        <button class="module-btn" data-action="gen-text">Text</button>
-                        <button class="module-btn" data-action="gen-image">Image</button>
-                        <button class="module-btn" data-action="gen-code">Code</button>
+                    
+                    <div class="agent-card" data-agent="analyzer">
+                        <div class="agent-avatar">📊</div>
+                        <div class="agent-info">
+                            <span class="agent-name">Analyzer</span>
+                            <span class="agent-status idle">Idle</span>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Ambient / Digital Twin -->
-                <div class="module-card" data-module="ambient">
-                    <div class="module-header">
-                        <span class="module-icon">🌳</span>
-                        <span class="module-name">AMBIENT</span>
-                        <span class="module-status connected"></span>
+                    
+                    <div class="agent-card active" data-agent="defender">
+                        <div class="agent-avatar">🛡️</div>
+                        <div class="agent-info">
+                            <span class="agent-name">Defender</span>
+                            <span class="agent-status running">Active</span>
+                        </div>
+                        <div class="agent-pulse"></div>
                     </div>
-                    <div class="module-desc">Digital Twin & System Monitor</div>
-                    <div class="module-actions">
-                        <button class="module-btn" data-action="connect-system">Connect</button>
-                        <button class="module-btn" data-action="monitor">Monitor</button>
+                    
+                    <div class="agent-card" data-agent="reporter">
+                        <div class="agent-avatar">📝</div>
+                        <div class="agent-info">
+                            <span class="agent-name">Reporter</span>
+                            <span class="agent-status idle">Standby</span>
+                        </div>
                     </div>
-                </div>
-
-                <!-- API Connector -->
-                <div class="module-card" data-module="api">
-                    <div class="module-header">
-                        <span class="module-icon">🔗</span>
-                        <span class="module-name">API</span>
-                        <span class="module-status connected"></span>
+                    
+                    <div class="agent-card" data-agent="hunter">
+                        <div class="agent-avatar">🎯</div>
+                        <div class="agent-info">
+                            <span class="agent-name">Threat Hunter</span>
+                            <span class="agent-status idle">Ready</span>
+                        </div>
                     </div>
-                    <div class="module-desc">External Service Integration</div>
-                    <div class="module-actions">
-                        <button class="module-btn" data-action="api-list">Services</button>
-                        <button class="module-btn" data-action="api-add">+ Add</button>
-                    </div>
-                    <div class="connected-apis">
-                        <span class="api-tag">Digital Ocean</span>
-                        <span class="api-tag">OpenAI</span>
-                    </div>
-                </div>
-
-                <!-- Memory Connector -->
-                <div class="module-card" data-module="memory">
-                    <div class="module-header">
-                        <span class="module-icon">💾</span>
-                        <span class="module-name">MEMORY</span>
-                        <span class="module-status connected"></span>
-                    </div>
-                    <div class="module-desc">Context & Knowledge Base</div>
-                    <div class="module-actions">
-                        <button class="module-btn" data-action="memory-view">View</button>
-                        <button class="module-btn" data-action="memory-add">+ Add</button>
-                    </div>
-                    <div class="memory-stats">
-                        <span>📊 1.2GB stored</span>
-                        <span>📝 847 entries</span>
+                    
+                    <div class="agent-card" data-agent="orchestrator">
+                        <div class="agent-avatar">🎭</div>
+                        <div class="agent-info">
+                            <span class="agent-name">Orchestrator</span>
+                            <span class="agent-status running">Coordinating</span>
+                        </div>
+                        <div class="agent-pulse"></div>
                     </div>
                 </div>
 
-                <!-- Multi-Agent -->
-                <div class="module-card" data-module="agents">
-                    <div class="module-header">
-                        <span class="module-icon">👥</span>
-                        <span class="module-name">AGENTS</span>
-                        <span class="module-status connected"></span>
-                    </div>
-                    <div class="module-desc">Multi-Agent Orchestration</div>
-                    <div class="module-actions">
-                        <button class="module-btn" data-action="agents-list">List</button>
-                        <button class="module-btn" data-action="agents-deploy">Deploy</button>
+                <!-- Quick Actions -->
+                <div class="quick-actions-panel">
+                    <div class="panel-subtitle">Quick Actions</div>
+                    <div class="action-buttons">
+                        <button class="action-btn-small" data-action="deploy-all">
+                            <span>🚀</span> Deploy All
+                        </button>
+                        <button class="action-btn-small" data-action="stop-all">
+                            <span>⏹️</span> Stop All
+                        </button>
+                        <button class="action-btn-small" data-action="sync-agents">
+                            <span>🔄</span> Sync
+                        </button>
                     </div>
                 </div>
 
-                <!-- Security / Quantum -->
-                <div class="module-card" data-module="security">
-                    <div class="module-header">
-                        <span class="module-icon">🔐</span>
-                        <span class="module-name">SECURITY</span>
-                        <span class="module-status connected"></span>
-                    </div>
-                    <div class="module-desc">Quantum-Proof Encryption</div>
-                    <div class="module-actions">
-                        <button class="module-btn" data-action="pentest">Pentest</button>
-                        <button class="module-btn" data-action="scan">Scan</button>
+                <!-- Agent Workflow -->
+                <div class="workflow-panel">
+                    <div class="panel-subtitle">LangGraph Workflow</div>
+                    <div class="workflow-diagram">
+                        <div class="workflow-node start">START</div>
+                        <div class="workflow-arrow">→</div>
+                        <div class="workflow-node">Scanner</div>
+                        <div class="workflow-arrow">→</div>
+                        <div class="workflow-node">Analyzer</div>
+                        <div class="workflow-arrow">→</div>
+                        <div class="workflow-node">Defender</div>
+                        <div class="workflow-arrow">→</div>
+                        <div class="workflow-node end">REPORT</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Center Panel - Chat & Workspace -->
+            <!-- Center Panel - CyberCAT Interface -->
             <div id="center-panel" class="workspace-panel">
-                <!-- Chat Display (VR-style floating) -->
-                <div id="chat-container">
-                    <div class="chat-header">
-                        <span class="chat-title">💬 AI WORKSPACE CHAT</span>
-                        <div class="chat-controls">
-                            <button class="chat-ctrl-btn" id="clear-chat" title="Clear">🗑️</button>
-                            <button class="chat-ctrl-btn" id="export-chat" title="Export">📥</button>
-                            <button class="chat-ctrl-btn" id="fullscreen-chat" title="Fullscreen">⛶</button>
+                <!-- CyberCAT Logo Display -->
+                <div id="cybercat-display">
+                    <div class="cat-container">
+                        <pre class="cybercat-ascii" id="main-cat">
+        ╔══════════════════════════════════════════╗
+        ║           /\_____/\                      ║
+        ║          /  o   o  \    CYBERCAT v2.0   ║
+        ║         ( ==  ^  == )   ═══════════════ ║
+        ║          )  ┌───┐  (    Security Status ║
+        ║         (   │ ▓ │   )   ██████████ 100% ║
+        ║        ( (  └───┘  ) )  PROTECTED       ║
+        ║       (__(__)___(__)__)                 ║
+        ╚══════════════════════════════════════════╝
+                        </pre>
+                        <div class="cat-eyes">
+                            <div class="eye left" id="left-eye"></div>
+                            <div class="eye right" id="right-eye"></div>
                         </div>
                     </div>
-                    <div id="chat-messages">
-                        <div class="chat-message system">
-                            <div class="message-content">
-                                <p>Welcome to EMERSA AI Workspace. I can help you:</p>
-                                <ul>
-                                    <li>🤖 Generate content (text, images, code)</li>
-                                    <li>🔍 Analyze websites and data</li>
-                                    <li>🔗 Connect to external APIs</li>
-                                    <li>🔐 Perform security assessments</li>
-                                    <li>💾 Store and retrieve knowledge</li>
-                                </ul>
-                                <p>Upload files, paste URLs, or type your request below.</p>
-                            </div>
-                            <button class="copy-btn" title="Copy">📋</button>
-                        </div>
+                    
+                    <!-- Security Gauge -->
+                    <div class="security-gauge">
+                        <svg viewBox="0 0 200 100" class="gauge-svg">
+                            <defs>
+                                <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#ff4444"/>
+                                    <stop offset="50%" style="stop-color:#ffaa00"/>
+                                    <stop offset="100%" style="stop-color:#00ff88"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M 20 90 A 80 80 0 0 1 180 90" fill="none" stroke="#1a1a2e" stroke-width="15"/>
+                            <path d="M 20 90 A 80 80 0 0 1 180 90" fill="none" stroke="url(#gaugeGradient)" stroke-width="15" 
+                                  stroke-dasharray="251" stroke-dashoffset="25" id="gauge-fill"/>
+                            <text x="100" y="75" text-anchor="middle" class="gauge-text" id="gauge-value">90%</text>
+                            <text x="100" y="95" text-anchor="middle" class="gauge-label">SECURITY LEVEL</text>
+                        </svg>
                     </div>
                 </div>
 
-                <!-- Input Area -->
-                <div id="input-container">
-                    <!-- File Upload Zone -->
-                    <div id="upload-zone" class="upload-zone">
-                        <input type="file" id="file-input" multiple accept="image/*,.pdf,.txt,.json,.csv,.doc,.docx,.xls,.xlsx">
-                        <div class="upload-content">
-                            <span class="upload-icon">📁</span>
-                            <span class="upload-text">Drop files here or click to upload</span>
-                            <span class="upload-formats">Images, PDF, TXT, JSON, CSV, DOC, XLS</span>
+                <!-- EQ Visualizer -->
+                <div id="eq-visualizer">
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                </div>
+
+                <!-- Command Terminal -->
+                <div id="terminal-container">
+                    <div class="terminal-header">
+                        <div class="terminal-buttons">
+                            <span class="term-btn red"></span>
+                            <span class="term-btn yellow"></span>
+                            <span class="term-btn green"></span>
+                        </div>
+                        <span class="terminal-title">CyberCAT Terminal</span>
+                        <div class="terminal-controls">
+                            <button class="term-ctrl" id="clear-terminal">Clear</button>
+                            <button class="term-ctrl" id="export-log">Export</button>
                         </div>
                     </div>
-
-                    <!-- Uploaded Files Preview -->
-                    <div id="uploaded-files" class="uploaded-files hidden">
-                        <!-- Files will be added here dynamically -->
-                    </div>
-
-                    <!-- URL Input -->
-                    <div id="url-input-container" class="url-input-container hidden">
-                        <input type="url" id="url-input" placeholder="Enter website URL to analyze...">
-                        <button id="analyze-url-btn" class="analyze-btn">🔍 Analyze</button>
-                        <button id="close-url-btn" class="close-btn">✕</button>
-                    </div>
-
-                    <!-- Main Text Input -->
-                    <div class="main-input-wrapper">
-                        <div class="input-toolbar">
-                            <button class="toolbar-btn" id="attach-file-btn" title="Attach File">📎</button>
-                            <button class="toolbar-btn" id="add-url-btn" title="Add URL">🔗</button>
-                            <button class="toolbar-btn" id="add-image-btn" title="Add Image">🖼️</button>
-                            <button class="toolbar-btn" id="code-mode-btn" title="Code Mode">💻</button>
-                            <div class="toolbar-divider"></div>
-                            <select id="ai-model-select" class="model-select">
-                                <option value="gpt-4">GPT-4</option>
-                                <option value="claude">Claude</option>
-                                <option value="local">Local LLM</option>
-                            </select>
+                    <div id="terminal-output">
+                        <div class="terminal-line system">
+                            <span class="timestamp">[12:00:00]</span>
+                            <span class="prefix">CYBERCAT></span>
+                            <span class="message">System initialized. All agents online.</span>
                         </div>
-                        <div class="text-input-container">
-                            <textarea id="main-input" placeholder="Ask EMERSA anything... Describe what you want to create, analyze, or connect to." rows="3"></textarea>
-                            <div class="input-actions">
-                                <button id="voice-input-btn" class="action-btn voice" title="Voice Input">🎤</button>
-                                <button id="send-btn" class="action-btn send" title="Send">▶</button>
-                            </div>
+                        <div class="terminal-line success">
+                            <span class="timestamp">[12:00:01]</span>
+                            <span class="prefix">SCANNER></span>
+                            <span class="message">Network scan complete. No threats detected.</span>
+                        </div>
+                        <div class="terminal-line info">
+                            <span class="timestamp">[12:00:02]</span>
+                            <span class="prefix">DEFENDER></span>
+                            <span class="message">Firewall rules updated. 47 rules active.</span>
                         </div>
                     </div>
+                    <div class="terminal-input-container">
+                        <span class="input-prefix">cybercat@security:~$</span>
+                        <input type="text" id="terminal-input" placeholder="Enter command..." autocomplete="off">
+                        <button id="send-command" class="send-btn">▶</button>
+                    </div>
+                </div>
 
-                    <!-- Quick Actions -->
-                    <div class="quick-actions">
-                        <button class="quick-btn" data-action="analyze-website">🔍 Analyze Website</button>
-                        <button class="quick-btn" data-action="generate-report">📊 Generate Report</button>
-                        <button class="quick-btn" data-action="security-scan">🔐 Security Scan</button>
-                        <button class="quick-btn" data-action="create-content">✨ Create Content</button>
+                <!-- Scan Progress -->
+                <div id="scan-progress" class="hidden">
+                    <div class="progress-header">
+                        <span class="progress-title">🔍 Scanning in Progress</span>
+                        <span class="progress-percent" id="progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progress-bar"></div>
+                        <div class="progress-glow"></div>
+                    </div>
+                    <div class="progress-details">
+                        <span id="scan-phase">Initializing...</span>
+                        <span id="scan-target">-</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Panel - Output & Results -->
+            <!-- Right Panel - Results & Monitoring -->
             <div id="right-panel" class="workspace-panel">
                 <div class="panel-title">
                     <span class="panel-icon">📊</span>
-                    OUTPUT & RESULTS
+                    MONITORING & RESULTS
                 </div>
 
-                <!-- Analysis Results -->
-                <div id="results-container">
-                    <div class="result-card" id="website-analysis">
-                        <div class="result-header">
-                            <span class="result-icon">🌐</span>
-                            <span class="result-title">Website Analysis</span>
-                            <button class="result-copy" title="Copy">📋</button>
-                        </div>
-                        <div class="result-content">
-                            <p class="result-placeholder">No analysis yet. Enter a URL or upload data to analyze.</p>
+                <!-- Live Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🔒</div>
+                        <div class="stat-content">
+                            <span class="stat-number" id="threats-blocked">1,247</span>
+                            <span class="stat-label">Threats Blocked</span>
                         </div>
                     </div>
-
-                    <div class="result-card" id="generated-content">
-                        <div class="result-header">
-                            <span class="result-icon">✨</span>
-                            <span class="result-title">Generated Content</span>
-                            <button class="result-copy" title="Copy">📋</button>
-                        </div>
-                        <div class="result-content">
-                            <p class="result-placeholder">Generated content will appear here.</p>
+                    <div class="stat-card">
+                        <div class="stat-icon">🌐</div>
+                        <div class="stat-content">
+                            <span class="stat-number" id="scans-completed">89</span>
+                            <span class="stat-label">Scans Today</span>
                         </div>
                     </div>
-
-                    <div class="result-card" id="code-output">
-                        <div class="result-header">
-                            <span class="result-icon">💻</span>
-                            <span class="result-title">Code Output</span>
-                            <button class="result-copy" title="Copy">📋</button>
-                        </div>
-                        <div class="result-content">
-                            <pre class="code-block"><code class="result-placeholder">// Code output will appear here</code></pre>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚡</div>
+                        <div class="stat-content">
+                            <span class="stat-number" id="response-time">12ms</span>
+                            <span class="stat-label">Response Time</span>
                         </div>
                     </div>
-
-                    <div class="result-card" id="security-results">
-                        <div class="result-header">
-                            <span class="result-icon">🔐</span>
-                            <span class="result-title">Security Report</span>
-                            <button class="result-copy" title="Copy">📋</button>
-                        </div>
-                        <div class="result-content">
-                            <p class="result-placeholder">Security scan results will appear here.</p>
+                    <div class="stat-card">
+                        <div class="stat-icon">🛡️</div>
+                        <div class="stat-content">
+                            <span class="stat-number" id="uptime">99.9%</span>
+                            <span class="stat-label">Uptime</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Connected Systems Status -->
-                <div id="systems-status">
-                    <div class="status-header">
-                        <span>🖥️ Connected Systems</span>
+                <!-- Recent Activity -->
+                <div class="activity-panel">
+                    <div class="panel-subtitle">Recent Activity</div>
+                    <div class="activity-list" id="activity-list">
+                        <div class="activity-item success">
+                            <span class="activity-icon">✅</span>
+                            <div class="activity-content">
+                                <span class="activity-text">Port scan completed</span>
+                                <span class="activity-time">2 min ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item warning">
+                            <span class="activity-icon">⚠️</span>
+                            <div class="activity-content">
+                                <span class="activity-text">Suspicious connection blocked</span>
+                                <span class="activity-time">5 min ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item info">
+                            <span class="activity-icon">ℹ️</span>
+                            <div class="activity-content">
+                                <span class="activity-text">SSL certificate verified</span>
+                                <span class="activity-time">10 min ago</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="system-item">
-                        <span class="system-icon">☁️</span>
-                        <span class="system-name">Digital Ocean</span>
-                        <span class="system-status online">● Online</span>
+                </div>
+
+                <!-- Scan Results -->
+                <div class="results-panel">
+                    <div class="panel-subtitle">Last Scan Results</div>
+                    <div class="results-content" id="scan-results">
+                        <div class="result-item">
+                            <span class="result-label">Open Ports:</span>
+                            <span class="result-value">22, 80, 443</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Vulnerabilities:</span>
+                            <span class="result-value safe">0 Critical</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">SSL Grade:</span>
+                            <span class="result-value grade-a">A+</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Scan Duration:</span>
+                            <span class="result-value">2.3s</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Memory Used:</span>
+                            <span class="result-value">128MB</span>
+                        </div>
                     </div>
-                    <div class="system-item">
-                        <span class="system-icon">🤖</span>
-                        <span class="system-name">AI Engine</span>
-                        <span class="system-status online">● Ready</span>
-                    </div>
-                    <div class="system-item">
-                        <span class="system-icon">💾</span>
-                        <span class="system-name">Memory Store</span>
-                        <span class="system-status online">● Active</span>
+                </div>
+
+                <!-- Connected Systems -->
+                <div class="systems-panel">
+                    <div class="panel-subtitle">Connected Systems</div>
+                    <div class="systems-list">
+                        <div class="system-item online">
+                            <span class="system-icon">☁️</span>
+                            <span class="system-name">DigitalOcean</span>
+                            <span class="system-status">● Online</span>
+                        </div>
+                        <div class="system-item online">
+                            <span class="system-icon">🤖</span>
+                            <span class="system-name">LangGraph</span>
+                            <span class="system-status">● Active</span>
+                        </div>
+                        <div class="system-item online">
+                            <span class="system-icon">💾</span>
+                            <span class="system-name">Memory Store</span>
+                            <span class="system-status">● Ready</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Floating Avatar Info -->
-        <div id="avatar-info">
-            <div class="avatar-name">EMERSA</div>
-            <div class="avatar-subtitle">AI WORKSPACE</div>
+        <!-- Bottom Control Bar -->
+        <div id="control-bar">
+            <div class="control-section">
+                <button class="control-btn primary" id="btn-full-scan">
+                    <span class="btn-icon">🔍</span>
+                    <span class="btn-text">Full Scan</span>
+                </button>
+                <button class="control-btn" id="btn-quick-scan">
+                    <span class="btn-icon">⚡</span>
+                    <span class="btn-text">Quick Scan</span>
+                </button>
+                <button class="control-btn" id="btn-port-scan">
+                    <span class="btn-icon">🔌</span>
+                    <span class="btn-text">Port Scan</span>
+                </button>
+                <button class="control-btn" id="btn-vuln-scan">
+                    <span class="btn-icon">🛡️</span>
+                    <span class="btn-text">Vuln Scan</span>
+                </button>
+            </div>
+            <div class="control-section">
+                <button class="control-btn danger" id="btn-threat-hunt">
+                    <span class="btn-icon">🎯</span>
+                    <span class="btn-text">Threat Hunt</span>
+                </button>
+                <button class="control-btn warning" id="btn-firewall">
+                    <span class="btn-icon">🔥</span>
+                    <span class="btn-text">Firewall</span>
+                </button>
+                <button class="control-btn success" id="btn-report">
+                    <span class="btn-icon">📊</span>
+                    <span class="btn-text">Report</span>
+                </button>
+            </div>
         </div>
-
-        <!-- Mobile Bottom Navigation -->
-        <nav id="mobile-nav">
-            <button class="nav-btn active" data-panel="center">
-                <span class="nav-icon">💬</span>
-                <span class="nav-label">Chat</span>
-            </button>
-            <button class="nav-btn" data-panel="left">
-                <span class="nav-icon">🔌</span>
-                <span class="nav-label">Connect</span>
-            </button>
-            <button class="nav-btn" data-panel="right">
-                <span class="nav-icon">📊</span>
-                <span class="nav-label">Output</span>
-            </button>
-            <button class="nav-btn" data-panel="3d">
-                <span class="nav-icon">🌐</span>
-                <span class="nav-label">3D View</span>
-            </button>
-        </nav>
 
         <!-- Toast Notifications -->
         <div id="toast-container"></div>
@@ -345,15 +450,6 @@
         <div id="modal-container"></div>
     </div>
 
-    <!-- Three.js and Dependencies -->
-    <script type="importmap">
-    {
-        "imports": {
-            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-        }
-    }
-    </script>
     <script type="module" src="js/app.js"></script>
 </body>
 </html>
