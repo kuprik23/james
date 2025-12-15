@@ -3,83 +3,78 @@
 ## Current Status
 
 ### ✅ Completed
-- GitHub repository connected
-- Digital Ocean MCP server created
+- GitHub repository connected and synchronized
+- Digital Ocean MCP server created and dependencies installed
 - All configuration files prepared
 - Documentation written
+- Node.js v24.11.1 installed and verified
+- npm v11.6.2 installed and verified
+- Emersa GUI web interface created
+- node_modules properly excluded from git tracking
 
-### 🔄 In Progress
-- Node.js installation (installer is running)
-- Digital Ocean API token setup
+### 🔄 Pending
+- Digital Ocean API token configuration (optional - can be done later)
 
-## Immediate Steps
+## Quick Start
 
-### 1. Complete Node.js Installation
-The installer is currently open. Please:
-- Follow the installation wizard
-- Keep all default options
-- Ensure "Automatically install the necessary tools" is checked
-- Click Install and then Finish
-
-### 2. Verify Installation (IMPORTANT: Restart Terminal First!)
-After installation, you MUST:
-1. **Close VSCode completely**
-2. **Reopen VSCode** 
-3. Open a new terminal and run:
+### 1. Configure Digital Ocean API Token (When Ready)
+Run the token setup script:
 ```bash
-check-and-setup.bat
+security\store-token.bat
 ```
-
-This script will:
-- Verify Node.js installation
-- Install MCP server dependencies
-- Prepare everything for use
-
-### 3. Digital Ocean API Token
-You have two options:
-
-**Option A - Quick Setup:**
+Or use the add token batch file:
 ```bash
 add-digital-ocean-token.bat
 ```
-Enter your token when prompted.
 
-**Option B - Manual Setup:**
+**To get a token:**
 1. Go to: https://cloud.digitalocean.com/account/api/tokens
-2. Login with: martkrupik@gmail.com
-3. Click "Generate New Token"
-4. Name: "James AI Security Agent"
-5. Select READ permissions for all resources
-6. Copy the token (starts with dop_v1_)
-7. Run `add-digital-ocean-token.bat` and paste it
+2. Click "Generate New Token"
+3. Name: "James AI Security Agent"
+4. Select READ permissions for all resources
+5. Copy the token (starts with dop_v1_)
+6. Run the setup script and paste it
 
-## Final Verification
-
-After all steps are complete:
-
-1. **Test MCP Server:**
+### 2. Test MCP Server (After Token Configuration)
 ```bash
-cd mcp-servers\digitalocean
+cd digitalocean-mcp
 npm start
 ```
 (Press Ctrl+C to stop)
 
-2. **Check VSCode Integration:**
+### 3. Start Emersa GUI
+```bash
+cd emersa-gui
+npm start
+```
+Then open http://localhost:3000 in your browser.
+
+### 4. VSCode Integration
 - Restart VSCode
-- The MCP server should be available automatically
+- The MCP server should be available automatically via .vscode/mcp.json
 
 ## Project Structure
 ```
 james/
-├── mcp-servers/
-│   └── digitalocean/       # MCP server implementation
-├── docs/                   # All documentation
+├── digitalocean-mcp/       # Digital Ocean MCP server
+│   ├── index.js           # Main server implementation
+│   ├── package.json       # Node.js dependencies
+│   └── .env               # Environment configuration
+├── emersa-gui/            # Web interface for management
+│   ├── server.js          # Express server
+│   ├── public/            # Frontend files
+│   └── package.json       # Node.js dependencies
+├── security/              # Secure credential management
+│   ├── credential-manager.ps1
+│   ├── store-token.bat
+│   └── get-token.js
+├── docs/                  # All documentation
 ├── .vscode/
-│   └── mcp.json           # VSCode MCP configuration
-├── setup_mcp_server.py    # Python setup script
-├── add-digital-ocean-token.bat    # Token input tool
-├── check-and-setup.bat    # Installation verifier
-└── README.md              # Project documentation
+│   └── mcp.json          # VSCode MCP configuration
+├── setup_mcp_server.py   # Python setup script
+├── add-digital-ocean-token.bat  # Token input tool
+├── check-and-setup.bat   # Installation verifier
+└── README.md             # Project documentation
 ```
 
 ## Troubleshooting
@@ -101,10 +96,23 @@ james/
 
 ## Next Development Steps
 
-Once setup is complete, you can:
-1. Start developing the James agent logic
-2. Add more security monitoring features
-3. Implement email notifications
-4. Create automated security reports
+With the current setup complete, you can:
+1. Configure the Digital Ocean API token when ready
+2. Start developing the James agent logic
+3. Add more security monitoring features
+4. Implement email notifications
+5. Create automated security reports
+6. Enhance the Emersa GUI with more features
+
+## Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `security\store-token.bat` | Securely store Digital Ocean token |
+| `cd digitalocean-mcp && npm start` | Start MCP server |
+| `cd emersa-gui && npm start` | Start web interface |
+| `git status` | Check repository status |
+| `git pull` | Pull latest changes |
+| `git push` | Push changes to GitHub |
 
 For any issues, refer to the documentation in the `docs/` folder.
