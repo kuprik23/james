@@ -1,3 +1,14 @@
+```
+    /\_____/\
+   /  o   o  \
+  ( ==  ^  == )
+   )         (
+  (           )
+ ( (  )   (  ) )
+(__(__)___(__)__)
+   CYBERCAT v2.0
+```
+
 # 🛡️ CYBERCAT - James AI Security Platform
 ## Cyber Analysis & Threat Detection System
 
