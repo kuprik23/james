@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐱 CyberCAT Hub - Security & API Command Center</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🐱</span>
+                <h1>CyberCAT Hub</h1>
+                <span class="subtitle">Security & API Command Center</span>
+            </div>
+            <div class="status-bar">
+                <span class="status-indicator" id="connectionStatus">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Connecting...</span>
+                </span>
+                <span class="api-count" id="apiCount">0 APIs</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar - MCP Servers & API List -->
+            <aside class="sidebar">
+                <!-- CyberCAT Security Section -->
+                <div class="sidebar-section mcp-section cybercat-section">
+                    <div class="sidebar-header">
+                        <h2>🐱 CyberCAT</h2>
+                    </div>
+                    <div class="cybercat-logo">
+                        <pre class="ascii-cat">
+    /\_____/\
+   /  o   o  \
+  ( ==  ^  == )
+   )         (
+  (           )
+ ( (  )   (  ) )
+(__(__)___(__)__)
+   CYBERCAT v1.0
+                        </pre>
+                    </div>
+                    <div class="quick-actions">
+                        <button class="btn-mcp btn-security" onclick="hub.executeCommand('security')">🛡️ Security Scan</button>
+                        <button class="btn-mcp" onclick="hub.executeCommand('netstat')">🌐 Network</button>
+                        <button class="btn-mcp" onclick="hub.executeCommand('procs')">⚙️ Processes</button>
+                        <button class="btn-mcp" onclick="hub.executeCommand('sessions')">👤 Sessions</button>
+                    </div>
+                </div>
+                
+                <!-- System Monitor Section -->
+                <div class="sidebar-section monitor-section">
+                    <div class="sidebar-header">
+                        <h2>📊 Monitor</h2>
+                    </div>
+                    <div class="quick-actions">
+                        <button class="btn-mcp btn-monitor" onclick="hub.executeCommand('sysinfo')">💻 System Info</button>
+                        <button class="btn-mcp" onclick="hub.executeCommand('website google.com')">🌍 Check Site</button>
+                        <button class="btn-mcp" onclick="hub.executeCommand('ping 8.8.8.8')">📡 Ping</button>
+                    </div>
+                </div>
+                
+                <!-- APIs Section -->
+                <div class="sidebar-section">
+                    <div class="sidebar-header">
+                        <h2>📡 APIs</h2>
+                        <button class="btn-add" id="addApiBtn" title="Add API">+</button>
+                    </div>
+                    <div class="api-list" id="apiList">
+                        <!-- API items will be added here -->
+                    </div>
+                    <div class="sidebar-footer">
+                        <button class="btn-secondary" id="refreshBtn">🔄 Refresh</button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Center - Terminal/Text Window -->
+            <main class="terminal-section">
+                <div class="terminal-header">
+                    <span class="terminal-title">📟 Command Terminal</span>
+                    <div class="terminal-controls">
+                        <button class="btn-icon" id="clearBtn" title="Clear">🗑️</button>
+                        <button class="btn-icon" id="historyBtn" title="History">📜</button>
+                    </div>
+                </div>
+                <div class="terminal" id="terminal">
+                    <div class="terminal-output" id="terminalOutput">
+                        <div class="output-line system">
+                            <span class="timestamp">[System]</span>
+                            <span class="message">Welcome to James API Hub</span>
+                        </div>
+                        <div class="output-line system">
+                            <span class="timestamp">[System]</span>
+                            <span class="message">Type "help" for available commands</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="terminal-input-container">
+                    <span class="prompt">❯</span>
+                    <input type="text" id="terminalInput" class="terminal-input" placeholder="Enter command..." autocomplete="off">
+                    <button class="btn-send" id="sendBtn">Send</button>
+                </div>
+            </main>
+
+            <!-- Right Panel - Request Builder -->
+            <aside class="request-panel">
+                <div class="panel-header">
+                    <h2>🛠️ Request Builder</h2>
+                </div>
+                <div class="request-form">
+                    <div class="form-group">
+                        <label>API</label>
+                        <select id="apiSelect">
+                            <option value="">Select API...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Method</label>
+                        <select id="methodSelect">
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                            <option value="PUT">PUT</option>
+                            <option value="PATCH">PATCH</option>
+                            <option value="DELETE">DELETE</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Endpoint</label>
+                        <input type="text" id="endpointInput" placeholder="/api/endpoint">
+                    </div>
+                    <div class="form-group">
+                        <label>Headers (JSON)</label>
+                        <textarea id="headersInput" placeholder='{"Content-Type": "application/json"}'></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Body (JSON)</label>
+                        <textarea id="bodyInput" placeholder='{"key": "value"}'></textarea>
+                    </div>
+                    <button class="btn-primary" id="executeBtn">🚀 Execute Request</button>
+                </div>
+                
+                <!-- Response Section -->
+                <div class="response-section">
+                    <div class="panel-header">
+                        <h3>📥 Response</h3>
+                        <span class="response-status" id="responseStatus"></span>
+                    </div>
+                    <pre class="response-body" id="responseBody">No response yet</pre>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <span>🐱 CyberCAT Hub v1.0.0 | Security & API Command Center</span>
+            <span id="requestCount">0 requests</span>
+            <span id="uptime">Uptime: 0s</span>
+        </footer>
+    </div>
+
+    <!-- Add API Modal -->
+    <div class="modal" id="addApiModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>➕ Add New API</h2>
+                <button class="btn-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>API Name *</label>
+                    <input type="text" id="newApiName" placeholder="my-api">
+                </div>
+                <div class="form-group">
+                    <label>Base URL *</label>
+                    <input type="text" id="newApiUrl" placeholder="https://api.example.com">
+                </div>
+                <div class="form-group">
+                    <label>Authentication Type</label>
+                    <select id="newApiAuthType">
+                        <option value="">None</option>
+                        <option value="bearer">Bearer Token</option>
+                        <option value="basic">Basic Auth</option>
+                        <option value="apiKey">API Key</option>
+                    </select>
+                </div>
+                <div class="auth-fields" id="authFields" style="display: none;">
+                    <!-- Dynamic auth fields -->
+                </div>
+                <div class="form-group">
+                    <label>Default Headers (JSON)</label>
+                    <textarea id="newApiHeaders" placeholder='{"Accept": "application/json"}'></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelAddApi">Cancel</button>
+                <button class="btn-primary" id="saveApiBtn">Save API</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
