@@ -4,6 +4,11 @@
       "command": "node",
       "args": ["digitalocean-mcp/index.js"],
       "cwd": "${workspaceFolder}"
+    },
+    "system-monitor": {
+      "command": "node",
+      "args": ["system-monitor-mcp/index.js"],
+      "cwd": "${workspaceFolder}"
     }
   }
 }
