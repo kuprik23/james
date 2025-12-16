@@ -19,31 +19,100 @@ A state-of-the-art, military-grade cybersecurity platform powered by artificial 
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start (Plug & Play Installation)
 
 ### Prerequisites
-- **Node.js** 18+ 
-- **Python** 3.10+ (for LangGraph agent)
-- **Windows 10/11** or **Linux/macOS**
 
-### Installation
+**Required Software:**
+- **Node.js** 18.x or higher ([Download](https://nodejs.org/))
+- **Python** 3.9 or higher ([Download](https://www.python.org/downloads/))
+- **npm** (comes with Node.js)
+- **pip** (comes with Python)
+
+**System Requirements:**
+- **Windows 10/11** (Recommended) or **Linux/macOS**
+- **4GB RAM** minimum (8GB recommended)
+- **2GB disk space** for installation
+- **Internet connection** for initial setup
+
+### One-Click Installation (Windows)
+
+1. **Download or Clone** the repository:
+   ```bash
+   git clone https://github.com/kuprik23/james.git
+   cd james
+   ```
+
+2. **Run the Installer** (Right-click → Run as Administrator):
+   ```bash
+   INSTALL.bat
+   ```
+
+3. **Start James AI**:
+   ```bash
+   START-ALL.bat
+   ```
+
+4. **Access the Interface**:
+   - Web GUI: http://localhost:3001
+   - LangGraph API: http://localhost:8000/docs
+
+**That's it!** The installer will:
+- ✅ Check all prerequisites
+- ✅ Install all dependencies automatically
+- ✅ Create configuration files
+- ✅ Set up startup scripts
+- ✅ Create desktop shortcuts (optional)
+- ✅ Guide you through API key configuration
+
+### Manual Installation
+
+If you prefer manual setup or are on Linux/macOS:
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/kuprik23/james.git
 cd james
 
-# Install dependencies for main platform
-cd james-ultimate
-npm install
+# Install Node.js dependencies
+cd emersa-gui && npm install && cd ..
+cd james-ultimate && npm install && cd ..
+cd cybercat-standalone && npm install && cd ..
 
-# Start the CYBERCAT platform
-npm run server
+# Install Python dependencies
+cd langgraph-agent
+pip install -r requirements.txt
+cd ..
+
+# Configure API keys (optional but recommended)
+# Edit langgraph-agent/.env and add:
+# OPENAI_API_KEY=your_key_here
 # OR
-node src/server.js
+# ANTHROPIC_API_KEY=your_key_here
+
+# Start services
+cd emersa-gui && PORT=3001 npm start &
+cd james-ultimate && node src/server.js &
+cd langgraph-agent && python server.py &
 ```
 
-The platform will be available at: `http://localhost:3000`
+### Configuration
+
+**Quick Config Tool:**
+```bash
+CONFIGURE.bat  # Windows
+# or
+configure-api-keys.bat
+```
+
+**Manual Configuration:**
+- Edit [`langgraph-agent/.env`](langgraph-agent/.env) for LangGraph Agent API keys
+- Edit [`digitalocean-mcp/.env`](digitalocean-mcp/.env) for Digital Ocean token
+
+**Available Platforms:**
+- Web Interface: http://localhost:3001 (Emersa GUI)
+- Main Platform: http://localhost:3000 (James Ultimate)
+- API Documentation: http://localhost:8000/docs (LangGraph Agent)
 
 ---
 
