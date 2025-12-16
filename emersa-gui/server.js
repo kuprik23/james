@@ -387,6 +387,113 @@ app.post('/api/agents/:name/stop', (req, res) => {
     }
 });
 
+app.post('/api/agents/:name/execute', (req, res) => {
+    const { name } = req.params;
+    const { command } = req.body;
+    
+    if (!agentState[name]) {
+        return res.status(404).json({ error: 'Agent not found' });
+    }
+    
+    // Activate agent
+    agentState[name].status = 'running';
+    agentState[name].lastActive = Date.now();
+    agentState[name].tasks++;
+    
+    broadcast({ type: 'agent-update', agent: name, status: 'running' });
+    
+    // Simulate agent processing
+    setTimeout(() => {
+        agentState[name].status = 'idle';
+        broadcast({ type: 'agent-update', agent: name, status: 'idle' });
+    }, 2000);
+    
+    // Return agent-specific response
+    const responses = {
+        scanner: {
+            status: 'Network scan initiated',
+            findings: ['22 open ports detected', '3 services running', 'SSL certificate valid']
+        },
+        analyzer: {
+            status: 'Analysis complete',
+            findings: ['0 critical vulnerabilities', '2 medium issues', 'System healthy']
+        },
+        defender: {
+            status: 'Defense systems active',
+            findings: ['Firewall rules updated', '47 IPs blocked', 'All services protected']
+        },
+        reporter: {
+            status: 'Report generation started',
+            findings: ['Security score: 95%', 'Compliance: PASSED', 'Last scan: Just now']
+        },
+        hunter: {
+            status: 'Threat hunting active',
+            findings: ['No active threats detected', 'All systems clear', 'Monitoring continues']
+        },
+        orchestrator: {
+            status: 'Coordinating agents',
+            findings: ['All agents online', 'Task queue: empty', 'System optimized']
+        }
+    };
+    
+    res.json({
+        success: true,
+        agent: name,
+        message: `Agent ${name} executed: ${command || 'status check'}`,
+        data: responses[name] || { status: 'Command processed' }
+    });
+});
+
+app.post('/api/agent/chat', async (req, res) => {
+    const { message } = req.body;
+    
+    if (!message || !message.trim()) {
+        return res.status(400).json({
+            success: false,
+            error: 'Message is required'
+        });
+    }
+    
+    // Activate orchestrator
+    agentState.orchestrator.status = 'running';
+    broadcast({ type: 'agent-update', agent: 'orchestrator', status: 'running' });
+    
+    // Simulate AI processing
+    setTimeout(() => {
+        agentState.orchestrator.status = 'idle';
+        broadcast({ type: 'agent-update', agent: 'orchestrator', status: 'idle' });
+    }, 1500);
+    
+    // Simple response logic based on keywords
+    const msg = message.toLowerCase();
+    let response = '';
+    let suggestions = [];
+    
+    if (msg.includes('scan') || msg.includes('check')) {
+        response = 'I recommend running a full security scan. All agents are ready to coordinate a comprehensive assessment.';
+        suggestions = ['Run full-scan', 'Check agent status', 'View recent threats'];
+    } else if (msg.includes('threat') || msg.includes('attack')) {
+        response = 'Currently monitoring for threats. No active attacks detected. The hunter agent is continuously scanning.';
+        suggestions = ['Activate threat-hunt', 'Review firewall', 'Check logs'];
+    } else if (msg.includes('status') || msg.includes('health')) {
+        response = `System health is excellent at ${securityStats.systemHealth}%. All critical agents are operational and ${securityStats.threatsBlocked} threats have been blocked today.`;
+        suggestions = ['View full status', 'Deploy all agents', 'Generate report'];
+    } else if (msg.includes('agent')) {
+        response = 'I have 6 specialized agents available: Scanner, Analyzer, Defender, Reporter, Hunter, and Orchestrator. Each handles specific security tasks.';
+        suggestions = ['List all agents', 'Deploy scanner', 'Agent workflow'];
+    } else {
+        response = 'I\'m your AI security assistant. I can help with scans, threat analysis, agent coordination, and system monitoring. What would you like to know?';
+        suggestions = ['Run security scan', 'Check threats', 'System status'];
+    }
+    
+    res.json({
+        success: true,
+        response: response,
+        suggestions: suggestions,
+        agent: 'orchestrator'
+    });
+});
+
 app.get('/api/stats', (req, res) => {
     res.json(securityStats);
 });

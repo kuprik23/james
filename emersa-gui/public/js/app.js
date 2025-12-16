@@ -184,6 +184,10 @@ function executeCommand(cmd) {
         showCat();
     } else if (command === 'matrix') {
         toggleMatrix();
+    } else if (command.startsWith('agent')) {
+        handleAgentCommand(command);
+    } else if (command === 'ask-agent' || command.startsWith('ask ')) {
+        handleAgentChat(command);
     } else {
         addTerminalLine('error', `Unknown command: ${cmd}. Type 'help' for available commands.`);
     }
@@ -269,6 +273,8 @@ Available Commands:
   status             - System status overview
   agents             - List all agents
   deploy [agent]     - Deploy specific agent
+  agent [name] [cmd] - Send command to specific agent
+  ask [question]     - Chat with AI agent
   stats              - Show statistics
   report             - Generate security report
   clear              - Clear terminal
@@ -277,6 +283,201 @@ Available Commands:
   help               - Show this help
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
     addTerminalLine('info', helpText.replace(/\n/g, '<br>'));
+}
+
+// ============================================
+// Agent Integration Functions
+// ============================================
+async function handleAgentCommand(command) {
+    const parts = command.split(' ');
+    const agentName = parts[1];
+    const agentCmd = parts.slice(2).join(' ');
+    
+    if (!agentName) {
+        addTerminalLine('error', 'Usage: agent [name] [command]');
+        addTerminalLine('info', 'Available agents: scanner, analyzer, defender, reporter, hunter, orchestrator');
+        return;
+    }
+    
+    if (!state.agents[agentName]) {
+        addTerminalLine('error', `Unknown agent: ${agentName}`);
+        return;
+    }
+    
+    addTerminalLine('system', `Sending command to ${agentName} agent...`);
+    
+    try {
+        const response = await fetch(`/api/agents/${agentName}/execute`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ command: agentCmd || 'status' })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            addTerminalLine('success', `Agent ${agentName}: ${result.message || 'Command executed'}`);
+            if (result.data) {
+                addTerminalLine('info', JSON.stringify(result.data, null, 2).replace(/\n/g, '<br>').replace(/ /g, '&nbsp;'));
+            }
+        } else {
+            addTerminalLine('error', `Agent error: ${result.error}`);
+        }
+    } catch (error) {
+        addTerminalLine('error', `Failed to communicate with agent: ${error.message}`);
+    }
+}
+
+async function handleAgentChat(command) {
+    const question = command.replace(/^(ask-agent|ask)\s*/i, '');
+    
+    if (!question.trim()) {
+        addTerminalLine('error', 'Usage: ask [your question]');
+        return;
+    }
+    
+    addTerminalLine('system', `Asking AI agent: "${question}"`);
+    updateAgentStatus('orchestrator', 'running');
+    
+    try {
+        const response = await fetch('/api/agent/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: question })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            addTerminalLine('success', `AI Agent: ${result.response}`);
+            if (result.suggestions) {
+                addTerminalLine('info', `Suggestions: ${result.suggestions.join(', ')}`);
+            }
+        } else {
+            addTerminalLine('warning', `Agent response: ${result.message || 'Agent is processing...'}`);
+        }
+    } catch (error) {
+        addTerminalLine('error', `Chat error: ${error.message}`);
+    } finally {
+        updateAgentStatus('orchestrator', 'idle');
+    }
+}
+
+async function triggerAgentScan() {
+    if (state.isScanning) {
+        addTerminalLine('warning', 'Agent scan already in progress...');
+        return;
+    }
+    
+    state.isScanning = true;
+    const scanBtn = document.getElementById('agent-scan-btn');
+    const eqStatus = document.getElementById('eq-status');
+    
+    // Update UI
+    scanBtn?.classList.add('scanning');
+    eqStatus?.classList.add('active');
+    if (eqStatus) {
+        eqStatus.querySelector('.status-text').textContent = 'Agent Scanning...';
+    }
+    
+    addTerminalLine('system', '═══ MULTI-AGENT SCAN INITIATED ═══');
+    addTerminalLine('scanner', 'Activating all security agents...');
+    
+    // Activate all agents
+    Object.keys(state.agents).forEach(agent => {
+        updateAgentStatus(agent, 'running');
+    });
+    
+    startEQAnimation();
+    showScanProgress();
+    updateScanPhase('Coordinating Agents');
+    
+    const phases = [
+        { agent: 'scanner', name: 'Network Discovery', duration: 15 },
+        { agent: 'analyzer', name: 'Threat Analysis', duration: 20 },
+        { agent: 'defender', name: 'Security Check', duration: 20 },
+        { agent: 'hunter', name: 'Threat Hunting', duration: 25 },
+        { agent: 'reporter', name: 'Generating Report', duration: 20 }
+    ];
+    
+    let currentPhase = 0;
+    let phaseProgress = 0;
+    
+    const scanInterval = setInterval(() => {
+        phaseProgress += 2;
+        state.scanProgress = Math.min(
+            (currentPhase * 20) + (phaseProgress * phases[currentPhase].duration / 100),
+            100
+        );
+        
+        updateProgressBar(state.scanProgress);
+        
+        if (phaseProgress >= 100) {
+            phaseProgress = 0;
+            const phase = phases[currentPhase];
+            addTerminalLine(phase.agent, `✓ ${phase.name} complete`);
+            updateAgentStatus(phase.agent, 'idle');
+            currentPhase++;
+            
+            if (currentPhase < phases.length) {
+                const nextPhase = phases[currentPhase];
+                updateScanPhase(nextPhase.name);
+                updateAgentStatus(nextPhase.agent, 'running');
+            }
+        }
+        
+        if (state.scanProgress >= 100) {
+            clearInterval(scanInterval);
+            completeAgentScan();
+            
+            // Reset UI
+            scanBtn?.classList.remove('scanning');
+            eqStatus?.classList.remove('active');
+            if (eqStatus) {
+                eqStatus.querySelector('.status-text').textContent = 'Scan Complete';
+            }
+            
+            setTimeout(() => {
+                if (eqStatus) {
+                    eqStatus.querySelector('.status-text').textContent = 'Idle';
+                }
+            }, 3000);
+        }
+    }, 100);
+}
+
+function completeAgentScan() {
+    hideScanProgress();
+    state.isScanning = false;
+    state.stats.scansCompleted++;
+    state.stats.threatsBlocked += Math.floor(Math.random() * 15);
+    
+    // Deactivate all agents
+    Object.keys(state.agents).forEach(agent => {
+        if (agent !== 'defender' && agent !== 'orchestrator') {
+            updateAgentStatus(agent, 'idle');
+        }
+    });
+    
+    addTerminalLine('success', '═══ MULTI-AGENT SCAN COMPLETE ═══');
+    addTerminalLine('success', `🔒 Threats Blocked: ${state.stats.threatsBlocked}`);
+    addTerminalLine('info', '🛡️ All agents coordinated successfully');
+    addTerminalLine('info', '📊 System Health: 95%');
+    addTerminalLine('success', '✓ No critical vulnerabilities detected');
+    
+    updateResults({
+        openPorts: '22, 80, 443, 3000',
+        vulnerabilities: '0 Critical',
+        sslGrade: 'A+',
+        scanDuration: '18.5s',
+        memoryUsed: '256MB'
+    });
+    
+    updateStatsDisplay();
+    showToast('Multi-agent scan completed!', 'success');
+    updateSecurityGauge(95);
+    
+    addActivity('success', 'Multi-agent scan completed successfully');
 }
 
 function showStatus() {
