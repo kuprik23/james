@@ -49,9 +49,11 @@
                     <button class="tab-btn" data-tab="agents">🤖 Agents</button>
                     <button class="tab-btn" data-tab="security">🔐 Security</button>
                     <button class="tab-btn" data-tab="network">🌐 Network</button>
+                    <button class="tab-btn" data-tab="logs">📜 Logs</button>
                 </div>
             </div>
             <div class="header-right">
+                <button class="icon-btn" id="settings-btn" title="Settings">⚙️</button>
                 <div class="system-stats">
                     <div class="stat-item">
                         <span class="stat-label">CPU</span>
@@ -445,6 +447,167 @@
 
         <!-- Toast Notifications -->
         <div id="toast-container"></div>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal hidden">
+            <div class="modal-content large">
+                <div class="modal-header">
+                    <h2>⚙️ Settings & Configuration</h2>
+                    <button class="modal-close" id="close-settings">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-tabs">
+                        <button class="settings-tab active" data-settings-tab="api">🔑 API Keys</button>
+                        <button class="settings-tab" data-settings-tab="standalone">🔧 Standalone Tools</button>
+                        <button class="settings-tab" data-settings-tab="system">💻 System</button>
+                    </div>
+                    
+                    <!-- API Keys Tab -->
+                    <div class="settings-panel active" id="api-settings">
+                        <h3>API Key Configuration</h3>
+                        <p class="settings-desc">Configure API keys for LangGraph Agent and cloud services</p>
+                        
+                        <div class="form-group">
+                            <label for="openai-key">OpenAI API Key</label>
+                            <div class="input-group">
+                                <input type="password" id="openai-key" placeholder="sk-..." autocomplete="off">
+                                <button class="toggle-visibility" data-input="openai-key">👁️</button>
+                            </div>
+                            <small>Get your key at: <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a></small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="anthropic-key">Anthropic API Key (Alternative)</label>
+                            <div class="input-group">
+                                <input type="password" id="anthropic-key" placeholder="sk-ant-..." autocomplete="off">
+                                <button class="toggle-visibility" data-input="anthropic-key">👁️</button>
+                            </div>
+                            <small>Get your key at: <a href="https://console.anthropic.com/" target="_blank">console.anthropic.com</a></small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="digitalocean-token">Digital Ocean API Token</label>
+                            <div class="input-group">
+                                <input type="password" id="digitalocean-token" placeholder="dop_v1_..." autocomplete="off">
+                                <button class="toggle-visibility" data-input="digitalocean-token">👁️</button>
+                            </div>
+                            <small>Get your token at: <a href="https://cloud.digitalocean.com/account/api/tokens" target="_blank">cloud.digitalocean.com</a></small>
+                        </div>
+                        
+                        <div class="settings-actions">
+                            <button class="btn-primary" id="save-api-keys">💾 Save API Keys</button>
+                            <button class="btn-secondary" id="test-connection">🧪 Test Connection</button>
+                        </div>
+                        
+                        <div id="api-status" class="status-message hidden"></div>
+                    </div>
+                    
+                    <!-- Standalone Tools Tab -->
+                    <div class="settings-panel" id="standalone-settings">
+                        <h3>Standalone Tools</h3>
+                        <p class="settings-desc">Run and manage standalone security tools</p>
+                        
+                        <div class="tool-card">
+                            <div class="tool-header">
+                                <h4>🔍 CyberCat Standalone</h4>
+                                <span class="tool-status online">Ready</span>
+                            </div>
+                            <p>AI-Powered Cybersecurity Analysis Tool</p>
+                            <div class="tool-actions">
+                                <button class="btn-small" data-tool="cybercat" data-cmd="status">Status</button>
+                                <button class="btn-small" data-tool="cybercat" data-cmd="network">Network</button>
+                                <button class="btn-small" data-tool="cybercat" data-cmd="scan">Full Scan</button>
+                            </div>
+                        </div>
+                        
+                        <div class="tool-card">
+                            <div class="tool-header">
+                                <h4>🛡️ CyberCAT Scanner</h4>
+                                <span class="tool-status online">Ready</span>
+                            </div>
+                            <p>Military-Grade Vulnerability Scanner</p>
+                            <div class="tool-actions">
+                                <button class="btn-small" data-tool="scanner" data-cmd="sweep">Sweep</button>
+                                <button class="btn-small" data-tool="scanner" data-cmd="ports">Port Scan</button>
+                                <button class="btn-small" data-tool="scanner" data-cmd="scan">Full Scan</button>
+                            </div>
+                        </div>
+                        
+                        <div class="tool-card">
+                            <div class="tool-header">
+                                <h4>🤖 LangGraph Agent</h4>
+                                <span class="tool-status" id="langgraph-status">Checking...</span>
+                            </div>
+                            <p>AI-Powered Security Agent API</p>
+                            <div class="tool-actions">
+                                <button class="btn-small" data-tool="langgraph" data-cmd="health">Health</button>
+                                <button class="btn-small" data-tool="langgraph" data-cmd="report">Report</button>
+                                <button class="btn-small" data-tool="langgraph" data-cmd="docs">API Docs</button>
+                            </div>
+                        </div>
+                        
+                        <div id="tool-output" class="tool-output hidden"></div>
+                    </div>
+                    
+                    <!-- System Tab -->
+                    <div class="settings-panel" id="system-settings">
+                        <h3>System Information</h3>
+                        <div class="system-info" id="system-info">
+                            <div class="info-item">
+                                <span class="info-label">Platform:</span>
+                                <span class="info-value" id="sys-platform">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Node.js:</span>
+                                <span class="info-value" id="sys-node">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Python:</span>
+                                <span class="info-value" id="sys-python">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Installation Path:</span>
+                                <span class="info-value" id="sys-path">-</span>
+                            </div>
+                        </div>
+                        <button class="btn-primary" id="refresh-system-info">🔄 Refresh</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expanded Log Viewer Modal -->
+        <div id="log-viewer-modal" class="modal hidden">
+            <div class="modal-content fullscreen">
+                <div class="modal-header">
+                    <h2>📜 Expanded Log Viewer</h2>
+                    <div class="log-controls">
+                        <input type="search" id="log-search" placeholder="Search logs..." class="search-input">
+                        <select id="log-filter" class="log-filter">
+                            <option value="all">All Levels</option>
+                            <option value="error">Errors</option>
+                            <option value="warning">Warnings</option>
+                            <option value="success">Success</option>
+                            <option value="info">Info</option>
+                        </select>
+                        <button class="btn-small" id="export-full-log">📥 Export</button>
+                        <button class="btn-small" id="clear-full-log">🗑️ Clear</button>
+                        <button class="modal-close" id="close-log-viewer">&times;</button>
+                    </div>
+                </div>
+                <div class="modal-body no-padding">
+                    <div id="expanded-log-output" class="expanded-log"></div>
+                </div>
+                <div class="modal-footer">
+                    <div class="log-stats">
+                        <span>Total: <strong id="log-count">0</strong></span>
+                        <span>Errors: <strong id="log-errors">0</strong></span>
+                        <span>Warnings: <strong id="log-warnings">0</strong></span>
+                    </div>
+                    <button class="btn-secondary" id="auto-scroll-toggle">📜 Auto-scroll: ON</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Modal Container -->
         <div id="modal-container"></div>

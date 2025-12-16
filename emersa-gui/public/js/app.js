@@ -978,6 +978,402 @@ function initCatEyes() {
 }
 
 // ============================================
+// Settings Modal
+// ============================================
+let logViewerAutoScroll = true;
+let fullLogLines = [];
+
+function initSettings() {
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsModal = document.getElementById('settings-modal');
+    const closeSettings = document.getElementById('close-settings');
+    
+    settingsBtn?.addEventListener('click', openSettings);
+    closeSettings?.addEventListener('click', closeSettingsModal);
+    
+    // Settings tabs
+    document.querySelectorAll('.settings-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetTab = tab.dataset.settingsTab;
+            switchSettingsTab(targetTab);
+        });
+    });
+    
+    // Toggle visibility buttons
+    document.querySelectorAll('.toggle-visibility').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const inputId = this.dataset.input;
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.type = input.type === 'password' ? 'text' : 'password';
+                this.classList.toggle('active');
+            }
+        });
+    });
+    
+    // Save API keys
+    document.getElementById('save-api-keys')?.addEventListener('click', saveApiKeys);
+    document.getElementById('test-connection')?.addEventListener('click', testApiConnection);
+    
+    // Standalone tool buttons
+    document.querySelectorAll('[data-tool]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tool = this.dataset.tool;
+            const cmd = this.dataset.cmd;
+            executeStandaloneTool(tool, cmd);
+        });
+    });
+    
+    // System info
+    document.getElementById('refresh-system-info')?.addEventListener('click', loadSystemInfo);
+}
+
+function openSettings() {
+    const modal = document.getElementById('settings-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        loadSystemInfo();
+        loadApiKeys();
+    }
+}
+
+function closeSettingsModal() {
+    const modal = document.getElementById('settings-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+function switchSettingsTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.settings-tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.dataset.settingsTab === tabName) {
+            tab.classList.add('active');
+        }
+    });
+    
+    // Update panels
+    document.querySelectorAll('.settings-panel').forEach(panel => {
+        panel.classList.remove('active');
+    });
+    
+    const targetPanel = document.getElementById(`${tabName}-settings`);
+    if (targetPanel) {
+        targetPanel.classList.add('active');
+    }
+}
+
+async function saveApiKeys() {
+    const openaiKey = document.getElementById('openai-key')?.value;
+    const anthropicKey = document.getElementById('anthropic-key')?.value;
+    const doToken = document.getElementById('digitalocean-token')?.value;
+    
+    const statusEl = document.getElementById('api-status');
+    
+    try {
+        const response = await fetch('/api/config/api-keys', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                openai: openaiKey,
+                anthropic: anthropicKey,
+                digitalocean: doToken
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            statusEl.className = 'status-message success';
+            statusEl.textContent = '✓ API keys saved successfully!';
+            statusEl.classList.remove('hidden');
+            showToast('API keys saved successfully!', 'success');
+            
+            setTimeout(() => statusEl.classList.add('hidden'), 5000);
+        } else {
+            throw new Error(result.error || 'Failed to save keys');
+        }
+    } catch (error) {
+        statusEl.className = 'status-message error';
+        statusEl.textContent = '✗ Error saving API keys: ' + error.message;
+        statusEl.classList.remove('hidden');
+        showToast('Error saving API keys', 'error');
+    }
+}
+
+async function testApiConnection() {
+    const statusEl = document.getElementById('api-status');
+    statusEl.className = 'status-message info';
+    statusEl.textContent = '⏳ Testing connection...';
+    statusEl.classList.remove('hidden');
+    
+    try {
+        const response = await fetch('/api/config/test-connection');
+        const result = await response.json();
+        
+        if (result.success) {
+            statusEl.className = 'status-message success';
+            statusEl.textContent = '✓ Connection test successful! Provider: ' + result.provider;
+            showToast('Connection test successful!', 'success');
+        } else {
+            statusEl.className = 'status-message error';
+            statusEl.textContent = '✗ Connection test failed: ' + result.error;
+        }
+    } catch (error) {
+        statusEl.className = 'status-message error';
+        statusEl.textContent = '✗ Connection test error: ' + error.message;
+    }
+}
+
+async function loadApiKeys() {
+    try {
+        const response = await fetch('/api/config/api-keys');
+        const keys = await response.json();
+        
+        if (keys.openai) document.getElementById('openai-key').value = keys.openai;
+        if (keys.anthropic) document.getElementById('anthropic-key').value = keys.anthropic;
+        if (keys.digitalocean) document.getElementById('digitalocean-token').value = keys.digitalocean;
+    } catch (error) {
+        console.error('Error loading API keys:', error);
+    }
+}
+
+async function loadSystemInfo() {
+    try {
+        const response = await fetch('/api/system/info');
+        const info = await response.json();
+        
+        document.getElementById('sys-platform').textContent = info.platform || '-';
+        document.getElementById('sys-node').textContent = info.node || '-';
+        document.getElementById('sys-python').textContent = info.python || '-';
+        document.getElementById('sys-path').textContent = info.path || '-';
+    } catch (error) {
+        console.error('Error loading system info:', error);
+    }
+}
+
+async function executeStandaloneTool(tool, cmd) {
+    const outputEl = document.getElementById('tool-output');
+    outputEl.classList.remove('hidden');
+    outputEl.innerHTML = '<div style="color: #ffaa00;">⏳ Executing command...</div>';
+    
+    try {
+        const response = await fetch('/api/standalone/execute', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tool, command: cmd })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            outputEl.innerHTML = `<pre>${escapeHtml(result.output)}</pre>`;
+            addTerminalLine('success', `${tool} ${cmd} completed`);
+        } else {
+            outputEl.innerHTML = `<div style="color: #ff4444;">✗ Error: ${escapeHtml(result.error)}</div>`;
+        }
+    } catch (error) {
+        outputEl.innerHTML = `<div style="color: #ff4444;">✗ Connection error: ${escapeHtml(error.message)}</div>`;
+    }
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// ============================================
+// Expanded Log Viewer
+// ============================================
+function initLogViewer() {
+    const exportBtn = document.getElementById('export-log');
+    const logViewerModal = document.getElementById('log-viewer-modal');
+    const closeLogViewer = document.getElementById('close-log-viewer');
+    const expandedOutput = document.getElementById('expanded-log-output');
+    const searchInput = document.getElementById('log-search');
+    const filterSelect = document.getElementById('log-filter');
+    const exportFullBtn = document.getElementById('export-full-log');
+    const clearFullBtn = document.getElementById('clear-full-log');
+    const autoScrollToggle = document.getElementById('auto-scroll-toggle');
+    
+    // Open log viewer when export is clicked
+    exportBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openLogViewer();
+    });
+    
+    closeLogViewer?.addEventListener('click', closeLogViewerModal);
+    
+    // Search functionality
+    searchInput?.addEventListener('input', (e) => {
+        filterLogs(e.target.value, filterSelect.value);
+    });
+    
+    filterSelect?.addEventListener('change', (e) => {
+        filterLogs(searchInput.value, e.target.value);
+    });
+    
+    exportFullBtn?.addEventListener('click', exportFullLog);
+    clearFullBtn?.addEventListener('click', clearFullLog);
+    
+    autoScrollToggle?.addEventListener('click', () => {
+        logViewerAutoScroll = !logViewerAutoScroll;
+        autoScrollToggle.classList.toggle('disabled');
+        autoScrollToggle.textContent = `📜 Auto-scroll: ${logViewerAutoScroll ? 'ON' : 'OFF'}`;
+    });
+}
+
+function openLogViewer() {
+    const modal = document.getElementById('log-viewer-modal');
+    const expandedOutput = document.getElementById('expanded-log-output');
+    
+    if (modal && expandedOutput) {
+        // Copy all terminal lines to expanded viewer
+        const terminalOutput = document.getElementById('terminal-output');
+        if (terminalOutput) {
+            expandedOutput.innerHTML = terminalOutput.innerHTML;
+            fullLogLines = Array.from(terminalOutput.querySelectorAll('.terminal-line'));
+        }
+        
+        modal.classList.remove('hidden');
+        updateLogStats();
+        
+        if (logViewerAutoScroll) {
+            expandedOutput.scrollTop = expandedOutput.scrollHeight;
+        }
+    }
+}
+
+function closeLogViewerModal() {
+    const modal = document.getElementById('log-viewer-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+function filterLogs(searchTerm, level) {
+    const expandedOutput = document.getElementById('expanded-log-output');
+    const lines = expandedOutput.querySelectorAll('.terminal-line');
+    
+    lines.forEach(line => {
+        let show = true;
+        
+        // Filter by level
+        if (level !== 'all') {
+            show = line.classList.contains(level);
+        }
+        
+        // Filter by search term
+        if (show && searchTerm) {
+            const text = line.textContent.toLowerCase();
+            show = text.includes(searchTerm.toLowerCase());
+            
+            if (show) {
+                line.classList.add('highlight');
+            } else {
+                line.classList.remove('highlight');
+            }
+        } else {
+            line.classList.remove('highlight');
+        }
+        
+        line.style.display = show ? '' : 'none';
+    });
+    
+    updateLogStats();
+}
+
+function updateLogStats() {
+    const expandedOutput = document.getElementById('expanded-log-output');
+    const lines = expandedOutput.querySelectorAll('.terminal-line');
+    const visibleLines = Array.from(lines).filter(l => l.style.display !== 'none');
+    
+    const errors = visibleLines.filter(l => l.classList.contains('error')).length;
+    const warnings = visibleLines.filter(l => l.classList.contains('warning')).length;
+    
+    document.getElementById('log-count').textContent = visibleLines.length;
+    document.getElementById('log-errors').textContent = errors;
+    document.getElementById('log-warnings').textContent = warnings;
+}
+
+function exportFullLog() {
+    const expandedOutput = document.getElementById('expanded-log-output');
+    const lines = expandedOutput.querySelectorAll('.terminal-line');
+    
+    let log = '='.repeat(70) + '\n';
+    log += 'CyberCAT Security Log - Expanded Export\n';
+    log += '='.repeat(70) + '\n';
+    log += `Generated: ${new Date().toISOString()}\n`;
+    log += `Total Lines: ${lines.length}\n`;
+    log += '='.repeat(70) + '\n\n';
+    
+    lines.forEach(line => {
+        if (line.style.display !== 'none') {
+            const timestamp = line.querySelector('.timestamp')?.textContent || '';
+            const prefix = line.querySelector('.prefix')?.textContent || '';
+            const message = line.querySelector('.message')?.textContent || '';
+            log += `${timestamp} ${prefix} ${message}\n`;
+        }
+    });
+    
+    log += '\n' + '='.repeat(70) + '\n';
+    log += 'End of Log\n';
+    log += '='.repeat(70);
+    
+    const blob = new Blob([log], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cybercat-full-log-${Date.now()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showToast('Full log exported successfully!', 'success');
+}
+
+function clearFullLog() {
+    if (confirm('Are you sure you want to clear all logs?')) {
+        const terminalOutput = document.getElementById('terminal-output');
+        const expandedOutput = document.getElementById('expanded-log-output');
+        
+        if (terminalOutput) terminalOutput.innerHTML = '';
+        if (expandedOutput) expandedOutput.innerHTML = '';
+        
+        fullLogLines = [];
+        addTerminalLine('system', 'Logs cleared. Type "help" for commands.');
+        showToast('Logs cleared', 'info');
+        closeLogViewerModal();
+    }
+}
+
+// Sync logs from terminal to expanded viewer
+function syncLogsToViewer() {
+    const modal = document.getElementById('log-viewer-modal');
+    if (!modal || modal.classList.contains('hidden')) return;
+    
+    const terminalOutput = document.getElementById('terminal-output');
+    const expandedOutput = document.getElementById('expanded-log-output');
+    
+    if (terminalOutput && expandedOutput) {
+        expandedOutput.innerHTML = terminalOutput.innerHTML;
+        updateLogStats();
+        
+        if (logViewerAutoScroll) {
+            expandedOutput.scrollTop = expandedOutput.scrollHeight;
+        }
+    }
+}
+
+// Override addTerminalLine to sync with expanded viewer
+const originalAddTerminalLine = addTerminalLine;
+window.addTerminalLine = function(...args) {
+    originalAddTerminalLine(...args);
+    syncLogsToViewer();
+};
+
+// ============================================
 // Initialization
 // ============================================
 function init() {
@@ -987,6 +1383,8 @@ function init() {
     initControlBar();
     initAgentCards();
     initTabs();
+    initSettings();
+    initLogViewer();
     initWebSocket();
     animateStats();
     initCatEyes();

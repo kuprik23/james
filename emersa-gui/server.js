@@ -4,6 +4,8 @@ const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
 const os = require('os');
+const fs = require('fs');
+const { execSync } = require('child_process');
 
 const app = express();
 const server = http.createServer(app);
@@ -15,6 +17,10 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Configuration storage
+const CONFIG_DIR = path.join(__dirname, '..', 'langgraph-agent');
+const ENV_FILE = path.join(CONFIG_DIR, '.env');
 
 // Connected clients
 const clients = new Set();
@@ -310,6 +316,195 @@ app.post('/api/scan', async (req, res) => {
         message: 'Scan started',
         scanId: Date.now()
     });
+});
+
+// ============================================
+// API Key Management Routes
+// ============================================
+app.post('/api/config/api-keys', (req, res) => {
+    try {
+        const { openai, anthropic, digitalocean } = req.body;
+        
+        let envContent = '';
+        
+        if (openai) {
+            envContent += `OPENAI_API_KEY=${openai}\n`;
+        }
+        if (anthropic) {
+            envContent += `ANTHROPIC_API_KEY=${anthropic}\n`;
+        }
+        if (digitalocean) {
+            envContent += `DIGITALOCEAN_API_TOKEN=${digitalocean}\n`;
+        }
+        
+        if (envContent) {
+            fs.writeFileSync(ENV_FILE, envContent, 'utf8');
+            res.json({ success: true, message: 'API keys saved successfully' });
+        } else {
+            res.status(400).json({ success: false, error: 'No API keys provided' });
+        }
+    } catch (error) {
+        console.error('Error saving API keys:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.get('/api/config/api-keys', (req, res) => {
+    try {
+        if (fs.existsSync(ENV_FILE)) {
+            const envContent = fs.readFileSync(ENV_FILE, 'utf8');
+            const keys = {};
+            
+            // Parse env file (mask the actual keys for security)
+            const lines = envContent.split('\n');
+            lines.forEach(line => {
+                if (line.includes('OPENAI_API_KEY=') && line.split('=')[1]) {
+                    keys.openai = '***' + line.split('=')[1].slice(-4);
+                }
+                if (line.includes('ANTHROPIC_API_KEY=') && line.split('=')[1]) {
+                    keys.anthropic = '***' + line.split('=')[1].slice(-4);
+                }
+                if (line.includes('DIGITALOCEAN_API_TOKEN=') && line.split('=')[1]) {
+                    keys.digitalocean = '***' + line.split('=')[1].slice(-4);
+                }
+            });
+            
+            res.json(keys);
+        } else {
+            res.json({});
+        }
+    } catch (error) {
+        console.error('Error reading API keys:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/config/test-connection', async (req, res) => {
+    try {
+        // Try to check if LangGraph agent is running
+        const http = require('http');
+        const options = {
+            hostname: 'localhost',
+            port: 8000,
+            path: '/health',
+            method: 'GET',
+            timeout: 3000
+        };
+        
+        const healthReq = http.request(options, (healthRes) => {
+            if (healthRes.statusCode === 200) {
+                res.json({
+                    success: true,
+                    provider: 'LangGraph Agent',
+                    status: 'Connected'
+                });
+            } else {
+                res.json({
+                    success: false,
+                    error: 'LangGraph Agent not responding properly'
+                });
+            }
+        });
+        
+        healthReq.on('error', () => {
+            res.json({
+                success: false,
+                error: 'LangGraph Agent not running. Start with: cd langgraph-agent && python server.py'
+            });
+        });
+        
+        healthReq.end();
+    } catch (error) {
+        res.json({ success: false, error: error.message });
+    }
+});
+
+// ============================================
+// Standalone Tool Execution Routes
+// ============================================
+app.post('/api/standalone/execute', (req, res) => {
+    try {
+        const { tool, command } = req.body;
+        let output = '';
+        let cmd = '';
+        
+        switch(tool) {
+            case 'cybercat':
+                const cybercatPath = path.join(__dirname, '..', 'cybercat-standalone');
+                cmd = `cd "${cybercatPath}" && node cybercat.js ${command}`;
+                break;
+                
+            case 'scanner':
+                const scannerPath = path.join(__dirname, '..', 'cybercat-scanner');
+                cmd = `cd "${scannerPath}" && node scanner.js ${command}`;
+                break;
+                
+            case 'langgraph':
+                if (command === 'docs') {
+                    res.json({
+                        success: true,
+                        output: 'Opening API documentation...',
+                        redirect: 'http://localhost:8000/docs'
+                    });
+                    return;
+                } else if (command === 'health') {
+                    cmd = 'curl -s http://localhost:8000/health';
+                } else {
+                    cmd = 'curl -s http://localhost:8000/api/report';
+                }
+                break;
+                
+            default:
+                res.status(400).json({ success: false, error: 'Unknown tool' });
+                return;
+        }
+        
+        try {
+            output = execSync(cmd, {
+                encoding: 'utf8',
+                timeout: 30000,
+                maxBuffer: 1024 * 1024 * 10
+            });
+            res.json({ success: true, output: output || 'Command executed successfully' });
+        } catch (execError) {
+            res.json({
+                success: false,
+                error: execError.message,
+                output: execError.stdout || execError.stderr || 'Execution failed'
+            });
+        }
+    } catch (error) {
+        console.error('Error executing standalone tool:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============================================
+// System Information Route
+// ============================================
+app.get('/api/system/info', (req, res) => {
+    try {
+        let nodeVersion = 'Not available';
+        let pythonVersion = 'Not available';
+        
+        try {
+            nodeVersion = execSync('node --version', { encoding: 'utf8' }).trim();
+        } catch (e) {}
+        
+        try {
+            pythonVersion = execSync('python --version', { encoding: 'utf8' }).trim();
+        } catch (e) {}
+        
+        res.json({
+            platform: `${os.platform()} ${os.release()}`,
+            node: nodeVersion,
+            python: pythonVersion,
+            path: process.cwd()
+        });
+    } catch (error) {
+        console.error('Error getting system info:', error);
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // Serve the main app
