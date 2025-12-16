@@ -224,3 +224,254 @@ yarn-debug.log*
 yarn-error.log*
 .npm
 .yarn
+package-lock.json
+yarn.lock
+
+# ==============================================================================
+# SECURITY CRITICAL - API Keys, Tokens, Credentials
+# ==============================================================================
+
+# Environment files containing secrets
+*.env
+!.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+**/.env
+**/.env.local
+
+# API Keys and Tokens
+**/api-keys.*
+**/*api-key*
+**/*api_key*
+**/keys/
+**/*-key.json
+**/*-token.json
+**/*credentials*
+!**/credentials.example*
+
+# Digital Ocean
+**/digitalocean-token*
+**/do-token*
+dop_v1_*
+
+# OpenAI / Anthropic
+sk-*
+sk-ant-*
+
+# Cloud provider credentials
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+**/*.cer
+**/*.crt
+**/*-credentials.json
+
+# SSH Keys
+id_rsa
+id_rsa.pub
+id_dsa
+id_dsa.pub
+id_ecdsa
+id_ecdsa.pub
+id_ed25519
+id_ed25519.pub
+
+# ==============================================================================
+# Application Logs & Generated Files
+# ==============================================================================
+
+# Installation & Setup logs
+install-log.txt
+setup-log.txt
+*-log.txt
+**/*-log.txt
+
+# Application logs
+logs/
+*.log
+**/*.log
+combined.log
+error.log
+access.log
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+*.temp
+.temp/
+.tmp/
+
+# Generated reports
+reports/
+**/reports/
+*.report
+*-report-*.*
+
+# Quarantine
+quarantine/
+**/quarantine/
+
+# ==============================================================================
+# IDE & Editor Files
+# ==============================================================================
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/launch.json
+.vscode/settings.json
+*.code-workspace
+
+# JetBrains (IntelliJ, WebStorm, PyCharm, etc.)
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.vim
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# ==============================================================================
+# Operating System Files
+# ==============================================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+.Trash-*
+.nfs*
+
+# ==============================================================================
+# Development & Build Artifacts
+# ==============================================================================
+
+# Compiled binaries
+*.exe
+*.dll
+*.so
+*.dylib
+*.class
+*.jar
+!**/target/*.jar
+
+# Build directories
+build/
+dist/
+out/
+target/
+
+# Dependency directories
+vendor/
+bower_components/
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# ==============================================================================
+# Database Files
+# ==============================================================================
+
+# SQLite
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+
+# Other databases
+*.mdb
+*.accdb
+*.sql
+
+# ==============================================================================
+# Backup Files
+# ==============================================================================
+
+*.backup
+*.bak
+*.old
+*.orig
+*~
+.backup/
+
+# ==============================================================================
+# Security Testing Files (Do not commit)
+# ==============================================================================
+
+# Penetration testing results
+pentest-results/
+scan-results/
+
+# Malware samples
+malware-samples/
+suspicious-files/
+
+# ==============================================================================
+# Docker & Container Files
+# ==============================================================================
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Kubernetes secrets
+*-secret.yaml
+secrets.yaml
+
+# ==============================================================================
+# Project Specific
+# ==============================================================================
+
+# James AI specific
+james-main.zip
+test-sync.txt
+install-log.txt
+
+# Excluded for safety - these should be example files
+# !digitalocean-mcp/.env.example
+# !langgraph-agent/.env.example

@@ -6,6 +6,7 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 const { execSync } = require('child_process');
+const crypto = require('crypto');
 
 const app = express();
 const server = http.createServer(app);
@@ -13,14 +14,112 @@ const wss = new WebSocket.Server({ server });
 
 const PORT = process.env.PORT || 3000;
 
+// ==============================================================================
+// SECURITY: Input Validation & Sanitization
+// ==============================================================================
+
+/**
+ * Validate API key format
+ * Prevents injection attacks and ensures proper format
+ */
+function validateApiKey(key, provider) {
+    if (!key || typeof key !== 'string') return false;
+    
+    // Remove whitespace
+    key = key.trim();
+    
+    switch(provider) {
+        case 'openai':
+            // OpenAI keys start with sk- and are typically 48-51 chars
+            return /^sk-[A-Za-z0-9]{40,100}$/.test(key);
+        
+        case 'anthropic':
+            // Anthropic keys start with sk-ant-
+            return /^sk-ant-[A-Za-z0-9_-]{40,200}$/.test(key);
+        
+        case 'digitalocean':
+            // DO tokens start with dop_v1_
+            return /^dop_v1_[a-f0-9]{64}$/.test(key);
+        
+        default:
+            return false;
+    }
+}
+
+/**
+ * Sanitize file paths to prevent directory traversal
+ */
+function sanitizePath(inputPath) {
+    if (!inputPath || typeof inputPath !== 'string') return '';
+    
+    // Remove null bytes, control characters, and dangerous patterns
+    let cleaned = inputPath.replace(/[\x00-\x1f\x7f]/g, '');
+    
+    // Remove directory traversal patterns
+    cleaned = cleaned.replace(/\.\./g, '');
+    cleaned = cleaned.replace(/[\\\/]{2,}/g, '/');
+    
+    return cleaned;
+}
+
+/**
+ * Sanitize command input to prevent injection
+ */
+function sanitizeCommand(cmd) {
+    if (!cmd || typeof cmd !== 'string') return '';
+    
+    // Only allow alphanumeric, spaces, and safe characters
+    const cleaned = cmd.replace(/[^a-zA-Z0-9\s_-]/g, '');
+    
+    // Limit length
+    return cleaned.substring(0, 100);
+}
+
+/**
+ * Validate tool name
+ */
+function validateToolName(tool) {
+    const validTools = ['cybercat', 'scanner', 'langgraph'];
+    return validTools.includes(tool);
+}
+
+/**
+ * Hash sensitive data for logging (never log actual keys)
+ */
+function hashForLogging(data) {
+    if (!data) return 'none';
+    return crypto.createHash('sha256').update(data).digest('hex').substring(0, 8) + '...';
+}
+
 // Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '1mb' })); // Limit payload size
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Security headers middleware
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com;");
+    next();
+});
+
+// Request logging middleware (sanitized)
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+    next();
+});
 
 // Configuration storage
 const CONFIG_DIR = path.join(__dirname, '..', 'langgraph-agent');
 const ENV_FILE = path.join(CONFIG_DIR, '.env');
+
+// Ensure config directory exists with proper permissions
+if (!fs.existsSync(CONFIG_DIR)) {
+    fs.mkdirSync(CONFIG_DIR, { recursive: true, mode: 0o700 });
+}
 
 // Connected clients
 const clients = new Set();
@@ -319,33 +418,89 @@ app.post('/api/scan', async (req, res) => {
 });
 
 // ============================================
-// API Key Management Routes
+// SECURE API Key Management Routes
 // ============================================
 app.post('/api/config/api-keys', (req, res) => {
     try {
         const { openai, anthropic, digitalocean } = req.body;
         
         let envContent = '';
+        let validKeys = 0;
         
-        if (openai) {
-            envContent += `OPENAI_API_KEY=${openai}\n`;
-        }
-        if (anthropic) {
-            envContent += `ANTHROPIC_API_KEY=${anthropic}\n`;
-        }
-        if (digitalocean) {
-            envContent += `DIGITALOCEAN_API_TOKEN=${digitalocean}\n`;
+        // Validate and sanitize OpenAI key
+        if (openai && openai.trim()) {
+            const cleanKey = openai.trim();
+            if (validateApiKey(cleanKey, 'openai')) {
+                envContent += `OPENAI_API_KEY=${cleanKey}\n`;
+                validKeys++;
+                console.log(`[SECURITY] OpenAI API key validated: ${hashForLogging(cleanKey)}`);
+            } else {
+                console.warn('[SECURITY] Invalid OpenAI API key format rejected');
+                return res.status(400).json({
+                    success: false,
+                    error: 'Invalid OpenAI API key format. Must start with sk- and be 40-100 characters.'
+                });
+            }
         }
         
-        if (envContent) {
-            fs.writeFileSync(ENV_FILE, envContent, 'utf8');
-            res.json({ success: true, message: 'API keys saved successfully' });
-        } else {
-            res.status(400).json({ success: false, error: 'No API keys provided' });
+        // Validate and sanitize Anthropic key
+        if (anthropic && anthropic.trim()) {
+            const cleanKey = anthropic.trim();
+            if (validateApiKey(cleanKey, 'anthropic')) {
+                envContent += `ANTHROPIC_API_KEY=${cleanKey}\n`;
+                validKeys++;
+                console.log(`[SECURITY] Anthropic API key validated: ${hashForLogging(cleanKey)}`);
+            } else {
+                console.warn('[SECURITY] Invalid Anthropic API key format rejected');
+                return res.status(400).json({
+                    success: false,
+                    error: 'Invalid Anthropic API key format. Must start with sk-ant-.'
+                });
+            }
         }
+        
+        // Validate and sanitize Digital Ocean token
+        if (digitalocean && digitalocean.trim()) {
+            const cleanKey = digitalocean.trim();
+            if (validateApiKey(cleanKey, 'digitalocean')) {
+                envContent += `DIGITALOCEAN_API_TOKEN=${cleanKey}\n`;
+                validKeys++;
+                console.log(`[SECURITY] Digital Ocean token validated: ${hashForLogging(cleanKey)}`);
+            } else {
+                console.warn('[SECURITY] Invalid Digital Ocean token format rejected');
+                return res.status(400).json({
+                    success: false,
+                    error: 'Invalid Digital Ocean token format. Must start with dop_v1_.'
+                });
+            }
+        }
+        
+        if (validKeys === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'No valid API keys provided'
+            });
+        }
+        
+        // Write with restricted permissions (owner read/write only)
+        fs.writeFileSync(ENV_FILE, envContent, {
+            encoding: 'utf8',
+            mode: 0o600  // -rw-------
+        });
+        
+        console.log(`[SECURITY] ${validKeys} API key(s) saved securely to ${ENV_FILE}`);
+        res.json({
+            success: true,
+            message: `${validKeys} API key(s) saved successfully`,
+            keysStored: validKeys
+        });
+        
     } catch (error) {
-        console.error('Error saving API keys:', error);
-        res.status(500).json({ success: false, error: error.message });
+        console.error('[SECURITY] Error saving API keys:', error.message);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to save API keys. Please check server logs.'
+        });
     }
 });
 
@@ -425,29 +580,46 @@ app.get('/api/config/test-connection', async (req, res) => {
 app.post('/api/standalone/execute', (req, res) => {
     try {
         const { tool, command } = req.body;
+        
+        // SECURITY: Validate tool name
+        if (!validateToolName(tool)) {
+            console.warn(`[SECURITY] Invalid tool name rejected: ${tool}`);
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid tool name'
+            });
+        }
+        
+        // SECURITY: Sanitize command
+        const sanitizedCmd = sanitizeCommand(command);
+        if (sanitizedCmd !== command) {
+            console.warn(`[SECURITY] Command sanitized from "${command}" to "${sanitizedCmd}"`);
+        }
+        
+        console.log(`[SECURITY] Executing standalone tool: ${tool} ${sanitizedCmd}`);
+        
         let output = '';
         let cmd = '';
         
         switch(tool) {
             case 'cybercat':
-                const cybercatPath = path.join(__dirname, '..', 'cybercat-standalone');
-                cmd = `cd "${cybercatPath}" && node cybercat.js ${command}`;
+                const cybercatPath = sanitizePath(path.join(__dirname, '..', 'cybercat-standalone'));
+                cmd = `cd "${cybercatPath}" && node cybercat.js ${sanitizedCmd}`;
                 break;
                 
             case 'scanner':
-                const scannerPath = path.join(__dirname, '..', 'cybercat-scanner');
-                cmd = `cd "${scannerPath}" && node scanner.js ${command}`;
+                const scannerPath = sanitizePath(path.join(__dirname, '..', 'cybercat-scanner'));
+                cmd = `cd "${scannerPath}" && node scanner.js ${sanitizedCmd}`;
                 break;
                 
             case 'langgraph':
-                if (command === 'docs') {
-                    res.json({
+                if (sanitizedCmd === 'docs') {
+                    return res.json({
                         success: true,
                         output: 'Opening API documentation...',
                         redirect: 'http://localhost:8000/docs'
                     });
-                    return;
-                } else if (command === 'health') {
+                } else if (sanitizedCmd === 'health') {
                     cmd = 'curl -s http://localhost:8000/health';
                 } else {
                     cmd = 'curl -s http://localhost:8000/api/report';
@@ -455,27 +627,38 @@ app.post('/api/standalone/execute', (req, res) => {
                 break;
                 
             default:
-                res.status(400).json({ success: false, error: 'Unknown tool' });
-                return;
+                return res.status(400).json({ success: false, error: 'Unknown tool' });
         }
         
         try {
             output = execSync(cmd, {
                 encoding: 'utf8',
                 timeout: 30000,
-                maxBuffer: 1024 * 1024 * 10
+                maxBuffer: 1024 * 1024 * 10,
+                windowsHide: true  // Security: Hide command window
             });
-            res.json({ success: true, output: output || 'Command executed successfully' });
+            
+            res.json({
+                success: true,
+                output: output || 'Command executed successfully',
+                tool: tool,
+                command: sanitizedCmd
+            });
+            
         } catch (execError) {
+            console.error(`[SECURITY] Tool execution error: ${execError.message}`);
             res.json({
                 success: false,
-                error: execError.message,
+                error: 'Tool execution failed',
                 output: execError.stdout || execError.stderr || 'Execution failed'
             });
         }
     } catch (error) {
-        console.error('Error executing standalone tool:', error);
-        res.status(500).json({ success: false, error: error.message });
+        console.error('[SECURITY] Error in standalone tool execution:', error.message);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
     }
 });
 
