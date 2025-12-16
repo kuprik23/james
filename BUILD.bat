@@ -2,17 +2,17 @@
 setlocal enabledelayedexpansion
 
 :: ============================================
-:: James AI - Production Build Script
+:: CyberCAT Security Platform - Production Build Script
 :: ============================================
 
 color 0A
-title James AI - Production Build
+title CyberCAT - Production Build
 
 echo.
 echo ╔═══════════════════════════════════════════════════════════════╗
 echo ║                                                               ║
 echo ║      /\_____/\                                                ║
-echo ║     /  o   o  \     JAMES AI v2.0                            ║
+echo ║     /  o   o  \     CYBERCAT v2.0                            ║
 echo ║    ( ==  ^  == )    Production Build System                  ║
 echo ║     )         (     ═══════════════════════════════════      ║
 echo ║    (           )                                              ║
@@ -24,7 +24,7 @@ echo.
 
 :: Create build log
 set BUILDLOG=%CD%\build-log.txt
-echo James AI Production Build Log > %BUILDLOG%
+echo CyberCAT Security Platform - Production Build Log > %BUILDLOG%
 echo Started: %date% %time% >> %BUILDLOG%
 echo. >> %BUILDLOG%
 
@@ -119,9 +119,9 @@ copy digitalocean-mcp\.env.example dist\ >nul
 copy langgraph-agent\.env.example dist\ >nul
 
 :: Create distribution README
-echo # James AI Security Platform - Distribution Package > dist\README-DIST.md
+echo # CyberCAT Security Platform - Distribution Package > dist\README-DIST.md
 echo. >> dist\README-DIST.md
-echo This is the production-ready distribution of James AI. >> dist\README-DIST.md
+echo This is the production-ready distribution of CyberCAT. >> dist\README-DIST.md
 echo. >> dist\README-DIST.md
 echo ## Quick Start >> dist\README-DIST.md
 echo 1. Run INSTALL.bat as Administrator >> dist\README-DIST.md

@@ -1,7 +1,7 @@
 @echo off
 echo.
 echo ========================================
-echo    James AI - API Key Configuration
+echo    CyberCAT - API Key Configuration
 echo ========================================
 echo.
 echo This will help you configure API keys for:

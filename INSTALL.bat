@@ -2,17 +2,17 @@
 setlocal enabledelayedexpansion
 
 :: ============================================
-:: James AI Security System - Master Installer
+:: CyberCAT Security Platform - Master Installer
 :: ============================================
 
 color 0A
-title James AI Security System - Installation
+title CyberCAT Security Platform - Installation
 
 echo.
 echo ╔═══════════════════════════════════════════════════════════════╗
 echo ║                                                               ║
 echo ║      /\_____/\                                                ║
-echo ║     /  o   o  \     JAMES AI v2.0                            ║
+echo ║     /  o   o  \     CYBERCAT v2.0                            ║
 echo ║    ( ==  ^  == )    Master Installer                          ║
 echo ║     )         (     ═══════════════════════════════════      ║
 echo ║    (           )                                              ║
@@ -21,7 +21,7 @@ echo ║  (__(__)___(__)__)                                            ║
 echo ║                                                               ║
 echo ╚═══════════════════════════════════════════════════════════════╝
 echo.
-echo Starting installation process...
+echo Starting CyberCAT installation...
 echo.
 
 :: Check for Administrator privileges
@@ -35,7 +35,7 @@ if %errorLevel% NEQ 0 (
 
 :: Create log file
 set LOGFILE=%CD%\install-log.txt
-echo James AI Installation Log > %LOGFILE%
+echo CyberCAT Security Platform Installation Log > %LOGFILE%
 echo Started: %date% %time% >> %LOGFILE%
 echo. >> %LOGFILE%
 
