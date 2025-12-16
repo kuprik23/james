@@ -1,0 +1,3 @@
+@echo off
+echo Starting CyberCAT Scanner...
+node scanner.js %*

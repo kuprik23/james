@@ -15,7 +15,7 @@
 
 ## Overview
 
-CyberCAT Scanner is a Java-based vulnerability scanning tool that provides:
+CyberCAT Scanner is a Node.js-based vulnerability scanning tool that provides:
 - **Port Scanning** - Detect open ports and identify risky services
 - **SSL/TLS Analysis** - Check certificate validity and cipher strength
 - **Local Security Sweep** - Analyze local system security posture
@@ -23,30 +23,27 @@ CyberCAT Scanner is a Java-based vulnerability scanning tool that provides:
 
 ## Requirements
 
-- Java 11 or higher
+- Node.js 14 or higher
 - Windows, Linux, or macOS
 
 ## Quick Start
 
-### Build
-```bash
-# Using Maven
-mvn clean package
-
-# Or using the build script (Windows)
-build.bat
-```
-
-### Run
+### Run Directly
 ```bash
 # Interactive mode
-java -jar target/cybercat-scanner-1.0.0.jar
+node scanner.js
 
 # Or use the launcher (Windows)
-cybercat.bat
+run-scanner.bat
 
 # Command line mode
-java -jar target/cybercat-scanner-1.0.0.jar --scan example.com
+node scanner.js scan example.com
+```
+
+### Install Globally (Optional)
+```bash
+npm install -g .
+cybercat-scanner scan example.com
 ```
 
 ## Commands
@@ -97,22 +94,18 @@ Scans 24 common ports including:
 - Memory status analysis
 - Localhost port scan
 
-## Creating an Executable
+## Creating an Executable (Optional)
 
-### Windows EXE
+You can use `pkg` to create standalone executables:
+
 ```bash
-# Run the EXE creator script
-create-exe.bat
+npm install -g pkg
+pkg scanner.js --targets node18-win-x64 --output dist/CyberCAT-Scanner.exe
 ```
 
-This creates:
-- `dist/CyberCAT.exe` - Windows executable
-- `dist/CyberCAT.bat` - Batch launcher
-- `dist/cybercat-scanner-1.0.0.jar` - JAR file
-
-### Manual JAR Execution
+Or simply run directly with Node.js:
 ```bash
-java -jar cybercat-scanner-1.0.0.jar
+node scanner.js
 ```
 
 ## Example Output
@@ -147,6 +140,10 @@ Based on scan results, CyberCAT provides recommendations:
 ## Integration with CyberCAT Hub
 
 This scanner can be used standalone or integrated with the CyberCAT Hub web interface for a complete security command center.
+
+## Legacy Java Version
+
+The original Java version is still available in this directory. The Node.js version provides the same functionality without requiring Java/Maven installation.
 
 ## License
 

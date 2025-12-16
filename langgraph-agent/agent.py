@@ -14,8 +14,7 @@ from enum import Enum
 
 from dotenv import load_dotenv
 from langgraph.graph import StateGraph, END
-from langgraph.prebuilt import ToolExecutor
-from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, SystemMessage
+from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, SystemMessage, ToolMessage
 from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
@@ -500,8 +499,6 @@ def create_agent():
         }
     
     # Define the tool execution node
-    tool_executor = ToolExecutor(tools)
-    
     def tool_node(state: AgentState) -> AgentState:
         """Execute tools based on agent decisions"""
         messages = state["messages"]
@@ -510,32 +507,32 @@ def create_agent():
         if not hasattr(last_message, 'tool_calls') or not last_message.tool_calls:
             return state
         
-        tool_results = []
+        # Create a mapping of tool names to tool functions
+        tool_map = {tool.name: tool for tool in tools}
+        
+        # Execute each tool call
+        new_messages = list(messages)
         for tool_call in last_message.tool_calls:
             tool_name = tool_call["name"]
             tool_args = tool_call["args"]
             
             # Find and execute the tool
-            for t in tools:
-                if t.name == tool_name:
-                    result = t.invoke(tool_args)
-                    tool_results.append({
-                        "tool": tool_name,
-                        "result": result
-                    })
-                    break
-        
-        # Add tool results to messages
-        from langchain_core.messages import ToolMessage
-        new_messages = list(messages)
-        for i, tool_call in enumerate(last_message.tool_calls):
-            if i < len(tool_results):
-                new_messages.append(
-                    ToolMessage(
-                        content=tool_results[i]["result"],
-                        tool_call_id=tool_call["id"]
+            if tool_name in tool_map:
+                try:
+                    result = tool_map[tool_name].invoke(tool_args)
+                    new_messages.append(
+                        ToolMessage(
+                            content=str(result),
+                            tool_call_id=tool_call["id"]
+                        )
                     )
-                )
+                except Exception as e:
+                    new_messages.append(
+                        ToolMessage(
+                            content=f"Error executing tool: {str(e)}",
+                            tool_call_id=tool_call["id"]
+                        )
+                    )
         
         return {
             **state,

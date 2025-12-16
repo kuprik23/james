@@ -1,0 +1,28 @@
+{
+  "name": "cybercat-scanner",
+  "version": "2.0.0",
+  "description": "CyberCAT Scanner - Military-Grade Vulnerability Scanner (Node.js Edition)",
+  "main": "scanner.js",
+  "bin": {
+    "cybercat-scanner": "./scanner.js"
+  },
+  "scripts": {
+    "start": "node scanner.js",
+    "scan": "node scanner.js scan",
+    "sweep": "node scanner.js sweep"
+  },
+  "keywords": [
+    "security",
+    "vulnerability",
+    "scanner",
+    "port-scan",
+    "ssl",
+    "tls",
+    "cybersecurity"
+  ],
+  "author": "James AI Security Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
