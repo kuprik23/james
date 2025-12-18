@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>James Ultimate - Unified Security Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            grid-template-rows: 60px 1fr;
+            height: 100vh;
+            gap: 0;
+        }
+        
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            font-size: 32px;
+        }
+        
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-indicator.active {
+            background: #00ff00;
+        }
+        
+        .status-indicator.inactive {
+            background: #ff0000;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-right: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-item {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-left: 4px solid #00ff00;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .portal {
+            display: none;
+        }
+        
+        .portal.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .card-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Paul AI Interface */
+        .paul-container {
+            display: grid;
+            grid-template-rows: 1fr auto;
+            height: calc(100vh - 140px);
+            gap: 20px;
+        }
+        
+        .chat-messages {
+            overflow-y: auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+        
+        .message {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+        
+        .message.user {
+            background: rgba(102, 126, 234, 0.3);
+            margin-left: auto;
+        }
+        
+        .message.assistant {
+            background: rgba(118, 75, 162, 0.3);
+        }
+        
+        .message.system {
+            background: rgba(255, 255, 255, 0.1);
+            text-align: center;
+            max-width: 100%;
+            font-style: italic;
+        }
+        
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 15px;
+            border-radius: 25px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-size: 16px;
+        }
+        
+        .send-button {
+            padding: 15px 30px;
+            border-radius: 25px;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .send-button:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Scanner Portal */
+        .scanner-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .scan-status {
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .scan-status.running {
+            border-left: 4px solid #ffaa00;
+        }
+        
+        .scan-status.completed {
+            border-left: 4px solid #00ff00;
+        }
+        
+        .scan-status.failed {
+            border-left: 4px solid #ff0000;
+        }
+        
+        /* Agentic Portal */
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .agent-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .agent-card:hover {
+            transform: translateY(-5px);
+            border-color: #00ff00;
+            box-shadow: 0 10px 30px rgba(0, 255, 0, 0.3);
+        }
+        
+        .agent-card.active {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        .agent-icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .agent-name {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        
+        .agent-desc {
+            font-size: 14px;
+            text-align: center;
+            opacity: 0.8;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #00ff00;
+            color: #000;
+        }
+        
+        .btn-danger {
+            background: #ff0000;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        /* Loading spinner */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #ffffff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <span class="logo-icon">🛡️</span>
+                <span>JAMES ULTIMATE</span>
+            </div>
+            <div class="status-bar">
+                <div class="status-item">
+                    <div class="status-indicator active"></div>
+                    <span id="scanner-status">Scanner: Active</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-indicator active"></div>
+                    <span id="ai-status">AI: Ready</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-indicator active"></div>
+                    <span id="mcp-status">MCP: Connected</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="nav-item active" data-portal="paul">
+                <span class="nav-icon">🤖</span>
+                <span>Paul AI Assistant</span>
+            </div>
+            <div class="nav-item" data-portal="scanner">
+                <span class="nav-icon">🔍</span>
+                <span>Scanner Portal</span>
+            </div>
+            <div class="nav-item" data-portal="agents">
+                <span class="nav-icon">👥</span>
+                <span>Agentic Portal</span>
+            </div>
+            <div class="nav-item" data-portal="monitoring">
+                <span class="nav-icon">📊</span>
+                <span>Live Monitoring</span>
+            </div>
+            <div class="nav-item" data-portal="tools">
+                <span class="nav-icon">🔧</span>
+                <span>Security Tools</span>
+            </div>
+            <div class="nav-item" data-portal="settings">
+                <span class="nav-icon">⚙️</span>
+                <span>Settings</span>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Paul AI Portal -->
+            <div id="paul-portal" class="portal active">
+                <div class="card">
+                    <div class="card-header">
+                        <span>🤖 Paul - Your AI Security Assistant</span>
+                        <div style="display: flex; gap: 10px;">
+                            <select id="agent-select" class="btn btn-primary" style="padding: 8px;">
+                                <option value="security-analyst">🔒 Security Analyst</option>
+                                <option value="network-guardian">🌐 Network Guardian</option>
+                                <option value="threat-hunter">🎯 Threat Hunter</option>
+                                <option value="code-security">💻 Code Security</option>
+                            </select>
+                            <select id="llm-select" class="btn btn-primary" style="padding: 8px;">
+                                <option value="ollama">🏠 Ollama (Local)</option>
+                                <option value="openai">☁️ OpenAI</option>
+                                <option value="anthropic">☁️ Anthropic</option>
+                                <option value="groq">⚡ Groq</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="paul-container">
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="message system">
+                                👋 Hello! I'm Paul, your AI security assistant powered by MCP. I can help you with:
+                                <br><br>
+                                • Real-time threat analysis
+                                • Security scanning and monitoring
+                                • Vulnerability assessments  
+                                • Incident response guidance
+                                • IoT device security
+                                <br><br>
+                                Connected to: <strong id="mcp-tools-count">5</strong> MCP tools
+                            </div>
+                        </div>
+                        <div class="chat-input-container">
+                            <input type="text" class="chat-input" id="chat-input" placeholder="Ask Paul anything about security..." />
+                            <button class="send-button" id="send-button">Send 🚀</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Scanner Portal -->
+            <div id="scanner-portal" class="portal">
+                <div class="card">
+                    <div class="card-header">
+                        <span>🔍 Background Security Scanner</span>
+                        <div>
+                            <button class="btn btn-success" id="start-scanner">▶️ Start</button>
+                            <button class="btn btn-danger" id="stop-scanner">⏸️ Stop</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Scanner Stats -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Scans</div>
+                            <div class="stat-value" id="total-scans">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Threats Found</div>
+                            <div class="stat-value" style="color: #ff4444;" id="threats-found">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Active Tasks</div>
+                            <div class="stat-value" style="color: #00ff00;" id="active-tasks">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Uptime</div>
+                            <div class="stat-value" id="uptime">0h 0m</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Active Scans -->
+                <div class="card">
+                    <div class="card-header">📋 Scheduled Scans</div>
+                    <div id="scan-tasks"></div>
+                </div>
+                
+                <!-- Recent Findings -->
+                <div class="card">
+                    <div class="card-header">⚠️ Recent Findings</div>
+                    <div id="recent-findings"></div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="scanner-grid">
+                    <div class="card">
+                        <div class="card-header">⚡ Quick Scan</div>
+                        <button class="btn btn-primary" style="width: 100%; margin: 5px 0;" onclick="runQuickScan('port')">Port Scan</button>
+                        <button class="btn btn-primary" style="width: 100%; margin: 5px 0;" onclick="runQuickScan('system')">System Analysis</button>
+                        <button class="btn btn-primary" style="width: 100%; margin: 5px 0;" onclick="runQuickScan('vuln')">Vulnerability Scan</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Agentic Portal -->
+            <div id="agents-portal" class="portal">
+                <div class="card">
+                    <div class="card-header">👥 AI Security Agents</div>
+                    <div class="agents-grid" id="agents-grid"></div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">🎯 Active Agent Details</div>
+                    <div id="agent-details">
+                        <p>Select an agent to see details</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Live Monitoring Portal -->
+            <div id="monitoring-portal" class="portal">
+                <div class="card">
+                    <div class="card-header">📊 Real-Time System Monitoring</div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">CPU Usage</div>
+                            <div class="stat-value" id="cpu-usage">0%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Memory Usage</div>
+                            <div class="stat-value" id="memory-usage">0%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Network Connections</div>
+                            <div class="stat-value" id="network-connections">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Open Ports</div>
+                            <div class="stat-value" id="open-ports">0</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">🔐 Security Status</div>
+                    <div id="security-status"></div>
+                </div>
+            </div>
+            
+            <!-- Tools Portal -->
+            <div id="tools-portal" class="portal">
+                <div class="card">
+                    <div class="card-header">🔧 Available Security Tools</div>
+                    <div id="tools-list"></div>
+                </div>
+            </div>
+            
+            <!-- Settings Portal -->
+            <div id="settings-portal" class="portal">
+                <div class="card">
+                    <div class="card-header">⚙️ Configuration</div>
+                    <h3>MCP Server Configuration</h3>
+                    <div style="margin: 20px 0;">
+                        <label>MCP Server URL:</label>
+                        <input type="text" class="chat-input" id="mcp-url" value="http://localhost:3000" style="width: 100%; margin: 10px 0;" />
+                    </div>
+                    <div style="margin: 20px 0;">
+                        <label>Scanner Settings:</label>
+                        <div style="margin: 10px 0;">
+                            <input type="checkbox" id="auto-scan" checked /> Auto-start background scanning
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <input type="checkbox" id="java-acceleration" checked /> Enable Java acceleration
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <input type="checkbox" id="rust-crypto" checked /> Enable Rust cryptography
+                        </div>
+                    </div>
+                    <button class="btn btn-success">💾 Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let currentPortal = 'paul';
+        let agents = [];
+        let activeAgent = 'security-analyst';
+        
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const portal = item.dataset.portal;
+                switchPortal(portal);
+            });
+        });
+        
+        function switchPortal(portalName) {
+            // Update nav
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.querySelector(`[data-portal="${portalName}"]`).classList.add('active');
+            
+            // Update portals
+            document.querySelectorAll('.portal').forEach(p => p.classList.remove('active'));
+            document.getElementById(`${portalName}-portal`).classList.add('active');
+            
+            currentPortal = portalName;
+            
+            // Load portal data
+            if (portalName === 'scanner') loadScannerData();
+            if (portalName === 'agents') loadAgentsData();
+            if (portalName === 'monitoring') startMonitoring();
+            if (portalName === 'tools') loadToolsData();
+        }
+        
+        // Paul AI Chat
+        const chatInput = document.getElementById('chat-input');
+        const sendButton = document.getElementById('send-button');
+        const chatMessages = document.getElementById('chat-messages');
+        
+        sendButton.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+        
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            // Add user message
+            addMessage('user', message);
+            chatInput.value = '';
+            
+            // Show typing indicator
+            const typingId = addMessage('system', '⏳ Paul is thinking...');
+            
+            try {
+                // Send to server with MCP context
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        message,
+                        agent: activeAgent,
+                        mcp: true // Enable MCP tools
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Remove typing indicator
+                document.getElementById(typingId)?.remove();
+                
+                // Add assistant response
+                addMessage('assistant', data.response || data.error);
+                
+            } catch (error) {
+                document.getElementById(typingId)?.remove();
+                addMessage('system', '❌ Error: ' + error.message);
+            }
+        }
+        
+        function addMessage(role, content) {
+            const id = `msg-${Date.now()}`;
+            const div = document.createElement('div');
+            div.id = id;
+            div.className = `message ${role}`;
+            div.innerHTML = content;
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return id;
+        }
+        
+        // Scanner Portal Functions
+        async function loadScannerData() {
+            try {
+                const response = await fetch('/api/scanner/tasks');
+                const tasks = await response.json();
+                displayScanTasks(tasks);
+                
+                const statsResponse = await fetch('/api/scanner/stats');
+                const stats = await statsResponse.json();
+                updateScannerStats(stats);
+            } catch (error) {
+                console.error('Failed to load scanner data:', error);
+            }
+        }
+        
+        function displayScanTasks(tasks) {
+            const container = document.getElementById('scan-tasks');
+            container.innerHTML = tasks.map(task => `
+                <div class="scan-status ${task.status}">
+                    <div>
+                        <strong>${task.type}</strong><br>
+                        <small>${task.target} - ${task.schedule}</small>
+                    </div>
+                    <div>${task.status}</div>
+                </div>
+            `).join('');
+        }
+        
+        function updateScannerStats(stats) {
+            document.getElementById('total-scans').textContent = stats.totalScans;
+            document.getElementById('threats-found').textContent = stats.threatsFound;
+            document.getElementById('active-tasks').textContent = stats.activeTasks;
+            
+            const uptime = Math.floor(stats.uptime / 1000 / 60);
+            const hours = Math.floor(uptime / 60);
+            const minutes = uptime % 60;
+            document.getElementById('uptime').textContent = `${hours}h ${minutes}m`;
+        }
+        
+        // Agents Portal Functions
+        async function loadAgentsData() {
+            try {
+                const response = await fetch('/api/agents');
+                agents = await response.json();
+                displayAgents(agents);
+            } catch (error) {
+                console.error('Failed to load agents:', error);
+            }
+        }
+        
+        function displayAgents(agents) {
+            const grid = document.getElementById('agents-grid');
+            grid.innerHTML = agents.map(agent => `
+                <div class="agent-card ${agent.isActive ? 'active' : ''}" onclick="selectAgent('${agent.id}')">
+                    <div class="agent-icon">${agent.icon}</div>
+                    <div class="agent-name">${agent.name}</div>
+                    <div class="agent-desc">${agent.description}</div>
+                </div>
+            `).join('');
+        }
+        
+        async function selectAgent(agentId) {
+            try {
+                await fetch('/api/agents/switch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ agentId })
+                });
+                
+                activeAgent = agentId;
+                await loadAgentsData();
+                
+                // Show notification
+                addMessage('system', `✅ Switched to ${agentId} agent`);
+                switchPortal('paul');
+                
+            } catch (error) {
+                console.error('Failed to switch agent:', error);
+            }
+        }
+        
+        // Scanner Control
+        document.getElementById('start-scanner').addEventListener('click', async () => {
+            try {
+                await fetch('/api/scanner/start', { method: 'POST' });
+                addMessage('system', '✅ Background scanner started');
+            } catch (error) {
+                addMessage('system', '❌ Failed to start scanner: ' + error.message);
+            }
+        });
+        
+        document.getElementById('stop-scanner').addEventListener('click', async () => {
+            try {
+                await fetch('/api/scanner/stop', { method: 'POST' });
+                addMessage('system', '⚠️ Background scanner stopped');
+            } catch (error) {
+                addMessage('system', '❌ Failed to stop scanner: ' + error.message);
+            }
+        });
+        
+        // Quick Scan Functions
+        async function runQuickScan(type) {
+            addMessage('system', `🔍 Running ${type} scan...`);
+            
+            try {
+                const response = await fetch('/api/scanner/quick-scan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type })
+                });
+                
+                const result = await response.json();
+                addMessage('system', `✅ ${type} scan completed!`);
+                addMessage('assistant', JSON.stringify(result, null, 2));
+                
+            } catch (error) {
+                addMessage('system', `❌ Scan failed: ${error.message}`);
+            }
+        }
+        
+        // WebSocket Events
+        socket.on('scan-started', (data) => {
+            console.log('Scan started:', data);
+            loadScannerData();
+        });
+        
+        socket.on('scan-completed', (data) => {
+            console.log('Scan completed:', data);
+            loadScannerData();
+            
+            // Notify in chat if threats found
+            const threats = extractThreats(data.result);
+            if (threats > 0) {
+                addMessage('system', `⚠️ Background scan found ${threats} threats!`);
+            }
+        });
+        
+        socket.on('threats-found', (data) => {
+            addMessage('system', `🚨 ALERT: ${data.count} threats detected in ${data.taskId}!`);
+        });
+        
+        socket.on('scanner-stats', (stats) => {
+            updateScannerStats(stats);
+        });
+        
+        function extractThreats(result) {
+            if (!result) return 0;
+            return (result.threatsFound || 0) + (result.vulnerabilityCount || 0);
+        }
+        
+        // Initialize
+        async function initialize() {
+            // Load agents
+            await loadAgentsData();
+            
+            // Start background scanner
+            try {
+                await fetch('/api/scanner/start', { method: 'POST' });
+                console.log('Background scanner started');
+            } catch (error) {
+                console.warn('Failed to auto-start scanner:', error);
+            }
+            
+            // Update stats every 5 seconds
+            setInterval(async () => {
+                if (currentPortal === 'scanner') {
+                    await loadScannerData();
+                }
+            }, 5000);
+        }
+        
+        // Start on load
+        initialize();
+    </script>
+</body>
+</html>

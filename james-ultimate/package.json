@@ -1,18 +1,32 @@
 {
   "name": "james-ultimate",
   "version": "2.0.0",
-  "description": "James Ultimate - AI-Powered Cybersecurity Platform with Multi-LLM Support",
-  "main": "src/main.js",
+  "description": "James Ultimate - AI-Powered Cybersecurity Platform with Multi-LLM Support (TypeScript + Java)",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
   "bin": {
-    "james": "./src/main.js"
+    "james": "./dist/main.js"
   },
   "scripts": {
-    "start": "node src/main.js",
-    "server": "node src/server.js",
-    "dev": "nodemon src/main.js",
-    "build": "pkg . --targets node18-win-x64 --output dist/James.exe",
-    "build-all": "pkg . --targets node18-win-x64,node18-macos-x64,node18-linux-x64 --out-path dist",
-    "test": "jest"
+    "start": "node dist/main.js",
+    "server": "node dist/server.js",
+    "dev": "nodemon --exec ts-node src/main.ts",
+    "dev:server": "nodemon --exec ts-node src/server.ts",
+    "build": "npm run build:ts && npm run build:java && npm run build:kotlin && npm run build:rust && npm run build:cpp",
+    "build:ts": "tsc",
+    "build:java": "cd java-scanner && mvn clean package",
+    "build:kotlin": "cd kotlin-scanner && gradle build",
+    "build:rust": "cd rust-crypto && cargo build --release",
+    "build:cpp": "cd cpp-scanner && cmake -B build -S . && cmake --build build --config Release",
+    "build:exe": "pkg dist/main.js --targets node18-win-x64 --output dist/James.exe",
+    "build-all": "npm run build && pkg dist/main.js --targets node18-win-x64,node18-macos-x64,node18-linux-x64 --out-path dist",
+    "clean": "rimraf dist && cd java-scanner && mvn clean && cd ../kotlin-scanner && gradle clean && cd ../rust-crypto && cargo clean && cd ../cpp-scanner && rimraf build",
+    "watch": "tsc --watch",
+    "test": "jest",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "setup": "node setup-prerequisites.bat",
+    "check-deps": "node -e \"console.log('Checking dependencies...'); const deps = ['rustc', 'cargo', 'mvn', 'gradle', 'cmake', 'java', 'javac', 'kotlinc']; deps.forEach(d => { try { require('child_process').execSync(d + ' --version', {stdio: 'ignore'}); console.log('✓ ' + d); } catch(e) { console.log('✗ ' + d + ' (missing)'); } });\""
   },
   "pkg": {
     "assets": [
@@ -56,8 +70,24 @@
     "highlight.js": "^11.9.0",
     "open": "^8.4.2"
   },
+  "optionalDependencies": {
+    "java": "^0.14.0"
+  },
   "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/compression": "^1.7.5",
+    "@types/inquirer": "^9.0.7",
+    "@types/chalk": "^2.2.0",
+    "@types/ws": "^8.5.10",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "typescript": "^5.3.2",
+    "ts-node": "^10.9.2",
+    "eslint": "^8.54.0",
     "pkg": "^5.8.1",
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.0.2",
+    "rimraf": "^5.0.5"
   }
 }

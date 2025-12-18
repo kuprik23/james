@@ -20,15 +20,21 @@ Creates `dist/James.exe` that can run anywhere.
 
 ### 🤖 Multi-LLM Support
 Switch between AI providers on the fly:
-- **OpenAI** (GPT-4, GPT-3.5)
-- **Anthropic** (Claude 3)
-- **Ollama** (Local - Llama, Mistral, etc.)
-- **Groq** (Fast inference)
+- **OpenAI** (GPT-4, GPT-3.5, GPT-4o)
+- **Anthropic** (Claude 3 Opus, Sonnet, Haiku)
+- **Ollama** (Local - Llama, Mistral, CodeLlama, etc.)
+- **KoboldAI** (Local - Privacy-focused, Custom models) ⭐ NEW
+- **Groq** (Ultra-fast inference)
 - **Google** (Gemini)
 - **Azure OpenAI**
 - **Together AI**
 - **OpenRouter**
 - **LM Studio** (Local)
+
+**Privacy-First Options:**
+- 🔒 **Ollama** - Easy local deployment
+- 🔒 **KoboldAI** - Advanced local AI with custom model support
+- 🔒 Both run 100% offline with no data sent to cloud
 
 ### 🔒 Security Agents
 Specialized AI agents for different security tasks:
@@ -137,6 +143,20 @@ OLLAMA_HOST=http://localhost:11434
 2. Pull a model: `ollama pull llama2`
 3. James will automatically detect Ollama
 
+### Using KoboldAI (Advanced Local AI)
+1. Download KoboldCpp: https://github.com/LostRuins/koboldcpp/releases
+2. Load your preferred GGUF model (Mistral, CodeLlama, etc.)
+3. Start on port 5001 (default)
+4. Switch in James: `/llm switch koboldai`
+5. See [`KOBOLDAI-INTEGRATION.md`](KOBOLDAI-INTEGRATION.md) for detailed setup
+
+**Why KoboldAI?**
+- ✅ Complete privacy and offline operation
+- ✅ Custom model support (GGUF, GGML)
+- ✅ Fine-tuning capabilities
+- ✅ No API costs
+- ✅ Community-driven models
+
 ## 📁 Project Structure
 
 ```
@@ -194,9 +214,29 @@ james-ultimate/
 
 ## 🛠️ Requirements
 
+### Core Requirements
 - **Node.js 18+** (https://nodejs.org)
-- **Windows 10/11** (for .exe build)
-- **Ollama** (optional, for local LLM)
+- **Java JDK 17+** (for Java security scanner)
+- **Apache Maven** (for building Java modules)
+
+### Optional for Full Features
+- **Rust** (for high-performance crypto)
+- **C++ Compiler** (MSVC/GCC for network scanner)
+- **CMake** (for C++ builds)
+
+### Optional AI Providers
+- **Ollama** (free, local LLM)
+- **KoboldAI/KoboldCpp** (advanced local AI)
+- API keys for cloud providers (OpenAI, Anthropic, etc.)
+
+### Quick Setup
+Run the automated installer:
+```cmd
+cd james-ultimate
+setup-prerequisites.bat
+```
+
+See [`PREREQUISITES-GUIDE.md`](PREREQUISITES-GUIDE.md) for detailed installation.
 
 ## 📜 License
 
@@ -205,6 +245,24 @@ MIT License
 ## 🤝 Contributing
 
 Contributions welcome! Please submit issues and pull requests.
+
+## 📚 Documentation
+
+- **[Quick Start Guide](QUICK-START.md)** - Get up and running in 5 minutes
+- **[Prerequisites Guide](PREREQUISITES-GUIDE.md)** - Complete installation guide
+- **[Multi-Language Integration](MULTI-LANGUAGE-INTEGRATION.md)** - Architecture details
+- **[KoboldAI Integration](KOBOLDAI-INTEGRATION.md)** - Local AI setup
+- **[Build Guide](BUILD.md)** - Building from source
+
+## 🏗️ Architecture
+
+James Ultimate uses a **multi-language architecture**:
+- **TypeScript/Node.js** - Core application, web server, API
+- **Java** - High-performance security scanning
+- **Rust** - Ultra-fast cryptographic operations
+- **C++** - Low-level network operations
+
+All seamlessly integrated for maximum performance and capability.
 
 ---
 
