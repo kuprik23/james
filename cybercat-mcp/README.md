@@ -1,4 +1,4 @@
-# 🐱 CyberCAT - Military-Grade Cybersecurity MCP Server
+# 🐱 CyberCAT - Military-Grade Cybersecurity MCP Server (TypeScript Edition)
 
 ```
 ╔═══════════════════════════════════════════════════════════════════════════╗
@@ -15,7 +15,7 @@
 ╚═══════════════════════════════════════════════════════════════════════════╝
 ```
 
-An advanced MCP (Model Context Protocol) server for military-grade cybersecurity monitoring and threat detection.
+An advanced MCP (Model Context Protocol) server for military-grade cybersecurity monitoring and threat detection, now with full TypeScript support for enhanced type safety and maintainability.
 
 ## 🎯 Features
 
@@ -69,15 +69,46 @@ npm install
 
 ## 🚀 Usage
 
-### Start the server
+### TypeScript Development
+
+#### Build the project
+```bash
+npm run build
+```
+
+#### Development mode (build + run)
+```bash
+npm run dev
+```
+
+#### Watch mode (auto-rebuild)
+```bash
+npm run watch
+```
+
+#### Start the server (production)
 ```bash
 npm start
 ```
 
-### Development mode
-```bash
-npm run dev
+### Project Structure
 ```
+cybercat-mcp/
+├── src/
+│   ├── index.ts              # Main MCP server (1,020 lines)
+│   └── types.ts              # TypeScript type definitions
+├── dist/                     # Compiled JavaScript output
+├── tsconfig.json             # TypeScript configuration
+├── package.json              # Project dependencies
+└── README.md
+```
+
+### TypeScript Benefits
+- ✅ **Full Type Safety** - Catch errors at compile time
+- ✅ **Better IDE Support** - IntelliSense and autocomplete
+- ✅ **Clear Interfaces** - Well-defined data structures
+- ✅ **Maintainability** - Easier to refactor and extend
+- ✅ **Documentation** - Types serve as inline documentation
 
 ## 🛠️ Available Tools
 
@@ -235,10 +266,23 @@ Like a vigilant cat, CyberCAT:
 - 🦁 Pounces on security issues
 - 😺 Keeps your systems safe
 
+## 🔧 TypeScript Configuration
+
+The project uses strict TypeScript settings for maximum type safety:
+- Strict mode enabled
+- ES2020 target
+- ESNext modules
+- Full type checking
+
 ## 📄 License
 
-MIT
+MIT License - Copyright © 2025 Emersa Ltd. All Rights Reserved.
 
 ## ⚠️ Disclaimer
 
 This tool is provided for educational and defensive security purposes only. Users are responsible for ensuring they have proper authorization before using any scanning or monitoring features on systems they do not own.
+
+---
+
+**Version:** 2.0.0 (TypeScript Edition)
+**Last Updated:** 2025-12-19

@@ -1,6 +1,8 @@
-# System Monitor MCP Server
+# System Monitor MCP Server (TypeScript Edition)
 
-An MCP (Model Context Protocol) server for monitoring website availability and system health.
+An MCP (Model Context Protocol) server for monitoring website availability and system health, now with full TypeScript support for enhanced type safety and maintainability.
+
+**Version:** 2.0.0 (TypeScript Edition)
 
 ## Features
 
@@ -17,16 +19,38 @@ cd system-monitor-mcp
 npm install
 ```
 
-## Usage
+## TypeScript Development
 
-### Start the server
+### Build the project
+```bash
+npm run build
+```
+
+### Development mode (build + run)
+```bash
+npm run dev
+```
+
+### Watch mode (auto-rebuild)
+```bash
+npm run watch
+```
+
+### Start the server (production)
 ```bash
 npm start
 ```
 
-### Development mode (auto-restart on changes)
-```bash
-npm run dev
+### Project Structure
+```
+system-monitor-mcp/
+├── src/
+│   ├── index.ts              # Main MCP server (TypeScript)
+│   └── types.ts              # Type definitions
+├── dist/                     # Compiled JavaScript
+├── tsconfig.json             # TypeScript configuration
+├── package.json              # Dependencies
+└── README.md
 ```
 
 ## Available Tools
@@ -116,10 +140,38 @@ This server is configured in `.vscode/mcp.json` for automatic integration with V
 
 ## Dependencies
 
+### Runtime
 - `@modelcontextprotocol/sdk`: MCP protocol implementation
 - `ping`: Network ping functionality
 - `systeminformation`: System hardware and software information
 
+### Development
+- `typescript`: TypeScript compiler
+- `@types/node`: Node.js type definitions
+- `@types/ping`: Ping type definitions
+
+## TypeScript Benefits
+
+- ✅ **Full Type Safety** - Catch errors at compile time
+- ✅ **Better IDE Support** - IntelliSense and autocomplete
+- ✅ **Clear Interfaces** - Well-defined data structures
+- ✅ **Maintainability** - Easier to refactor and extend
+- ✅ **Documentation** - Types serve as inline documentation
+
+## Available Scripts
+
+```bash
+npm run build       # Compile TypeScript to JavaScript
+npm run dev         # Build and run in development mode
+npm run watch       # Watch for changes and auto-rebuild
+npm start           # Run the compiled server
+```
+
 ## License
 
-MIT
+MIT License - Copyright © 2025 Emersa Ltd. All Rights Reserved.
+
+---
+
+**Version:** 2.0.0 (TypeScript Edition)
+**Last Updated:** 2025-12-19

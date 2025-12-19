@@ -1,19 +1,23 @@
 {
   "name": "system-monitor-mcp-server",
-  "version": "1.0.0",
-  "description": "MCP server for monitoring website and system status",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "MCP server for monitoring website and system status (TypeScript Edition)",
+  "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "dev": "node --watch index.js"
+    "build": "tsc",
+    "dev": "tsc && node dist/index.js",
+    "watch": "tsc --watch",
+    "start": "node dist/index.js",
+    "prestart": "npm run build"
   },
   "keywords": [
     "mcp",
     "monitoring",
     "website",
     "system",
-    "health-check"
+    "health-check",
+    "typescript"
   ],
   "author": "CYBERCAT",
   "license": "MIT",
@@ -21,5 +25,10 @@
     "@modelcontextprotocol/sdk": "^1.0.0",
     "ping": "^0.4.4",
     "systeminformation": "^5.21.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "@types/node": "^20.10.6",
+    "@types/ping": "^0.4.4"
   }
 }
