@@ -63,18 +63,16 @@ const colors = {
 // Utility functions
 function printBanner(): void {
   console.log(colors.primary(logo));
-  const license = licenseService.getLicense();
-  const stats = licenseService.getScanStatistics();
 
   console.log(boxen(
-    colors.highlight('AI-Powered Cybersecurity Analysis Tool') + '\n' +
+    colors.highlight('Cybersecurity Analysis Tool') + '\n' +
     colors.info(`Version ${version}`) + '\n' +
     colors.gray('━'.repeat(50)) + '\n' +
-    colors.white(`License: ${colors.primary(license.tier.toUpperCase())}`) + '\n' +
-    colors.white(`Today's Scans: ${colors.warning(`${stats.todayScans} / ${stats.dailyLimit}`)}`),
+    colors.white(`License: ${colors.success('MIT - Open Source')}`) + '\n' +
+    colors.white(`Scans: ${colors.success('Unlimited ✓')}`),
     { padding: 1, margin: 1, borderStyle: 'round', borderColor: 'cyan' }
   ));
-  console.log(colors.gray('Emersa Labs © 2025 | 4d@emersa.io\n'));
+  console.log(colors.gray('Emersa Labs © 2025 | MIT License\n'));
 }
 
 function formatBytes(bytes: number): string {
@@ -276,15 +274,8 @@ async function checkAntivirusStatus(): Promise<SecurityStatus['antivirus']> {
 async function generateSecurityReport(): Promise<SecurityReport | null> {
   printBanner();
 
-  // Check license and scan limit
-  const canScan = licenseService.canPerformScan();
-  if (!canScan.allowed) {
-    notificationManager.scanLimitReached(canScan.tier, licenseService.SCAN_LIMITS[canScan.tier]);
-    return null;
-  }
-
   console.log(colors.info('\n📊 Generating Comprehensive Security Report...\n'));
-  notificationManager.info(`Scans remaining today: ${canScan.remaining}`);
+  notificationManager.info('MIT License - Unlimited scans available!');
 
   const report: SecurityReport = {
     timestamp: new Date().toISOString(),
@@ -451,9 +442,6 @@ async function generateSecurityReport(): Promise<SecurityReport | null> {
   const reportPath = path.join(outputDir, `cybercat-report-${Date.now()}.json`);
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
   notificationManager.success(`Report saved to: ${reportPath}`);
-
-  // Record scan
-  licenseService.recordScan();
 
   return report;
 }
@@ -682,35 +670,31 @@ async function manageSettings(): Promise<void> {
   }
 }
 
-// Show Upgrade Options
+// Show About / MIT License Info
 function showUpgradeOptions(): void {
   const message = `
-${colors.primary('💎 CYBERCAT Pricing Tiers')}
+${colors.primary('🐱 CYBERCAT - Open Source')}
 
-${colors.warning('🆓 FREE (Current)')}
-  • Basic port scanning
-  • System information
-  • ${colors.error('1 scan per day')}
-
-${colors.success('💎 PRO - $29/month')}
+${colors.success('🆓 MIT License - Completely Free!')}
   ✓ Unlimited scans
-  ✓ AI threat analysis
-  ✓ Real-time monitoring
-  ✓ Export reports
-  ✓ Priority support
+  ✓ All features included
+  ✓ No restrictions
+  ✓ Modify and distribute freely
+  ✓ Use commercially without fees
 
-${colors.highlight('🏢 ENTERPRISE - $99/month')}
-  ✓ All Pro features
-  ✓ Custom integrations
-  ✓ Advanced analytics
-  ✓ Team collaboration
-  ✓ Dedicated account manager
+${colors.info('🚀 Want AI-Powered Analysis?')}
+  Try ${colors.primary('James Ultimate')} for:
+  ✓ Multi-LLM AI support
+  ✓ AI Security Agents
+  ✓ Web interface
+  ✓ IoT management
+  ✓ Advanced features
 
-${colors.white('📧 To Purchase:')}
-  Email: ${colors.primary('4d@emersa.io')}
-  Subject: ${colors.gray('CYBERCAT License Purchase - [Pro/Enterprise]')}
+${colors.white('📧 Contribute:')}
+  GitHub: ${colors.primary('https://github.com/kuprik23/james')}
+  Issues: ${colors.gray('Report bugs and request features')}
 
-${colors.gray('See LICENSE-PURCHASE.md for full details')}
+${colors.gray('Also MIT Licensed - Fully Open Source!')}
 `;
 
   console.log(boxen(message, {

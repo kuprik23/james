@@ -63,12 +63,12 @@ npm run build-all
 
 ## ✨ What's New in v2.0.0
 
-### 🔑 License System
-- **Free Tier**: 1 scan per day
-- **Pro Tier**: Unlimited scans + advanced features ($29/month)
-- **Enterprise Tier**: All features + priority support ($99/month)
-- Built-in license activation and management
-- Automatic scan limit enforcement
+### 🆓 Now Open Source - MIT License!
+- **Fully free and open source**
+- **No scan limits**
+- **No paid tiers**
+- **No license activation required**
+- **Community-driven development**
 
 ### ⚙️ Settings Management
 - Persistent settings storage
@@ -168,39 +168,21 @@ cybercat settings
 cybercat upgrade
 ```
 
-## 💰 Pricing & Licensing
+## 📜 License
 
-### 🆓 FREE Tier (Default)
-- **Price**: $0/month
-- **Features**:
-  - Basic port scanning
-  - System information gathering
-  - Simple vulnerability checks
-- **Limit**: 1 scan per day
+### MIT License - Fully Open Source
 
-### 💎 PRO Tier
-- **Price**: $29/month
-- **Features**:
-  - All Free features
-  - ✅ Unlimited scans
-  - ✅ AI-powered threat analysis
-  - ✅ Real-time monitoring
-  - ✅ Export reports
-  - ✅ Priority email support
+CyberCAT Standalone is now completely **free and open source** under the MIT License!
 
-### 🏢 ENTERPRISE Tier
-- **Price**: $99/month
-- **Features**:
-  - All Pro features
-  - ✅ Custom integrations
-  - ✅ Advanced analytics
-  - ✅ Team collaboration
-  - ✅ Dedicated account manager
-  - ✅ 24/7 priority support
+**What this means:**
+- ✅ Free to use for any purpose
+- ✅ No scan limits
+- ✅ No paid subscriptions
+- ✅ Modify and distribute freely
+- ✅ Use commercially without restrictions
+- ✅ No license keys required
 
-**To Purchase**: Email **4d@emersa.io** with subject "CYBERCAT License Purchase"
-
-See [`LICENSE-PURCHASE.md`](./LICENSE-PURCHASE.md) for detailed purchasing information.
+See the root [`LICENSE`](../LICENSE) file for full MIT license text.
 
 ## 📊 Output
 
@@ -335,18 +317,15 @@ cybercat license --status
 - ✅ Settings encrypted when sensitive
 - ✅ Full offline operation
 
-## 📜 License & Terms
+## 📜 License
 
-This software is proprietary and owned by **Emersa Ltd.**
+**MIT License** - Free and Open Source
 
-**Terms**:
-- Free tier: Unlimited use with daily scan limit
-- Pro/Enterprise: Requires valid paid license
-- License keys are non-transferable
-- See `TERMS-AND-CONDITIONS.txt` for full terms
-- See `LICENSE-PURCHASE.md` for purchasing information
+Copyright © 2025 Emersa Ltd.
 
-**Copyright © 2025 Emersa Ltd. All Rights Reserved.**
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so.
+
+See the root [`LICENSE`](../LICENSE) file for full MIT license text.
 
 ## 🤝 Contributing
 
@@ -354,14 +333,10 @@ Contributions welcome! Feel free to submit issues and pull requests.
 
 ## 📞 Support
 
-**For licensing inquiries:**
-- Email: 4d@emersa.io
-- Subject: CYBERCAT License Purchase
-
 **For technical support:**
-- Free tier: Community support
-- Pro tier: Email support (24h response)
-- Enterprise: Priority support (4h response) + phone
+- GitHub Issues: https://github.com/kuprik23/james/issues
+- Community support
+- Contributions welcome!
 
 ## 🔄 Updates
 
