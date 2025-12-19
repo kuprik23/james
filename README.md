@@ -9,57 +9,57 @@
    CYBERCAT v2.0
 ```
 
-# 🛡️ CYBERCAT Security Platform
-## Cyber Analysis & Threat Detection System
+🛡️ CYBERCAT Security Platform
+Cyber Analysis & Threat Detection System
 
-**Copyright © 2025 Emersa Ltd. All Rights Reserved.**
-**Made in California, USA 🇺🇸**
+Copyright © 2025 Emersa Ltd. All Rights Reserved.
+Made in California, USA
 
 A state-of-the-art, military-grade cybersecurity platform powered by artificial intelligence with comprehensive threat detection, malware protection, and real-time security monitoring.
 
 ---
 
-## 🚀 Quick Start (Plug & Play Installation)
+🚀 Quick Start (Plug & Play Installation)
 
-**CyberCAT Security Platform - Enterprise-Ready Cybersecurity Solution**
+CyberCAT Security Platform - Enterprise-Ready Cybersecurity Solution
 
-### Prerequisites
+Prerequisites
 
-**Required Software:**
-- **Node.js** 18.x or higher ([Download](https://nodejs.org/))
-- **Python** 3.9 or higher ([Download](https://www.python.org/downloads/))
-- **npm** (comes with Node.js)
-- **pip** (comes with Python)
+Required Software:
+- Node.js 18.x or higher ([Download](https://nodejs.org/))
+- Python 3.9 or higher ([Download](https://www.python.org/downloads/))
+- npm (comes with Node.js)
+- pip (comes with Python)
 
-**System Requirements:**
-- **Windows 10/11** (Recommended) or **Linux/macOS**
-- **4GB RAM** minimum (8GB recommended)
-- **2GB disk space** for installation
-- **Internet connection** for initial setup
+System Requirements:
+- Windows 10/11 (Recommended) or Linux/macOS
+- 4GB RAM minimum (8GB recommended)
+- 2GB disk space for installation
+- Internet connection for initial setup
 
-### One-Click Installation (Windows)
+One-Click Installation (Windows)
 
-1. **Download or Clone** the repository:
+1. Download or Clone the repository:
    ```bash
    git clone https://github.com/kuprik23/james.git
    cd james
    ```
 
-2. **Run the Installer** (Right-click → Run as Administrator):
+2. Run the Installer (Right-click → Run as Administrator):
    ```bash
    INSTALL.bat
    ```
 
-3. **Start James AI**:
+3. Start James AI:
    ```bash
    START-ALL.bat
    ```
 
-4. **Access the Interface**:
+4. Access the Interface:
    - Web GUI: http://localhost:3001
    - LangGraph API: http://localhost:8000/docs
 
-**That's it!** The installer will:
+That's it! The installer will:
 - ✅ Check all prerequisites
 - ✅ Install all dependencies automatically
 - ✅ Create configuration files
@@ -67,7 +67,7 @@ A state-of-the-art, military-grade cybersecurity platform powered by artificial 
 - ✅ Create desktop shortcuts (optional)
 - ✅ Guide you through API key configuration
 
-### Manual Installation
+Manual Installation
 
 If you prefer manual setup or are on Linux/macOS:
 
@@ -98,29 +98,29 @@ cd james-ultimate && node src/server.js &
 cd langgraph-agent && python server.py &
 ```
 
-### Configuration
+Configuration
 
-**Quick Config Tool:**
+Quick Config Tool:
 ```bash
 CONFIGURE.bat  # Windows
 # or
 configure-api-keys.bat
 ```
 
-**Manual Configuration:**
+Manual Configuration:
 - Edit [`langgraph-agent/.env`](langgraph-agent/.env) for LangGraph Agent API keys
 - Edit [`digitalocean-mcp/.env`](digitalocean-mcp/.env) for Digital Ocean token
 
-**Available Platforms:**
+Available Platforms:
 - Web Interface: http://localhost:3001 (Emersa GUI)
 - Main Platform: http://localhost:3000 (James Ultimate)
 - API Documentation: http://localhost:8000/docs (LangGraph Agent)
 
 ---
 
-## 🏗️ System Architecture
+🏗️ System Architecture
 
-### Core Components
+Core Components
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -167,99 +167,99 @@ configure-api-keys.bat
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Security Architecture
+Security Architecture
 
-#### 1. **Encryption Layer** (AES-256-GCM)
-- **Algorithm**: AES-256-GCM with unique IVs per encryption
-- **Key Derivation**: PBKDF2 with 100,000 iterations
-- **Use Cases**: 
+1. Encryption Layer (AES-256-GCM)
+- Algorithm: AES-256-GCM with unique IVs per encryption
+- Key Derivation: PBKDF2 with 100,000 iterations
+- Use Cases: 
   - API key storage
   - Sensitive configuration
   - Credential management
-- **Implementation**: [`james-ultimate/src/security/security-core.js`](james-ultimate/src/security/security-core.js)
+- Implementation: [`james-ultimate/src/security/security-core.js`](james-ultimate/src/security/security-core.js)
 
-#### 2. **Anti-Malware Protection**
-- **Signature-Based Detection**: Hash-based malware identification
-- **Heuristic Analysis**: Behavioral pattern recognition
-- **File Scanning**: Real-time file system monitoring
-- **Process Monitoring**: Suspicious process detection
-- **Quarantine System**: Automatic threat isolation
-- **Implementation**: [`james-ultimate/src/security/anti-malware.js`](james-ultimate/src/security/anti-malware.js)
+2. Anti-Malware Protection
+- Signature-Based Detection: Hash-based malware identification
+- Heuristic Analysis: Behavioral pattern recognition
+- File Scanning: Real-time file system monitoring
+- Process Monitoring: Suspicious process detection
+- Quarantine System: Automatic threat isolation
+- Implementation: [`james-ultimate/src/security/anti-malware.js`](james-ultimate/src/security/anti-malware.js)
 
-#### 3. **Anti-Ransomware Defense**
-- **Honeypot Files**: Canary file deployment for early detection
-- **Mass Encryption Detection**: Pattern-based activity monitoring
-- **Automatic Backup**: Continuous file protection
-- **Process Termination**: Suspicious process kill capability
-- **Shadow Copy Protection**: Windows VSS safeguarding
-- **Implementation**: [`james-ultimate/src/security/anti-ransomware.js`](james-ultimate/src/security/anti-ransomware.js)
+3. Anti-Ransomware Defense
+- Honeypot Files: Canary file deployment for early detection
+- Mass Encryption Detection: Pattern-based activity monitoring
+- Automatic Backup: Continuous file protection
+- Process Termination: Suspicious process kill capability
+- Shadow Copy Protection: Windows VSS safeguarding
+- Implementation: [`james-ultimate/src/security/anti-ransomware.js`](james-ultimate/src/security/anti-ransomware.js)
 
-#### 4. **DDoS Protection & Rate Limiting**
-- **Token Bucket Algorithm**: Smooth rate limiting
-- **IP Blacklisting**: Automatic threat blocking
-- **Request Throttling**: Per-route limits
-- **Sliding Window**: Accurate request counting
-- **Implementation**: [`james-ultimate/src/security/rate-limiter.js`](james-ultimate/src/security/rate-limiter.js)
+4. DDoS Protection & Rate Limiting
+- Token Bucket Algorithm: Smooth rate limiting
+- IP Blacklisting: Automatic threat blocking
+- Request Throttling: Per-route limits
+- Sliding Window: Accurate request counting
+- Implementation: [`james-ultimate/src/security/rate-limiter.js`](james-ultimate/src/security/rate-limiter.js)
 
 ---
 
-## 🤖 AI Agent System
+🤖 AI Agent System
 
-### Available Agents
+Available Agents
 
 | Agent | Icon | Specialization | Use Case |
 |-------|------|----------------|----------|
-| **Security Analyst** | 🔒 | Vulnerability assessment, penetration testing | General security audits |
-| **Network Guardian** | 🌐 | Network security, traffic analysis, IDS | Network monitoring |
-| **IoT Security** | 📡 | IoT device security, protocol analysis | Smart device protection |
-| **Threat Hunter** | 🎯 | APT detection, malware analysis | Proactive threat hunting |
-| **Compliance Auditor** | 📋 | NIST, ISO 27001, PCI DSS, HIPAA | Regulatory compliance |
-| **Incident Responder** | 🚨 | Incident response, forensics | Security incident handling |
-| **Code Security** | 💻 | Secure code review, OWASP Top 10 | Application security |
-| **General Assistant** | 🤖 | General-purpose AI assistant | General queries |
+| Security Analyst | 🔒 | Vulnerability assessment, penetration testing | General security audits |
+| Network Guardian | 🌐 | Network security, traffic analysis, IDS | Network monitoring |
+| IoT Security | 📡 | IoT device security, protocol analysis | Smart device protection |
+| Threat Hunter | 🎯 | APT detection, malware analysis | Proactive threat hunting |
+| Compliance Auditor | 📋 | NIST, ISO 27001, PCI DSS, HIPAA | Regulatory compliance |
+| Incident Responder | 🚨 | Incident response, forensics | Security incident handling |
+| Code Security | 💻 | Secure code review, OWASP Top 10 | Application security |
+| General Assistant | 🤖 | General-purpose AI assistant | General queries |
 
-### LLM Providers Supported
+LLM Providers Supported
 
-- **Local**: Ollama, LM Studio
-- **Cloud**: OpenAI, Anthropic, Google Gemini, Groq, Together AI, OpenRouter
-- **Enterprise**: Azure OpenAI
+- Local: Ollama, LM Studio
+- Cloud: OpenAI, Anthropic, Google Gemini, Groq, Together AI, OpenRouter
+- Enterprise: Azure OpenAI
 
 ---
 
-## 🔧 Security Tools
+🔧 Security Tools
 
-### Network Security
-- **Port Scanner**: Identify open ports and services
-- **Network Analysis**: Monitor active connections
-- **DNS Lookup**: Domain reconnaissance
-- **SSL Certificate Check**: TLS/SSL validation
-- **WHOIS Lookup**: Domain information
+Network Security
+- Port Scanner: Identify open ports and services
+- Network Analysis: Monitor active connections
+- DNS Lookup: Domain reconnaissance
+- SSL Certificate Check: TLS/SSL validation
+- WHOIS Lookup: Domain information
 
-### System Security
-- **System Analysis**: Security posture assessment
-- **Process Analysis**: Detect suspicious processes
-- **File Hash Analysis**: Integrity verification
-- **Password Strength Checker**: Password security validation
+System Security
+- System Analysis: Security posture assessment
+- Process Analysis: Detect suspicious processes
+- File Hash Analysis: Integrity verification
+- Password Strength Checker: Password security validation
 
 ### Threat Intelligence
-- **IP Reputation Check**: Malicious IP detection
-- **URL Analysis**: Phishing and malware URL detection
-- **Security Report Generator**: Comprehensive security audits
+- IP Reputation Check: Malicious IP detection
+- URL Analysis: Phishing and malware URL detection
+- Security Report Generator: Comprehensive security audits
 
 ---
 
-## 🌐 IoT Security Management
+🌐 IoT Security Management
 
-### Supported Protocols
-- **MQTT**: Message queuing for IoT
-- **CoAP**: Constrained Application Protocol
-- **Modbus TCP**: Industrial automation
-- **HTTP/REST**: RESTful APIs
-- **WebSocket**: Real-time communication
-- **Serial Port**: Local device communication
-- **Raw TCP/UDP**: Low-level protocols
+Supported Protocols
+- MQTT: Message queuing for IoT
+- CoAP: Constrained Application Protocol
+- Modbus TCP: Industrial automation
+- HTTP/REST: RESTful APIs
+- WebSocket: Real-time communication
+- Serial Port: Local device communication
+- Raw TCP/UDP: Low-level protocols
 
-### IoT Features
+IoT Features
 - Device discovery and registration
 - Protocol-specific security analysis
 - Real-time device monitoring
@@ -267,9 +267,9 @@ configure-api-keys.bat
 
 ---
 
-## 📊 API Endpoints
+📊 API Endpoints
 
-### Core APIs
+Core APIs
 
 ```http
 # Health Check
@@ -307,23 +307,23 @@ POST /api/iot/discover
 
 ---
 
-## 🛡️ Security Features
+🛡️ Security Features
 
-### ✅ Implemented Protections
+✅ Implemented Protections
 
-1. **Encryption**
+1. Encryption
    - ✓ AES-256-GCM for data at rest
    - ✓ Secure key derivation (PBKDF2)
    - ✓ Unique IV per encryption
    - ✓ Authentication tags for integrity
 
-2. **Access Control**
+2. Access Control
    - ✓ Rate limiting (100-200 req/min)
    - ✓ IP blacklisting
    - ✓ Request throttling
    - ✓ Input validation & sanitization
 
-3. **Malware Protection**
+   Malware Protection
    - ✓ Signature-based detection
    - ✓ Heuristic analysis
    - ✓ Real-time file scanning
@@ -337,7 +337,7 @@ POST /api/iot/discover
    - ✓ Process termination
    - ✓ Shadow copy protection
 
-5. **Audit & Compliance**
+5. Audit & Compliance
    - ✓ Security event logging
    - ✓ Audit trail maintenance
    - ✓ Compliance reporting
@@ -345,9 +345,9 @@ POST /api/iot/discover
 
 ---
 
-## 🚦 Usage Examples
+🚦 Usage Examples
 
-### Command Line Interface
+Command Line Interface
 
 ```bash
 # Start interactive mode
@@ -369,7 +369,7 @@ james tools
 james agents
 ```
 
-### Programmatic Usage
+Programmatic Usage
 
 ```javascript
 const { securityCore } = require('./src/security/security-core');
@@ -385,7 +385,7 @@ const scanResult = await antiMalware.scanFile('/path/to/file');
 antiRansomware.monitorDirectory('/important/data');
 ```
 
-### Web Interface
+Web Interface
 
 1. Navigate to `http://localhost:3000`
 2. Select an AI agent from the dropdown
@@ -395,7 +395,7 @@ antiRansomware.monitorDirectory('/important/data');
 
 ---
 
-## 📁 Project Structure
+📁 Project Structure
 
 ```
 james/
@@ -427,16 +427,16 @@ james/
 
 ---
 
-## 🔐 Security Best Practices
+🔐 Security Best Practices
 
-### For Developers
+For Developers
 
-1. **Never commit sensitive data**
+1. Never commit sensitive data
    - Use `.gitignore` for credential files
    - Store keys in encrypted format only
    - Use environment variables for configuration
 
-2. **API Key Management**
+2. API Key Management
    - Store using `securityCore.storeApiKey()`
    - Retrieve using `securityCore.getApiKey()`
    - Never log or expose keys in responses
@@ -451,28 +451,28 @@ james/
    - Use stricter limits for sensitive operations
    - Monitor for abuse patterns
 
-### For System Administrators
+For System Administrators
 
-1. **Regular Updates**
+1. Regular Updates
    - Keep Node.js updated
    - Update npm packages regularly
    - Apply security patches promptly
 
-2. **Monitoring**
+2. Monitoring
    - Review audit logs daily
    - Monitor rate limiter statistics
    - Check quarantine regularly
 
-3. **Backup Strategy**
+3. Backup Strategy
    - Enable automatic backups
    - Test restoration procedures
    - Maintain off-site backups
 
 ---
 
-## 🧪 Testing
+🧪 Testing
 
-### Run Security Scans
+Run Security Scans
 
 ```javascript
 // Malware scan
@@ -488,26 +488,26 @@ const decrypted = securityCore.decrypt(encrypted);
 
 ---
 
-## 📞 Support & Contact
+📞 Support & Contact
 
-**Emersa Ltd.**
-- **Documentation**: See `/docs` directory
-- **Security Issues**: Report via secure channels only
-- **License**: Proprietary - All Rights Reserved
+Emersa Ltd.
+- Documentation: See `/docs` directory
+- Security Issues: Report via secure channels only
+- License: Proprietary - All Rights Reserved
 
 ---
 
-## ⚖️ Legal Notice
+⚖️ Legal Notice
 
-### Copyright & Intellectual Property
+Copyright & Intellectual Property
 
 This software and all associated documentation are proprietary to **Emersa Ltd.** and are protected by copyright, trade secret, and other intellectual property laws.
 
-**CONFIDENTIAL AND PROPRIETARY INFORMATION**
+CONFIDENTIAL AND PROPRIETARY INFORMATION
 
 Unauthorized copying, distribution, modification, public display, or public performance of this software, via any medium, is strictly prohibited. This software contains trade secrets and proprietary algorithms that are the exclusive property of Emersa Ltd.
 
-### Restrictions
+Restrictions
 
 - ❌ No reverse engineering
 - ❌ No decompilation or disassembly
@@ -515,15 +515,15 @@ Unauthorized copying, distribution, modification, public display, or public perf
 - ❌ No modification of security components
 - ❌ No commercial use without license
 
-### License
+License
 
 All rights reserved. For licensing inquiries, contact Emersa Ltd.
 
 ---
 
-## 🎯 Roadmap
+🎯 Roadmap
 
-### Completed ✅
+Completed ✅
 - Multi-LLM integration
 - AI agent system
 - AES-256-GCM encryption
@@ -533,13 +533,13 @@ All rights reserved. For licensing inquiries, contact Emersa Ltd.
 - IoT security management
 - Web interface
 
-### In Progress 🚧
+In Progress 🚧
 - Machine learning threat detection
 - Automated penetration testing
 - Cloud security posture management
 - Blockchain integration
 
-### Planned 📋
+Planned 📋
 - Mobile app support
 - Advanced AI models
 - Integration with SIEM systems
@@ -547,6 +547,5 @@ All rights reserved. For licensing inquiries, contact Emersa Ltd.
 
 ---
 
-**CYBERCAT - Protecting Systems for Generations to Come**
-
-*Copyright © 2025 Emersa Ltd. All Rights Reserved. Made in California, USA 🇺🇸*
+CYBERCAT - Protecting Systems for Generations to Come
+Copyright © 2025 Emersa Ltd. All Rights Reserved. Made in California, USA 
