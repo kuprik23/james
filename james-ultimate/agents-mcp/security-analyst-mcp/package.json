@@ -1,0 +1,24 @@
+{
+  "name": "security-analyst-mcp",
+  "version": "1.0.0",
+  "description": "Security Analyst AI Agent MCP Server for CYBERCAT",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1"
+  },
+  "keywords": [
+    "mcp",
+    "security",
+    "threat-detection",
+    "cybercat"
+  ],
+  "author": "CYBERCAT",
+  "license": "MIT"
+}

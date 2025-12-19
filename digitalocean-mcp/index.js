@@ -95,6 +95,7 @@ class DigitalOceanMCPServer {
   setupHandlers() {
     this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
       tools: [
+        // Droplet Management
         {
           name: 'list_droplets',
           description: 'List all droplets in your Digital Ocean account',
@@ -123,6 +124,56 @@ class DigitalOceanMCPServer {
           },
         },
         {
+          name: 'get_droplet_snapshots',
+          description: 'List all snapshots for a specific droplet',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              droplet_id: {
+                type: 'string',
+                description: 'The ID of the droplet',
+              },
+            },
+            required: ['droplet_id'],
+          },
+        },
+        // Monitoring Tools
+        {
+          name: 'get_droplet_metrics',
+          description: 'Get monitoring metrics for a specific droplet (CPU, memory, bandwidth)',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              droplet_id: {
+                type: 'string',
+                description: 'The ID of the droplet',
+              },
+              metric: {
+                type: 'string',
+                description: 'Metric type: cpu, memory_free, memory_available, disk_read, disk_write, bandwidth_inbound, bandwidth_outbound',
+              },
+              start: {
+                type: 'string',
+                description: 'Start time for metrics (ISO 8601 format)',
+              },
+              end: {
+                type: 'string',
+                description: 'End time for metrics (ISO 8601 format)',
+              },
+            },
+            required: ['droplet_id', 'metric', 'start', 'end'],
+          },
+        },
+        {
+          name: 'get_droplet_alerts',
+          description: 'List all alert policies for monitoring',
+          inputSchema: {
+            type: 'object',
+            properties: {},
+          },
+        },
+        // Networking
+        {
           name: 'list_firewalls',
           description: 'List all firewalls in your Digital Ocean account',
           inputSchema: {
@@ -145,6 +196,83 @@ class DigitalOceanMCPServer {
           },
         },
         {
+          name: 'list_vpcs',
+          description: 'List all Virtual Private Clouds (VPCs)',
+          inputSchema: {
+            type: 'object',
+            properties: {},
+          },
+        },
+        {
+          name: 'list_domains',
+          description: 'List all domains',
+          inputSchema: {
+            type: 'object',
+            properties: {},
+          },
+        },
+        {
+          name: 'get_domain',
+          description: 'Get details about a specific domain',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              domain_name: {
+                type: 'string',
+                description: 'The domain name',
+              },
+            },
+            required: ['domain_name'],
+          },
+        },
+        // Load Balancers
+        {
+          name: 'list_load_balancers',
+          description: 'List all load balancers in your Digital Ocean account',
+          inputSchema: {
+            type: 'object',
+            properties: {},
+          },
+        },
+        {
+          name: 'get_load_balancer',
+          description: 'Get detailed information about a specific load balancer',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              lb_id: {
+                type: 'string',
+                description: 'The ID of the load balancer',
+              },
+            },
+            required: ['lb_id'],
+          },
+        },
+        // Databases
+        {
+          name: 'list_databases',
+          description: 'List all managed databases',
+          inputSchema: {
+            type: 'object',
+            properties: {},
+          },
+        },
+        {
+          name: 'get_database',
+          description: 'Get details about a specific database cluster',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              db_id: {
+                type: 'string',
+                description: 'The ID of the database cluster',
+              },
+            },
+            required: ['db_id'],
+          },
+        },
+        // SSH Keys
+        {
           name: 'list_ssh_keys',
           description: 'List all SSH keys in your Digital Ocean account',
           inputSchema: {
@@ -152,6 +280,7 @@ class DigitalOceanMCPServer {
             properties: {},
           },
         },
+        // Account & Projects
         {
           name: 'get_account_info',
           description: 'Get information about your Digital Ocean account',
@@ -168,6 +297,7 @@ class DigitalOceanMCPServer {
             properties: {},
           },
         },
+        // Storage
         {
           name: 'list_volumes',
           description: 'List all volumes in your Digital Ocean account',
@@ -177,25 +307,17 @@ class DigitalOceanMCPServer {
           },
         },
         {
-          name: 'list_load_balancers',
-          description: 'List all load balancers in your Digital Ocean account',
-          inputSchema: {
-            type: 'object',
-            properties: {},
-          },
-        },
-        {
-          name: 'get_droplet_snapshots',
-          description: 'List all snapshots for a specific droplet',
+          name: 'get_volume',
+          description: 'Get details about a specific volume',
           inputSchema: {
             type: 'object',
             properties: {
-              droplet_id: {
+              volume_id: {
                 type: 'string',
-                description: 'The ID of the droplet',
+                description: 'The ID of the volume',
               },
             },
-            required: ['droplet_id'],
+            required: ['volume_id'],
           },
         },
       ],
@@ -275,6 +397,66 @@ class DigitalOceanMCPServer {
           case 'get_droplet_snapshots': {
             const response = await axios.get(
               `${this.baseURL}/droplets/${args.droplet_id}/snapshots`,
+              { headers }
+            );
+            return { content: [{ type: 'text', text: JSON.stringify(response.data, null, 2) }] };
+          }
+
+          case 'get_droplet_metrics': {
+            const response = await axios.get(
+              `${this.baseURL}/monitoring/metrics/droplet/${args.metric}?host_id=${args.droplet_id}&start=${args.start}&end=${args.end}`,
+              { headers }
+            );
+            return { content: [{ type: 'text', text: JSON.stringify(response.data, null, 2) }] };
+          }
+
+          case 'get_droplet_alerts': {
+            const response = await axios.get(`${this.baseURL}/monitoring/alerts`, { headers });
+            return { content: [{ type: 'text', text: JSON.stringify(response.data, null, 2) }] };
+          }
+
+          case 'list_vpcs': {
+            const response = await axios.get(`${this.baseURL}/vpcs`, { headers });
+            return { content: [{ type: 'text', text: JSON.stringify(response.data, null, 2) }] };
+          }
+
+          case 'list_domains': {
+            const response = await axios.get(`${this.baseURL}/domains`, { headers });
+            return { content: [{ type: 'text', text: JSON.stringify(response.data, null, 2) }] };
+          }
+
+          case 'get_domain': {
+            const response = await axios.get(
+              `${this.baseURL}/domains/${args.domain_name}`,
+              { headers }
+            );
+            return { content: [{ type: 'text', text: JSON.stringify(response.data, null, 2) }] };
+          }
+
+          case 'get_load_balancer': {
+            const response = await axios.get(
+              `${this.baseURL}/load_balancers/${args.lb_id}`,
+              { headers }
+            );
+            return { content: [{ type: 'text', text: JSON.stringify(response.data, null, 2) }] };
+          }
+
+          case 'list_databases': {
+            const response = await axios.get(`${this.baseURL}/databases`, { headers });
+            return { content: [{ type: 'text', text: JSON.stringify(response.data, null, 2) }] };
+          }
+
+          case 'get_database': {
+            const response = await axios.get(
+              `${this.baseURL}/databases/${args.db_id}`,
+              { headers }
+            );
+            return { content: [{ type: 'text', text: JSON.stringify(response.data, null, 2) }] };
+          }
+
+          case 'get_volume': {
+            const response = await axios.get(
+              `${this.baseURL}/volumes/${args.volume_id}`,
               { headers }
             );
             return { content: [{ type: 'text', text: JSON.stringify(response.data, null, 2) }] };

@@ -33,6 +33,7 @@ const server = new Server(
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
+      // Checkout & Payment
       {
         name: 'create_checkout_session',
         description: 'Create a Stripe checkout session for license purchase',
@@ -59,6 +60,43 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: ['priceId', 'successUrl', 'cancelUrl'],
         },
       },
+      {
+        name: 'create_payment_intent',
+        description: 'Create a payment intent for one-time payments',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            amount: {
+              type: 'number',
+              description: 'Payment amount in cents',
+            },
+            currency: {
+              type: 'string',
+              description: 'Currency code (e.g., usd)',
+            },
+            customerId: {
+              type: 'string',
+              description: 'Customer ID (optional)',
+            },
+          },
+          required: ['amount', 'currency'],
+        },
+      },
+      {
+        name: 'confirm_payment_intent',
+        description: 'Confirm a payment intent',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            paymentIntentId: {
+              type: 'string',
+              description: 'Payment Intent ID',
+            },
+          },
+          required: ['paymentIntentId'],
+        },
+      },
+      // Subscription Management
       {
         name: 'create_subscription',
         description: 'Create a subscription for a customer',
@@ -106,6 +144,39 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         },
       },
       {
+        name: 'list_subscriptions',
+        description: 'List all subscriptions for a customer',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            customerId: {
+              type: 'string',
+              description: 'Customer ID',
+            },
+          },
+          required: ['customerId'],
+        },
+      },
+      {
+        name: 'update_subscription',
+        description: 'Update a subscription (e.g., change plan)',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            subscriptionId: {
+              type: 'string',
+              description: 'Subscription ID',
+            },
+            priceId: {
+              type: 'string',
+              description: 'New price ID',
+            },
+          },
+          required: ['subscriptionId', 'priceId'],
+        },
+      },
+      // Customer Management
+      {
         name: 'create_customer',
         description: 'Create a new Stripe customer',
         inputSchema: {
@@ -141,6 +212,99 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: ['customerId'],
         },
       },
+      {
+        name: 'update_customer',
+        description: 'Update customer information',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            customerId: {
+              type: 'string',
+              description: 'Customer ID',
+            },
+            email: {
+              type: 'string',
+              description: 'New email (optional)',
+            },
+            name: {
+              type: 'string',
+              description: 'New name (optional)',
+            },
+            metadata: {
+              type: 'object',
+              description: 'Updated metadata (optional)',
+            },
+          },
+          required: ['customerId'],
+        },
+      },
+      // Invoice Management
+      {
+        name: 'list_invoices',
+        description: 'List invoices for a customer',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            customerId: {
+              type: 'string',
+              description: 'Customer ID',
+            },
+          },
+          required: ['customerId'],
+        },
+      },
+      {
+        name: 'get_invoice',
+        description: 'Get invoice details',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            invoiceId: {
+              type: 'string',
+              description: 'Invoice ID',
+            },
+          },
+          required: ['invoiceId'],
+        },
+      },
+      {
+        name: 'create_billing_portal_session',
+        description: 'Create a billing portal session for customer self-service',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            customerId: {
+              type: 'string',
+              description: 'Customer ID',
+            },
+            returnUrl: {
+              type: 'string',
+              description: 'URL to return to after portal session',
+            },
+          },
+          required: ['customerId', 'returnUrl'],
+        },
+      },
+      // Refunds
+      {
+        name: 'create_refund',
+        description: 'Create a refund for a payment',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            paymentIntentId: {
+              type: 'string',
+              description: 'Payment Intent ID',
+            },
+            amount: {
+              type: 'number',
+              description: 'Amount to refund in cents (optional, full refund if not specified)',
+            },
+          },
+          required: ['paymentIntentId'],
+        },
+      },
+      // Products & Prices
       {
         name: 'create_product',
         description: 'Create a new product in Stripe',
@@ -183,6 +347,23 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
           },
           required: ['productId', 'amount', 'currency', 'interval'],
+        },
+      },
+      {
+        name: 'list_products',
+        description: 'List all products',
+        inputSchema: {
+          type: 'object',
+          properties: {},
+        },
+      },
+      // Webhooks
+      {
+        name: 'list_webhook_endpoints',
+        description: 'List all webhook endpoints',
+        inputSchema: {
+          type: 'object',
+          properties: {},
         },
       },
     ],
@@ -362,6 +543,232 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                 amount: price.unit_amount,
                 currency: price.currency,
                 interval: price.recurring?.interval,
+              }, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'create_payment_intent': {
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount: args.amount,
+          currency: args.currency,
+          customer: args.customerId,
+          automatic_payment_methods: { enabled: true },
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                paymentIntentId: paymentIntent.id,
+                clientSecret: paymentIntent.client_secret,
+                status: paymentIntent.status,
+              }, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'confirm_payment_intent': {
+        const paymentIntent = await stripe.paymentIntents.confirm(args.paymentIntentId);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                paymentIntentId: paymentIntent.id,
+                status: paymentIntent.status,
+                amount: paymentIntent.amount,
+              }, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'list_subscriptions': {
+        const subscriptions = await stripe.subscriptions.list({
+          customer: args.customerId,
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                subscriptions: subscriptions.data.map(sub => ({
+                  id: sub.id,
+                  status: sub.status,
+                  current_period_end: sub.current_period_end,
+                })),
+              }, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'update_subscription': {
+        const subscription = await stripe.subscriptions.update(args.subscriptionId, {
+          items: [{
+            id: (await stripe.subscriptions.retrieve(args.subscriptionId)).items.data[0].id,
+            price: args.priceId,
+          }],
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                subscriptionId: subscription.id,
+                status: subscription.status,
+                updated: true,
+              }, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'update_customer': {
+        const updateData = {};
+        if (args.email) updateData.email = args.email;
+        if (args.name) updateData.name = args.name;
+        if (args.metadata) updateData.metadata = args.metadata;
+
+        const customer = await stripe.customers.update(args.customerId, updateData);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                customerId: customer.id,
+                email: customer.email,
+                name: customer.name,
+              }, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'list_invoices': {
+        const invoices = await stripe.invoices.list({
+          customer: args.customerId,
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                invoices: invoices.data.map(inv => ({
+                  id: inv.id,
+                  status: inv.status,
+                  amount_due: inv.amount_due,
+                  created: inv.created,
+                })),
+              }, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'get_invoice': {
+        const invoice = await stripe.invoices.retrieve(args.invoiceId);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                invoiceId: invoice.id,
+                status: invoice.status,
+                amount_due: invoice.amount_due,
+                amount_paid: invoice.amount_paid,
+                created: invoice.created,
+              }, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'create_billing_portal_session': {
+        const session = await stripe.billingPortal.sessions.create({
+          customer: args.customerId,
+          return_url: args.returnUrl,
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                sessionId: session.id,
+                url: session.url,
+              }, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'create_refund': {
+        const refundData = {
+          payment_intent: args.paymentIntentId,
+        };
+        if (args.amount) refundData.amount = args.amount;
+
+        const refund = await stripe.refunds.create(refundData);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                refundId: refund.id,
+                status: refund.status,
+                amount: refund.amount,
+              }, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'list_products': {
+        const products = await stripe.products.list();
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                products: products.data.map(prod => ({
+                  id: prod.id,
+                  name: prod.name,
+                  description: prod.description,
+                  active: prod.active,
+                })),
+              }, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'list_webhook_endpoints': {
+        const webhooks = await stripe.webhookEndpoints.list();
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                webhooks: webhooks.data.map(wh => ({
+                  id: wh.id,
+                  url: wh.url,
+                  enabled_events: wh.enabled_events,
+                  status: wh.status,
+                })),
               }, null, 2),
             },
           ],
