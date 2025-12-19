@@ -25,15 +25,16 @@ export class AuthMiddleware {
   /**
    * Verify JWT token and attach user to request
    */
-  authenticate = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  authenticate = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
       const authHeader = req.headers.authorization;
 
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({
+        res.status(401).json({
           error: 'No token provided',
           message: 'Authentication required',
         });
+        return;
       }
 
       const token = authHeader.substring(7);
@@ -46,17 +47,18 @@ export class AuthMiddleware {
 
       next();
     } catch (error) {
-      return res.status(401).json({
+      res.status(401).json({
         error: 'Invalid token',
         message: error instanceof Error ? error.message : 'Authentication failed',
       });
+      return;
     }
   };
 
   /**
    * Optional authentication - doesn't fail if no token
    */
-  optionalAuth = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  optionalAuth = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
       const authHeader = req.headers.authorization;
 
@@ -81,24 +83,26 @@ export class AuthMiddleware {
    * Require specific license tier
    */
   requireTier = (requiredTier: 'free' | 'pro' | 'enterprise') => {
-    return async (req: AuthRequest, res: Response, next: NextFunction) => {
+    return async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
       if (!req.user) {
-        return res.status(401).json({
+        res.status(401).json({
           error: 'Authentication required',
           message: 'Please log in to access this feature',
         });
+        return;
       }
 
       const license = await this.licenseService.getLicenseDetails(req.user.userId);
 
       if (!license) {
-        return res.status(403).json({
+        res.status(403).json({
           error: 'No license found',
           message: 'Please upgrade your account',
           upgradeRequired: true,
           currentTier: 'free',
           requiredTier,
         });
+        return;
       }
 
       const tierHierarchy = { free: 0, pro: 1, enterprise: 2 };
@@ -106,13 +110,14 @@ export class AuthMiddleware {
       const requiredTierLevel = tierHierarchy[requiredTier];
 
       if (userTierLevel < requiredTierLevel) {
-        return res.status(403).json({
+        res.status(403).json({
           error: 'Insufficient license tier',
           message: `This feature requires ${requiredTier} tier`,
           upgradeRequired: true,
           currentTier: license.tier,
           requiredTier,
         });
+        return;
       }
 
       // Attach license info to request
@@ -130,12 +135,13 @@ export class AuthMiddleware {
    * Require specific feature access
    */
   requireFeature = (featureName: string) => {
-    return async (req: AuthRequest, res: Response, next: NextFunction) => {
+    return async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
       if (!req.user) {
-        return res.status(401).json({
+        res.status(401).json({
           error: 'Authentication required',
           message: 'Please log in to access this feature',
         });
+        return;
       }
 
       const access = await this.licenseService.checkFeatureAccess(
@@ -144,7 +150,7 @@ export class AuthMiddleware {
       );
 
       if (!access.allowed) {
-        return res.status(403).json({
+        res.status(403).json({
           error: 'Feature not available',
           message: access.reason || 'You do not have access to this feature',
           upgradeRequired: access.upgradeRequired,
@@ -152,6 +158,7 @@ export class AuthMiddleware {
           requiredTier: access.requiredTier,
           feature: featureName,
         });
+        return;
       }
 
       next();
@@ -161,24 +168,26 @@ export class AuthMiddleware {
   /**
    * Check scan limit before allowing scan
    */
-  checkScanLimit = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  checkScanLimit = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     if (!req.user) {
-      return res.status(401).json({
+      res.status(401).json({
         error: 'Authentication required',
         message: 'Please log in to perform scans',
       });
+      return;
     }
 
     const canScan = await this.licenseService.canPerformScan(req.user.userId);
 
     if (!canScan.allowed) {
-      return res.status(429).json({
+      res.status(429).json({
         error: 'Scan limit reached',
         message: canScan.reason,
         upgradeRequired: canScan.upgradeRequired,
         currentTier: canScan.currentTier,
         requiredTier: canScan.requiredTier,
       });
+      return;
     }
 
     next();
@@ -219,25 +228,27 @@ export class AuthMiddleware {
   /**
    * Validate license key middleware
    */
-  validateLicenseKey = async (req: Request, res: Response, next: NextFunction) => {
+  validateLicenseKey = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const licenseKey = req.body.licenseKey || req.query.licenseKey;
 
     if (!licenseKey) {
-      return res.status(400).json({
+      res.status(400).json({
         error: 'License key required',
         message: 'Please provide a license key',
       });
+      return;
     }
 
     const validation = await this.licenseService.validateLicense(licenseKey as string);
 
     if (!validation.valid) {
-      return res.status(403).json({
+      res.status(403).json({
         error: 'Invalid license',
         message: validation.message,
         tier: validation.tier,
         status: validation.status,
       });
+      return;
     }
 
     next();
@@ -246,12 +257,13 @@ export class AuthMiddleware {
   /**
    * Admin only middleware
    */
-  requireAdmin = (req: AuthRequest, res: Response, next: NextFunction) => {
+  requireAdmin = (req: AuthRequest, res: Response, next: NextFunction): void => {
     if (!req.user) {
-      return res.status(401).json({
+      res.status(401).json({
         error: 'Authentication required',
         message: 'Admin access required',
       });
+      return;
     }
 
     // In production, check if user has admin role
@@ -259,10 +271,11 @@ export class AuthMiddleware {
     const adminEmails = (process.env.ADMIN_EMAILS || '').split(',');
     
     if (!adminEmails.includes(req.user.email)) {
-      return res.status(403).json({
+      res.status(403).json({
         error: 'Forbidden',
         message: 'Admin access required',
       });
+      return;
     }
 
     next();

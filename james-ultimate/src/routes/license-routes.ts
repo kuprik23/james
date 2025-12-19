@@ -25,12 +25,12 @@ export class LicenseRoutes {
      * POST /auth/register
      * Register new user
      */
-    this.router.post('/auth/register', async (req: Request, res: Response) => {
+    this.router.post('/auth/register', async (req: Request, res: Response): Promise<void> => {
       try {
         const { email, password, name } = req.body;
 
         if (!email || !password || !name) {
-          return res.status(400).json({
+          res.status(400).json({
             error: 'Missing required fields',
             message: 'Email, password, and name are required',
           });
@@ -56,12 +56,12 @@ export class LicenseRoutes {
      * POST /auth/login
      * Login user
      */
-    this.router.post('/auth/login', async (req: Request, res: Response) => {
+    this.router.post('/auth/login', async (req: Request, res: Response): Promise<void> => {
       try {
         const { email, password } = req.body;
 
         if (!email || !password) {
-          return res.status(400).json({
+          res.status(400).json({
             error: 'Missing credentials',
             message: 'Email and password are required',
           });
@@ -87,12 +87,12 @@ export class LicenseRoutes {
      * POST /auth/refresh
      * Refresh access token
      */
-    this.router.post('/auth/refresh', async (req: Request, res: Response) => {
+    this.router.post('/auth/refresh', async (req: Request, res: Response): Promise<void> => {
       try {
         const { refreshToken } = req.body;
 
         if (!refreshToken) {
-          return res.status(400).json({
+          res.status(400).json({
             error: 'Missing refresh token',
             message: 'Refresh token is required',
           });
@@ -143,12 +143,12 @@ export class LicenseRoutes {
     this.router.post(
       '/auth/change-password',
       this.authMiddleware.authenticate,
-      async (req: AuthRequest, res: Response) => {
+      async (req: AuthRequest, res: Response): Promise<void> => {
         try {
           const { oldPassword, newPassword } = req.body;
 
           if (!oldPassword || !newPassword) {
-            return res.status(400).json({
+            res.status(400).json({
               error: 'Missing passwords',
               message: 'Old and new passwords are required',
             });
@@ -179,12 +179,12 @@ export class LicenseRoutes {
      * GET /license/validate
      * Validate license key
      */
-    this.router.get('/license/validate', async (req: Request, res: Response) => {
+    this.router.get('/license/validate', async (req: Request, res: Response): Promise<void> => {
       try {
         const licenseKey = req.query.key as string;
 
         if (!licenseKey) {
-          return res.status(400).json({
+          res.status(400).json({
             error: 'Missing license key',
             message: 'License key is required',
           });
@@ -211,15 +211,16 @@ export class LicenseRoutes {
     this.router.get(
       '/license/details',
       this.authMiddleware.authenticate,
-      async (req: AuthRequest, res: Response) => {
+      async (req: AuthRequest, res: Response): Promise<void> => {
         try {
           const license = await this.licenseService.getLicenseDetails(req.user!.userId);
 
           if (!license) {
-            return res.status(404).json({
+            res.status(404).json({
               error: 'No license found',
               message: 'User does not have a license',
             });
+            return;
           }
 
           const validation = await this.licenseService.validateLicense(license.license_key);
@@ -274,12 +275,12 @@ export class LicenseRoutes {
     this.router.post(
       '/license/check-feature',
       this.authMiddleware.authenticate,
-      async (req: AuthRequest, res: Response) => {
+      async (req: AuthRequest, res: Response): Promise<void> => {
         try {
           const { feature } = req.body;
 
           if (!feature) {
-            return res.status(400).json({
+            res.status(400).json({
               error: 'Missing feature name',
               message: 'Feature name is required',
             });
@@ -310,22 +311,23 @@ export class LicenseRoutes {
     this.router.post(
       '/license/upgrade',
       this.authMiddleware.authenticate,
-      async (req: AuthRequest, res: Response) => {
+      async (req: AuthRequest, res: Response): Promise<void> => {
         try {
           const { tier, subscriptionId, expiresAt } = req.body;
 
           if (!tier || !subscriptionId) {
-            return res.status(400).json({
+            res.status(400).json({
               error: 'Missing required fields',
               message: 'Tier and subscription ID are required',
             });
           }
 
           if (!['pro', 'enterprise'].includes(tier)) {
-            return res.status(400).json({
+            res.status(400).json({
               error: 'Invalid tier',
               message: 'Tier must be pro or enterprise',
             });
+            return;
           }
 
           const license = await this.licenseService.upgradeLicense(

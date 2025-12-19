@@ -141,6 +141,7 @@ export class SecurityCore {
             this.logSecurityEvent('ENCRYPT', 'Data encrypted successfully');
             
             return {
+                data: encrypted,
                 encrypted,
                 iv: iv.toString('hex'),
                 salt: salt.toString('hex'),
@@ -158,6 +159,10 @@ export class SecurityCore {
     decrypt(encryptedData: EncryptedData): string {
         try {
             const { encrypted, iv, salt, authTag } = encryptedData;
+            
+            if (!encrypted || !iv || !salt || !authTag) {
+                throw new Error('Invalid encrypted data structure');
+            }
             
             const ivBuffer = Buffer.from(iv, 'hex');
             const saltBuffer = Buffer.from(salt, 'hex');
@@ -295,10 +300,11 @@ export class SecurityCore {
         const isValid = validators[type] ? validators[type].test(sanitized) : true;
         
         return {
+            valid: isValid,
             isValid,
             sanitized,
             original: input,
-            type
+            message: isValid ? 'Valid input' : 'Invalid input format'
         };
     }
     
@@ -307,8 +313,10 @@ export class SecurityCore {
      */
     logSecurityEvent(eventType: string, message: string, metadata: Record<string, any> = {}): void {
         const event: SecurityEvent = {
+            id: this.generateToken(16),
             timestamp: new Date().toISOString(),
             type: eventType,
+            severity: this.determineSeverity(eventType),
             message,
             metadata,
             pid: process.pid
@@ -381,6 +389,22 @@ export class SecurityCore {
             Buffer.from(actualHash),
             Buffer.from(expectedHash)
         );
+    }
+    
+    /**
+     * Determine severity level based on event type
+     */
+    private determineSeverity(eventType: string): 'critical' | 'high' | 'medium' | 'low' | 'info' {
+        const criticalEvents = ['DECRYPT_ERROR', 'ENCRYPT_ERROR', 'KEY_ERROR'];
+        const highEvents = ['API_KEY_STORE_ERROR', 'API_KEY_GET_ERROR'];
+        const mediumEvents = ['KEY_GENERATE', 'KEY_LOAD'];
+        
+        if (criticalEvents.some(e => eventType.includes(e))) return 'critical';
+        if (highEvents.some(e => eventType.includes(e))) return 'high';
+        if (mediumEvents.some(e => eventType.includes(e))) return 'medium';
+        if (eventType.includes('ERROR')) return 'high';
+        
+        return 'info';
     }
 }
 

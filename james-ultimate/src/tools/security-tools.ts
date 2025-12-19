@@ -62,6 +62,12 @@ export class SecurityTools {
             name: 'Port Scanner',
             description: 'Scan for open ports on a target host (Java-accelerated)',
             category: 'network',
+            icon: '🔍',
+            parameters: [
+                { name: 'host', type: 'string', required: true, description: 'Target host to scan' },
+                { name: 'ports', type: 'string', required: false, description: 'Ports to scan (e.g., "1-1024" or "80,443")', default: '1-1024' },
+                { name: 'timeout', type: 'number', required: false, description: 'Timeout in milliseconds', default: 1000 }
+            ],
             execute: this.portScan.bind(this)
         });
         
@@ -70,6 +76,10 @@ export class SecurityTools {
             name: 'Fast Port Scanner',
             description: 'Quick scan of common ports only (Java-accelerated)',
             category: 'network',
+            icon: '⚡',
+            parameters: [
+                { name: 'host', type: 'string', required: true, description: 'Target host to scan' }
+            ],
             execute: this.portScanFast.bind(this)
         });
         
@@ -78,6 +88,8 @@ export class SecurityTools {
             name: 'System Security Analysis',
             description: 'Analyze system security posture',
             category: 'system',
+            icon: '💻',
+            parameters: [],
             execute: this.systemAnalysis.bind(this)
         });
         
@@ -86,6 +98,8 @@ export class SecurityTools {
             name: 'Network Analysis',
             description: 'Analyze network interfaces and connections',
             category: 'network',
+            icon: '🌐',
+            parameters: [],
             execute: this.networkAnalysis.bind(this)
         });
         
@@ -94,6 +108,10 @@ export class SecurityTools {
             name: 'DNS Lookup',
             description: 'Perform DNS lookups for a domain',
             category: 'network',
+            icon: '🔎',
+            parameters: [
+                { name: 'domain', type: 'string', required: true, description: 'Domain name to lookup' }
+            ],
             execute: this.dnsLookup.bind(this)
         });
         
@@ -102,6 +120,10 @@ export class SecurityTools {
             name: 'File Hash Analysis',
             description: 'Calculate and analyze file hashes (Java-accelerated)',
             category: 'forensics',
+            icon: '🔐',
+            parameters: [
+                { name: 'filePath', type: 'string', required: true, description: 'Path to file' }
+            ],
             execute: this.fileHash.bind(this)
         });
         
@@ -110,6 +132,12 @@ export class SecurityTools {
             name: 'Vulnerability Scanner',
             description: 'Scan for code vulnerabilities (Java-accelerated)',
             category: 'security',
+            icon: '🛡️',
+            parameters: [
+                { name: 'filePath', type: 'string', required: false, description: 'File to scan' },
+                { name: 'directory', type: 'string', required: false, description: 'Directory to scan' },
+                { name: 'recursive', type: 'boolean', required: false, description: 'Scan recursively', default: true }
+            ],
             execute: this.vulnerabilityScan.bind(this)
         });
         
@@ -118,6 +146,10 @@ export class SecurityTools {
             name: 'IP Reputation Check',
             description: 'Check reputation of an IP address',
             category: 'threat_intel',
+            icon: '🌍',
+            parameters: [
+                { name: 'ip', type: 'string', required: true, description: 'IP address to check' }
+            ],
             execute: this.ipReputation.bind(this)
         });
         
@@ -126,6 +158,10 @@ export class SecurityTools {
             name: 'URL Analysis',
             description: 'Analyze a URL for potential threats',
             category: 'threat_intel',
+            icon: '🔗',
+            parameters: [
+                { name: 'url', type: 'string', required: true, description: 'URL to analyze' }
+            ],
             execute: this.urlAnalysis.bind(this)
         });
         
@@ -134,6 +170,11 @@ export class SecurityTools {
             name: 'SSL/TLS Certificate Check',
             description: 'Check SSL/TLS certificate of a domain',
             category: 'network',
+            icon: '🔒',
+            parameters: [
+                { name: 'domain', type: 'string', required: true, description: 'Domain to check' },
+                { name: 'port', type: 'number', required: false, description: 'Port number', default: 443 }
+            ],
             execute: this.sslCheck.bind(this)
         });
         
@@ -142,6 +183,10 @@ export class SecurityTools {
             name: 'Password Strength Checker',
             description: 'Analyze password strength',
             category: 'utility',
+            icon: '🔑',
+            parameters: [
+                { name: 'password', type: 'string', required: true, description: 'Password to check' }
+            ],
             execute: this.passwordCheck.bind(this)
         });
         
@@ -150,6 +195,8 @@ export class SecurityTools {
             name: 'Security Report Generator',
             description: 'Generate comprehensive security report',
             category: 'reporting',
+            icon: '📊',
+            parameters: [],
             execute: this.securityReport.bind(this)
         });
     }
@@ -725,7 +772,7 @@ export class SecurityTools {
         this.tools.set(id, {
             id,
             ...config
-        });
+        } as SecurityTool);
     }
     
     getTool(id: string): SecurityTool | undefined {
@@ -733,13 +780,7 @@ export class SecurityTools {
     }
     
     getTools(): SecurityTool[] {
-        return Array.from(this.tools.values()).map(t => ({
-            id: t.id,
-            name: t.name,
-            description: t.description,
-            category: t.category,
-            execute: t.execute
-        }));
+        return Array.from(this.tools.values());
     }
     
     getToolsByCategory(category: string): SecurityTool[] {

@@ -70,7 +70,7 @@ export interface SecurityTool {
   category: string;
   icon: string;
   parameters: ToolParameter[];
-  execute: (params: any) => Promise<ToolResult>;
+  execute: (params: any) => Promise<any>;
 }
 
 export interface ToolParameter {
@@ -365,3 +365,58 @@ export type SeverityLevel = 'critical' | 'high' | 'medium' | 'low' | 'info';
 export type ScanStatus = 'pending' | 'running' | 'completed' | 'failed';
 export type AlertType = 'error' | 'warning' | 'info' | 'success';
 export type LogLevel = 'error' | 'warn' | 'info' | 'debug';
+
+// ============================================================================
+// Additional Security Types
+// ============================================================================
+
+export interface PortScanResult {
+  host: string;
+  portsScanned: number;
+  openPorts: Array<{
+    port: number;
+    service: string;
+    risk: string;
+  }>;
+  timestamp: string;
+}
+
+export interface SystemAnalysisResult {
+  timestamp: string;
+  system: Record<string, any>;
+  security: Record<string, any>;
+  processes: Record<string, any>;
+  network: Record<string, any>;
+  score: number;
+  issues: string[];
+  recommendations: string[];
+}
+
+export interface EncryptedData {
+  data?: string;
+  encrypted?: string;
+  iv: string;
+  tag?: string;
+  salt?: string;
+  authTag?: string;
+}
+
+export interface SecurityEvent {
+  id?: string;
+  type: string;
+  severity?: SeverityLevel;
+  message: string;
+  timestamp: string;
+  pid?: number;
+  metadata?: Record<string, any>;
+}
+
+export interface ValidationResult {
+  valid: boolean;
+  isValid?: boolean;
+  message?: string;
+  errors?: string[];
+  warnings?: string[];
+  sanitized?: any;
+  original?: any;
+}
