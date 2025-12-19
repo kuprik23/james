@@ -12,7 +12,7 @@
 
 ### Step 3: Generate New Token
 1. Click the "Generate New Token" button
-2. Give your token a descriptive name (e.g., "James AI Security Agent")
+2. Give your token a descriptive name (e.g., "CYBERCAT Security Agent")
 3. Select the appropriate scopes:
    - **For monitoring only**: Select all "read" permissions
    - **For full management**: Select both "read" and "write" permissions

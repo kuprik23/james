@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Deploy James AI Security Agent to Digital Ocean
+Deploy CYBERCAT Security Agent to Digital Ocean
 This script creates a droplet and deploys the LangGraph agent
 """
 
@@ -83,7 +83,7 @@ pip install -r requirements.txt
 # Create systemd service
 cat > /etc/systemd/system/james-agent.service << 'EOF'
 [Unit]
-Description=James AI Security Agent
+Description=CYBERCAT Security Agent
 After=network.target
 
 [Service]
@@ -246,7 +246,7 @@ def delete_droplet(droplet_id):
 def main():
     """Main deployment function"""
     print("=" * 60)
-    print("  James AI Security Agent - Digital Ocean Deployment")
+    print("  CYBERCAT Security Agent - Digital Ocean Deployment")
     print("=" * 60)
     
     # Check for API token
@@ -291,7 +291,7 @@ def main():
     print("  Deployment Complete!")
     print("=" * 60)
     print(f"""
-Your James AI Security Agent droplet is ready!
+Your CYBERCAT Security Agent droplet is ready!
 
 📍 IP Address: {ip_address}
 🔗 API URL: http://{ip_address}:8000

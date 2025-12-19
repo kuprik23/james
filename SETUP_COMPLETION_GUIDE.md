@@ -1,4 +1,4 @@
-# Setup Completion Guide - James AI Cybersecurity Agent
+# Setup Completion Guide - CYBERCAT Cybersecurity Agent
 
 ## Current Status
 
@@ -30,7 +30,7 @@ add-digital-ocean-token.bat
 **To get a token:**
 1. Go to: https://cloud.digitalocean.com/account/api/tokens
 2. Click "Generate New Token"
-3. Name: "James AI Security Agent"
+3. Name: "CYBERCAT Security Agent"
 4. Select READ permissions for all resources
 5. Copy the token (starts with dop_v1_)
 6. Run the setup script and paste it

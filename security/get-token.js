@@ -1,5 +1,5 @@
 /**
- * Secure Token Retrieval for James AI
+ * Secure Token Retrieval for CYBERCAT
  * Retrieves tokens from DPAPI-encrypted storage
  */
 

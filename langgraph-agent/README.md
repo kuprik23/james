@@ -1,4 +1,4 @@
-# 🤖 James AI Security Agent - LangGraph
+# 🤖 CYBERCAT Security Agent - LangGraph
 
 An AI-powered cybersecurity analysis agent built with LangGraph. This agent can analyze systems, scan networks, check IP reputations, and provide security recommendations.
 
@@ -189,4 +189,4 @@ Contributions welcome! Please submit issues and pull requests.
 
 ---
 
-**James AI Security Agent** - Powered by LangGraph 🔒
+**CYBERCAT Security Agent** - Powered by LangGraph 🔒

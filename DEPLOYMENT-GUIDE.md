@@ -1,4 +1,4 @@
-# 🚀 James AI - Production Deployment Guide
+# 🚀 CYBERCAT - Production Deployment Guide
 
 **Target Audience:** DevOps Engineers, System Administrators, Senior Engineers  
 **Deployment Complexity:** Medium  
@@ -479,8 +479,8 @@ server {
 
 **Windows Firewall:**
 ```powershell
-New-NetFirewallRule -DisplayName "James AI GUI" -Direction Inbound -LocalPort 3001 -Protocol TCP -Action Allow
-New-NetFirewallRule -DisplayName "James AI API" -Direction Inbound -LocalPort 8000 -Protocol TCP -Action Allow
+New-NetFirewallRule -DisplayName "CYBERCAT GUI" -Direction Inbound -LocalPort 3001 -Protocol TCP -Action Allow
+New-NetFirewallRule -DisplayName "CYBERCAT API" -Direction Inbound -LocalPort 8000 -Protocol TCP -Action Allow
 ```
 
 **Linux (UFW):**
@@ -513,7 +513,7 @@ pm2 startup
 ```ini
 # /etc/systemd/system/james-ai.service
 [Unit]
-Description=James AI Security Platform
+Description=CYBERCAT Security Platform
 After=network.target
 
 [Service]
@@ -541,7 +541,7 @@ curl http://localhost:3001/metrics
 # Custom health check
 while true; do
     if ! curl -f http://localhost:3001/api/health > /dev/null 2>&1; then
-        echo "Alert: James AI GUI is down!"
+        echo "Alert: CYBERCAT GUI is down!"
         # Send alert (email, Slack, PagerDuty, etc.)
     fi
     sleep 60
@@ -570,7 +570,7 @@ filebeat.inputs:
 ### GitHub Actions Example
 
 ```yaml
-name: Deploy James AI
+name: Deploy CYBERCAT
 
 on:
   push:

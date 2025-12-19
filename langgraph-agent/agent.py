@@ -1,5 +1,5 @@
 """
-James AI Security Agent - LangGraph Implementation
+CYBERCAT Security Agent - LangGraph Implementation
 A cybersecurity-focused AI agent using LangGraph for orchestration
 """
 
@@ -605,7 +605,7 @@ if __name__ == "__main__":
     import sys
     
     print("=" * 60)
-    print("  James AI Security Agent - LangGraph")
+    print("  CYBERCAT Security Agent - LangGraph")
     print("=" * 60)
     print()
     

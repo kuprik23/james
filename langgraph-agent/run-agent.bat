@@ -1,9 +1,9 @@
 @echo off
-title James AI Security Agent
+title CYBERCAT Security Agent
 cd /d "%~dp0"
 
 echo ========================================
-echo   James AI Security Agent
+echo   CYBERCAT Security Agent
 echo ========================================
 echo.
 
@@ -30,7 +30,7 @@ if not exist ".env" (
 )
 
 :: Start the server
-echo Starting James AI Security Agent Server...
+echo Starting CYBERCAT Security Agent Server...
 echo.
 echo API Documentation: http://localhost:8000/docs
 echo Health Check: http://localhost:8000/health

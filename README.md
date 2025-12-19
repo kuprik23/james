@@ -50,7 +50,7 @@ One-Click Installation (Windows)
    INSTALL.bat
    ```
 
-3. Start James AI:
+3. Start CYBERCAT:
    ```bash
    START-ALL.bat
    ```

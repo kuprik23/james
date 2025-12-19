@@ -20,7 +20,7 @@
     "tls",
     "cybersecurity"
   ],
-  "author": "James AI Security Team",
+  "author": "CYBERCAT Security Team",
   "license": "MIT",
   "engines": {
     "node": ">=14.0.0"

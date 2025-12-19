@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Military-grade credential management for James AI Security Agent
+    Military-grade credential management for CYBERCAT Security Agent
     
 .DESCRIPTION
     This script provides secure storage and retrieval of API credentials
@@ -159,10 +159,10 @@ function Get-AllCredentials {
         $credentials = cmdkey /list 2>&1 | Where-Object { $_ -match "JamesAI_" }
         
         if ($credentials) {
-            Write-AuditLog "Listed all James AI credentials" "INFO"
+            Write-AuditLog "Listed all CYBERCAT credentials" "INFO"
             return $credentials
         } else {
-            Write-AuditLog "No James AI credentials found" "INFO"
+            Write-AuditLog "No CYBERCAT credentials found" "INFO"
             return @()
         }
     }
@@ -288,7 +288,7 @@ switch ($Action) {
         Remove-StoredCredential -Name $CredentialName
     }
     'List' {
-        Write-Host "`nJames AI Stored Credentials:" -ForegroundColor Cyan
+        Write-Host "`nCYBERCAT Stored Credentials:" -ForegroundColor Cyan
         Write-Host "=============================" -ForegroundColor Cyan
         
         $credDir = Join-Path $env:LOCALAPPDATA "James\credentials"

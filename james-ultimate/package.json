@@ -47,7 +47,7 @@
     "openai",
     "anthropic"
   ],
-  "author": "James AI Security Team",
+  "author": "CYBERCAT Security Team",
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",

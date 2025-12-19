@@ -16,7 +16,7 @@
     "military-grade",
     "network-security"
   ],
-  "author": "James AI - CyberCAT Division",
+  "author": "CYBERCAT - CyberCAT Division",
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",

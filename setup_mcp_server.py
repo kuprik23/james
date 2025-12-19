@@ -75,7 +75,7 @@ def setup_api_token():
     print("To get your API token:")
     print("1. Visit: https://cloud.digitalocean.com/account/api/tokens")
     print("2. Click 'Generate New Token'")
-    print("3. Name it 'James AI Agent'")
+    print("3. Name it 'CYBERCAT Agent'")
     print("4. Select appropriate permissions (read for monitoring, write for management)")
     print("5. Copy the generated token")
     

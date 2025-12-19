@@ -25,7 +25,7 @@
     "network",
     "vulnerability"
   ],
-  "author": "James AI Security Team",
+  "author": "CYBERCAT Security Team",
   "license": "MIT",
   "dependencies": {
     "chalk": "^4.1.2",

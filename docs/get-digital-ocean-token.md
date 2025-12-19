@@ -16,7 +16,7 @@
    - Click the blue "Generate New Token" button
 
 4. **Configure your token:**
-   - **Token name**: `James AI Security Agent`
+   - **Token name**: `CYBERCAT Security Agent`
    - **Expiration**: No expiry (or choose as needed)
    - **Scopes** - Select these READ permissions:
      - ✅ account:read

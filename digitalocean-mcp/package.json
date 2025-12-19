@@ -1,7 +1,7 @@
 {
   "name": "digitalocean-mcp-server",
   "version": "1.0.0",
-  "description": "MCP server for Digital Ocean integration with James AI Cybersecurity Agent",
+  "description": "MCP server for Digital Ocean integration with CYBERCAT Cybersecurity Agent",
   "main": "index.js",
   "type": "module",
   "scripts": {

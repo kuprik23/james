@@ -236,15 +236,15 @@ echo.
 
 :: Create START-ALL.bat
 echo @echo off > START-ALL.bat
-echo title James AI - All Services >> START-ALL.bat
-echo echo Starting James AI Security System... >> START-ALL.bat
+echo title CYBERCAT - All Services >> START-ALL.bat
+echo echo Starting CYBERCAT Security System... >> START-ALL.bat
 echo echo. >> START-ALL.bat
 echo start "Emersa GUI" cmd /k "cd emersa-gui && set PORT=3001 && npm start" >> START-ALL.bat
 echo start "James Ultimate" cmd /k "cd james-ultimate && node src/server.js" >> START-ALL.bat
 echo start "LangGraph Agent" cmd /k "cd langgraph-agent && python server.py" >> START-ALL.bat
 echo echo. >> START-ALL.bat
 echo echo ══════════════════════════════════════════════════════ >> START-ALL.bat
-echo echo  James AI Security System is starting... >> START-ALL.bat
+echo echo  CYBERCAT Security System is starting... >> START-ALL.bat
 echo echo ══════════════════════════════════════════════════════ >> START-ALL.bat
 echo echo. >> START-ALL.bat
 echo echo  ^> Emersa GUI: http://localhost:3001 >> START-ALL.bat
@@ -257,7 +257,7 @@ echo [√] Created START-ALL.bat
 
 :: Create START-GUI.bat
 echo @echo off > START-GUI.bat
-echo title James AI - GUI Only >> START-GUI.bat
+echo title CYBERCAT - GUI Only >> START-GUI.bat
 echo cd emersa-gui >> START-GUI.bat
 echo set PORT=3001 >> START-GUI.bat
 echo npm start >> START-GUI.bat
@@ -286,10 +286,10 @@ if /i "!CREATE_SHORTCUTS!"=="Y" (
     echo Creating desktop shortcuts...
     
     :: Create shortcut using PowerShell
-    powershell -Command "$WshShell = New-Object -ComObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut('%USERPROFILE%\Desktop\James AI.lnk'); $Shortcut.TargetPath = '%CD%\START-ALL.bat'; $Shortcut.WorkingDirectory = '%CD%'; $Shortcut.Description = 'James AI Security System'; $Shortcut.Save()"
+    powershell -Command "$WshShell = New-Object -ComObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut('%USERPROFILE%\Desktop\CYBERCAT.lnk'); $Shortcut.TargetPath = '%CD%\START-ALL.bat'; $Shortcut.WorkingDirectory = '%CD%'; $Shortcut.Description = 'CYBERCAT Security System'; $Shortcut.Save()"
     
     if !errorLevel! EQU 0 (
-        echo [√] Desktop shortcut created: James AI
+        echo [√] Desktop shortcut created: CYBERCAT
     ) else (
         echo [!] Failed to create desktop shortcut
     )
@@ -332,7 +332,7 @@ echo ║      /\_____/\                                                ║
 echo ║     /  o   o  \     INSTALLATION COMPLETE!                   ║
 echo ║    ( ==  ^  == )    ═════════════════════════════════        ║
 echo ║     )         (                                               ║
-echo ║    (           )    James AI is ready to protect!            ║
+echo ║    (           )    CYBERCAT is ready to protect!            ║
 echo ║   ( (  )   (  ) )                                             ║
 echo ║  (__(__)___(__)__)                                            ║
 echo ║                                                               ║

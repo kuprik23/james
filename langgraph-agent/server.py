@@ -1,5 +1,5 @@
 """
-James AI Security Agent - FastAPI Server
+CYBERCAT Security Agent - FastAPI Server
 Provides REST API endpoints for the LangGraph security agent
 """
 
@@ -119,7 +119,7 @@ async def lifespan(app: FastAPI):
     global agent
     
     # Startup
-    print("🚀 Starting James AI Security Agent Server...")
+    print("🚀 Starting CYBERCAT Security Agent Server...")
     
     # Check for API keys
     has_openai = bool(os.getenv("OPENAI_API_KEY"))
@@ -146,7 +146,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="James AI Security Agent",
+    title="CYBERCAT Security Agent",
     description="AI-powered cybersecurity analysis API using LangGraph",
     version="1.0.0",
     lifespan=lifespan
@@ -170,7 +170,7 @@ app.add_middleware(
 async def root():
     """Root endpoint"""
     return {
-        "name": "James AI Security Agent",
+        "name": "CYBERCAT Security Agent",
         "version": "1.0.0",
         "status": "running",
         "endpoints": {
@@ -391,7 +391,7 @@ if __name__ == "__main__":
     
     print(f"""
 ╔══════════════════════════════════════════════════════════════╗
-║           James AI Security Agent - API Server               ║
+║           CYBERCAT Security Agent - API Server               ║
 ╠══════════════════════════════════════════════════════════════╣
 ║  Starting server on http://{host}:{port}                      
 ║  API Documentation: http://{host}:{port}/docs                 

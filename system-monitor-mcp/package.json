@@ -15,7 +15,7 @@
     "system",
     "health-check"
   ],
-  "author": "James AI",
+  "author": "CYBERCAT",
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",

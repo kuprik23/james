@@ -1,9 +1,9 @@
 @echo off
-title James AI Security Agent - Setup
+title CYBERCAT Security Agent - Setup
 cd /d "%~dp0"
 
 echo ========================================
-echo   James AI Security Agent - Setup
+echo   CYBERCAT Security Agent - Setup
 echo ========================================
 echo.
 

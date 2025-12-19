@@ -1,5 +1,5 @@
 @echo off
-title James AI Security Agent - Deploy to Digital Ocean
+title CYBERCAT Security Agent - Deploy to Digital Ocean
 cd /d "%~dp0"
 
 echo ========================================

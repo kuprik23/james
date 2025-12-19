@@ -404,6 +404,22 @@ dist/
 out/
 target/
 
+# Gradle
+.gradle/
+**/gradle-wrapper.jar
+**/gradle-wrapper.properties
+!gradle-wrapper.jar
+gradlew
+gradlew.bat
+
+# Maven
+**/target/
+*.versionsBackup
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.next
+release.properties
+
 # Dependency directories
 vendor/
 bower_components/

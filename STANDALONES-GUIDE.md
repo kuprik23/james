@@ -1,4 +1,4 @@
-# 🚀 James AI - Standalone Applications Guide
+# 🚀 CYBERCAT - Standalone Applications Guide
 
 ## Repository
 📦 **GitHub:** https://github.com/kuprik23/james

@@ -1,6 +1,6 @@
 @echo off
 echo ============================================
-echo James AI - Secure Token Storage
+echo CYBERCAT - Secure Token Storage
 echo Military-Grade Encryption (DPAPI)
 echo ============================================
 echo.
