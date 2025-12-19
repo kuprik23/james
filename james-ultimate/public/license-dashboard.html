@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERCAT - License Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .tier-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .tier-free {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .tier-pro {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .tier-enterprise {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .license-info {
+            margin: 20px 0;
+        }
+
+        .license-info p {
+            margin: 10px 0;
+            color: #666;
+        }
+
+        .license-key {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-item {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            color: #333;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .features-list {
+            list-style: none;
+            margin: 15px 0;
+        }
+
+        .features-list li {
+            padding: 8px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #555;
+        }
+
+        .features-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .locked-feature:before {
+            content: "🔒";
+        }
+
+        .locked-feature {
+            color: #999;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-danger {
+            background: #f44336;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        .pricing-card.popular {
+            border: 3px solid #667eea;
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .price {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #333;
+            margin: 15px 0;
+        }
+
+        .price-currency {
+            font-size: 0.5em;
+            vertical-align: super;
+        }
+
+        .price-interval {
+            font-size: 0.4em;
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🐱 CYBERCAT Dashboard</h1>
+        <div class="header-actions">
+            <div class="user-info">
+                <span id="userName">Loading...</span>
+            </div>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="loading" class="loading">
+            <h2>Loading your dashboard...</h2>
+        </div>
+
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+        <div id="dashboard" style="display: none;">
+            <div class="dashboard-grid">
+                <!-- License Card -->
+                <div class="card">
+                    <h2>Your License</h2>
+                    <div id="tierBadge" class="tier-badge"></div>
+                    <div class="license-info">
+                        <p><strong>Email:</strong> <span id="userEmail"></span></p>
+                        <p><strong>Member Since:</strong> <span id="memberSince"></span></p>
+                        <p><strong>License Key:</strong></p>
+                        <div class="license-key" id="licenseKey"></div>
+                        <p id="expiresAt" style="display: none;"><strong>Expires:</strong> <span id="expiresDate"></span></p>
+                    </div>
+                </div>
+
+                <!-- Scan Statistics Card -->
+                <div class="card">
+                    <h2>Scan Statistics</h2>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Today's Scans</div>
+                            <div class="stat-value" id="todayScans">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Remaining</div>
+                            <div class="stat-value" id="remainingScans">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Total Scans</div>
+                            <div class="stat-value" id="totalScans">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Current Tier</div>
+                            <div class="stat-value" id="currentTier">Free</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features Card -->
+                <div class="card">
+                    <h2>Available Features</h2>
+                    <ul class="features-list" id="featuresList"></ul>
+                </div>
+            </div>
+
+            <!-- Upgrade Section -->
+            <div id="upgradeSection" class="card" style="display: none;">
+                <h2>Upgrade Your License</h2>
+                <p style="margin-bottom: 20px; color: #666;">Unlock powerful features with our premium tiers</p>
+                <div class="pricing-grid" id="pricingGrid"></div>
+            </div>
+
+            <!-- Scan History -->
+            <div class="card" style="margin-top: 20px;">
+                <h2>Recent Scans</h2>
+                <div id="scanHistory">
+                    <p style="color: #666;">No scan history available</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        let currentUser = null;
+
+        async function fetchWithAuth(url, options = {}) {
+            const token = localStorage.getItem('accessToken');
+            const headers = {
+                ...options.headers,
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            };
+
+            const response = await fetch(url, { ...options, headers });
+
+            if (response.status === 401) {
+                // Token expired, try to refresh
+                const refreshed = await refreshToken();
+                if (refreshed) {
+                    return fetchWithAuth(url, options);
+                } else {
+                    logout();
+                    return null;
+                }
+            }
+
+            return response;
+        }
+
+        async function refreshToken() {
+            const refreshToken = localStorage.getItem('refreshToken');
+            if (!refreshToken) return false;
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/refresh`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ refreshToken }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('accessToken', data.tokens.accessToken);
+                    localStorage.setItem('refreshToken', data.tokens.refreshToken);
+                    return true;
+                }
+            } catch (error) {
+                console.error('Token refresh failed:', error);
+            }
+            return false;
+        }
+
+        async function loadDashboard() {
+            try {
+                // Load user profile
+                const profileRes = await fetchWithAuth(`${API_BASE}/auth/profile`);
+                if (!profileRes) return;
+                const profileData = await profileRes.json();
+                currentUser = profileData.profile;
+
+                // Load scan statistics
+                const statsRes = await fetchWithAuth(`${API_BASE}/scan/statistics`);
+                const statsData = await statsRes.json();
+
+                // Load features
+                const featuresRes = await fetchWithAuth(`${API_BASE}/license/features`);
+                const featuresData = await featuresRes.json();
+
+                // Load pricing
+                const pricingRes = await fetch(`${API_BASE}/pricing`);
+                const pricingData = await pricingRes.json();
+
+                // Update UI
+                updateDashboard(currentUser, statsData.statistics, featuresData, pricingData.tiers);
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showError('Failed to load dashboard. Please try refreshing the page.');
+            }
+        }
+
+        function updateDashboard(user, stats, features, pricing) {
+            // User info
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('memberSince').textContent = new Date(user.created_at).toLocaleDateString();
+            document.getElementById('licenseKey').textContent = user.license_key || 'N/A';
+
+            // Tier badge
+            const tierBadge = document.getElementById('tierBadge');
+            tierBadge.textContent = user.license_tier.toUpperCase();
+            tierBadge.className = `tier-badge tier-${user.license_tier}`;
+
+            // Expiration date
+            if (user.subscription_end) {
+                document.getElementById('expiresAt').style.display = 'block';
+                document.getElementById('expiresDate').textContent = new Date(user.subscription_end).toLocaleDateString();
+            }
+
+            // Stats
+            document.getElementById('todayScans').textContent = stats.todayScans;
+            document.getElementById('remainingScans').textContent = stats.remainingScans;
+            document.getElementById('totalScans').textContent = stats.totalScans;
+            document.getElementById('currentTier').textContent = stats.tier.toUpperCase();
+
+            // Features
+            const featuresList = document.getElementById('featuresList');
+            featuresList.innerHTML = '';
+            
+            const allFeatures = [
+                'basic_port_scan',
+                'system_info',
+                'simple_vuln_check',
+                'ai_threat_analysis',
+                'multi_llm_access',
+                'unlimited_scans',
+                'real_time_monitoring',
+                'iot_management',
+                'custom_agents',
+                'export_reports',
+                'priority_support',
+                'custom_integrations',
+            ];
+
+            allFeatures.forEach(feature => {
+                const li = document.createElement('li');
+                const hasFeature = features.features.includes(feature);
+                li.textContent = feature.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                if (!hasFeature) {
+                    li.classList.add('locked-feature');
+                }
+                featuresList.appendChild(li);
+            });
+
+            // Show upgrade section if not enterprise
+            if (user.license_tier !== 'enterprise') {
+                document.getElementById('upgradeSection').style.display = 'block';
+                renderPricing(pricing, user.license_tier);
+            }
+        }
+
+        function renderPricing(tiers, currentTier) {
+            const pricingGrid = document.getElementById('pricingGrid');
+            pricingGrid.innerHTML = '';
+
+            tiers.forEach(tier => {
+                if (tier.tier === currentTier) return; // Skip current tier
+
+                const card = document.createElement('div');
+                card.className = `pricing-card ${tier.popular ? 'popular' : ''}`;
+                
+                card.innerHTML = `
+                    ${tier.popular ? '<div class="popular-badge">POPULAR</div>' : ''}
+                    <h3>${tier.name}</h3>
+                    <div class="price">
+                        <span class="price-currency">$</span>${tier.price}
+                        <span class="price-interval">/${tier.interval}</span>
+                    </div>
+                    <ul class="features-list" style="text-align: left; margin: 20px 0;">
+                        ${tier.features.map(f => `<li>${f}</li>`).join('')}
+                    </ul>
+                    <button class="btn" onclick="upgradeTo('${tier.tier}', '${tier.name}', ${tier.price})">
+                        Upgrade to ${tier.name}
+                    </button>
+                `;
+                
+                pricingGrid.appendChild(card);
+            });
+        }
+
+        function upgradeTo(tier, name, price) {
+            alert(`Upgrade to ${name} - $${price}/month\n\nStripe integration coming soon!\n\nThis will redirect to Stripe checkout.`);
+            // In production, this would create a Stripe checkout session
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function logout() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            window.location.href = '/auth.html';
+        }
+
+        // Check authentication
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                window.location.href = '/auth.html';
+                return;
+            }
+            loadDashboard();
+        });
+    </script>
+</body>
+</html>

@@ -69,7 +69,11 @@
     "ws": "^8.14.2",
     "marked": "^11.0.0",
     "highlight.js": "^11.9.0",
-    "open": "^8.4.2"
+    "open": "^8.4.2",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "sqlite3": "^5.1.6",
+    "stripe": "^14.9.0"
   },
   "optionalDependencies": {
     "java": "^0.14.0"
@@ -82,6 +86,8 @@
     "@types/inquirer": "^9.0.7",
     "@types/chalk": "^2.2.0",
     "@types/ws": "^8.5.10",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/bcryptjs": "^2.4.6",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
     "@typescript-eslint/parser": "^6.13.0",
     "typescript": "^5.3.2",

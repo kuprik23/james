@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERCAT - Login / Sign Up</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+            display: flex;
+        }
+
+        .info-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .info-section h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .info-section p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .features {
+            list-style: none;
+        }
+
+        .features li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .form-section {
+            padding: 60px 40px;
+            flex: 1;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .form {
+            display: none;
+        }
+
+        .form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success {
+            background: #efe;
+            color: #3c3;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .info-section {
+                padding: 40px 30px;
+            }
+
+            .form-section {
+                padding: 40px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="info-section">
+            <h1>🐱 CYBERCAT</h1>
+            <p>Advanced AI-Powered Cybersecurity Platform</p>
+            <ul class="features">
+                <li>Port Scanning & Network Analysis</li>
+                <li>AI-Powered Threat Detection</li>
+                <li>Real-Time Monitoring</li>
+                <li>IoT Device Management</li>
+                <li>Custom Security Agents</li>
+                <li>Multi-LLM Integration</li>
+            </ul>
+        </div>
+
+        <div class="form-section">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('login')">Login</div>
+                <div class="tab" onclick="switchTab('signup')">Sign Up</div>
+            </div>
+
+            <div id="error" class="error"></div>
+            <div id="success" class="success"></div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="form active" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn" id="loginBtn">Login</button>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signupForm" class="form" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label for="signupName">Name</label>
+                    <input type="text" id="signupName" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" required minlength="8">
+                </div>
+                <div class="form-group">
+                    <label for="signupPasswordConfirm">Confirm Password</label>
+                    <input type="password" id="signupPasswordConfirm" required minlength="8">
+                </div>
+                <button type="submit" class="btn" id="signupBtn">Sign Up</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+
+        function switchTab(tab) {
+            // Update tabs
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update forms
+            document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
+            document.getElementById(tab + 'Form').classList.add('active');
+
+            // Clear messages
+            hideError();
+            hideSuccess();
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+        }
+
+        function hideSuccess() {
+            document.getElementById('success').style.display = 'none';
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            hideError();
+            hideSuccess();
+
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+
+            btn.disabled = true;
+            btn.textContent = 'Logging in...';
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Store tokens
+                    localStorage.setItem('accessToken', data.tokens.accessToken);
+                    localStorage.setItem('refreshToken', data.tokens.refreshToken);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+
+                    showSuccess('Login successful! Redirecting...');
+                    setTimeout(() => {
+                        window.location.href = '/license-dashboard.html';
+                    }, 1000);
+                } else {
+                    showError(data.message || 'Login failed');
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Login';
+            }
+        }
+
+        async function handleSignup(event) {
+            event.preventDefault();
+            hideError();
+            hideSuccess();
+
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
+
+            if (password !== passwordConfirm) {
+                showError('Passwords do not match');
+                return;
+            }
+
+            const btn = document.getElementById('signupBtn');
+            btn.disabled = true;
+            btn.textContent = 'Creating account...';
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name, email, password }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Store tokens
+                    localStorage.setItem('accessToken', data.tokens.accessToken);
+                    localStorage.setItem('refreshToken', data.tokens.refreshToken);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+
+                    showSuccess('Account created successfully! Redirecting...');
+                    setTimeout(() => {
+                        window.location.href = '/license-dashboard.html';
+                    }, 1000);
+                } else {
+                    showError(data.message || 'Registration failed');
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Sign Up';
+            }
+        }
+
+        // Check if already logged in
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('accessToken');
+            if (token) {
+                window.location.href = '/license-dashboard.html';
+            }
+        });
+    </script>
+</body>
+</html>

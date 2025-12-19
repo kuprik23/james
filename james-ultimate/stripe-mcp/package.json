@@ -1,0 +1,24 @@
+{
+  "name": "stripe-mcp-server",
+  "version": "1.0.0",
+  "description": "Stripe MCP Server for CYBERCAT payment processing",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "stripe": "^14.9.0",
+    "dotenv": "^16.3.1"
+  },
+  "keywords": [
+    "mcp",
+    "stripe",
+    "payment",
+    "cybercat"
+  ],
+  "author": "CYBERCAT",
+  "license": "MIT"
+}

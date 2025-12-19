@@ -47,6 +47,16 @@ import { antiMalware } from './security/anti-malware';
 import { antiRansomware } from './security/anti-ransomware';
 import { rateLimiter } from './security/rate-limiter';
 
+// Import licensing system
+import { Database } from './database/database';
+import { LicenseRoutes } from './routes/license-routes';
+
+// Initialize database (will be initialized in startup)
+const db = new Database();
+let licenseRoutes: LicenseRoutes;
+let authMiddleware: any;
+let licenseService: any;
+
 // Initialize Express app
 const app: Express = express();
 const server = http.createServer(app);
@@ -430,6 +440,8 @@ apiRouter.post('/config/save', (req: Request, res: Response) => {
 // Mount API router
 app.use('/api', apiRouter);
 
+// Mount license routes (will be added after DB initialization)
+
 // Socket.IO for real-time communication
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
@@ -559,7 +571,23 @@ rateLimiter.on('ip_blacklisted', (data: any) => {
   console.warn('[SECURITY] IP blacklisted:', data.ip);
 });
 
-server.listen(PORT, HOST, () => {
+// Initialize database and start server
+async function startServer() {
+  try {
+    // Initialize database
+    await db.initialize();
+    console.log('[LICENSING] Database initialized');
+
+    // Initialize license routes
+    licenseRoutes = new LicenseRoutes(db);
+    authMiddleware = licenseRoutes.getAuthMiddleware();
+    licenseService = licenseRoutes.getLicenseService();
+
+    // Mount license routes
+    app.use('/api', licenseRoutes.getRouter());
+
+    // Start server
+    server.listen(PORT, HOST, () => {
   console.log(`
 ╔═══════════════════════════════════════════════════════════════════════════╗
 ║                                                                           ║
@@ -592,8 +620,16 @@ server.listen(PORT, HOST, () => {
 ║  • Real-time Security Analysis
 ╚═══════════════════════════════════════════════════════════════════════════╝
   `);
-  
-  console.log('[CYBERCAT] All systems operational. Standing by for threats...');
-});
+      
+      console.log('[CYBERCAT] All systems operational. Standing by for threats...');
+    });
+  } catch (error) {
+    console.error('[FATAL] Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+// Start the server
+startServer();
 
 export { app, server, io };
