@@ -1,6 +1,18 @@
-@echo off 
-title CYBERCAT - Cyber Analysis and Threat Detection 
-echo ======================================== 
+@echo off
+title CYBERCAT - Cyber Analysis and Threat Detection
+
+:: Check and enforce Terms acceptance
+call Accept-Terms.bat
+if %ERRORLEVEL% NEQ 0 (
+    echo.
+    echo Terms and Conditions not accepted.
+    echo CYBERCAT cannot run without acceptance.
+    echo.
+    pause
+    exit /b 1
+)
+
+echo ========================================
 echo   CYBERCAT - Starting Server... 
 echo ======================================== 
 if exist "config\.env" ( 

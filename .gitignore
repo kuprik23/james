@@ -490,6 +490,11 @@ james-main.zip
 test-sync.txt
 install-log.txt
 
+# CYBERCAT Terms acceptance
+.terms-accepted
+*/.terms-accepted
+**/.terms-accepted
+
 # Excluded for safety - these should be example files
 # !digitalocean-mcp/.env.example
 # !langgraph-agent/.env.example
