@@ -18,8 +18,9 @@
     "build:kotlin": "cd kotlin-scanner && gradle build",
     "build:rust": "cd rust-crypto && cargo build --release",
     "build:cpp": "cd cpp-scanner && cmake -B build -S . && cmake --build build --config Release",
-    "build:exe": "pkg dist/main.js --targets node18-win-x64 --output dist/James.exe",
-    "build-all": "npm run build && pkg dist/main.js --targets node18-win-x64,node18-macos-x64,node18-linux-x64 --out-path dist",
+    "build:exe": "node build-exe.js",
+    "build:exe:legacy": "pkg dist/main.js --targets node18-win-x64 --output dist/James.exe",
+    "build-all": "npm run build && node build-exe.js --all",
     "clean": "rimraf dist && cd java-scanner && mvn clean && cd ../kotlin-scanner && gradle clean && cd ../rust-crypto && cargo clean && cd ../cpp-scanner && rimraf build",
     "watch": "tsc --watch",
     "test": "jest",
@@ -87,7 +88,9 @@
     "ts-node": "^10.9.2",
     "eslint": "^8.54.0",
     "pkg": "^5.8.1",
+    "@vercel/ncc": "^0.38.1",
     "nodemon": "^3.0.2",
+    "nexe": "^4.0.0-rc.6",
     "rimraf": "^5.0.5"
   }
 }
