@@ -183,7 +183,7 @@ Server starts on http://localhost:3000
 - ✅ Basic port scanning
 - ✅ System information
 - ✅ Simple vulnerability checks
-- ⚠️ Limited to 5 scans/day
+- ⚠️ Limited to 1 scan/day
 
 ### Pro Tier - $29/month
 - ✅ All Free features

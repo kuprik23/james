@@ -60,7 +60,7 @@ export class LicenseService {
 
   // Daily scan limits by tier
   private readonly SCAN_LIMITS = {
-    free: 5,
+    free: 1,
     pro: Infinity,
     enterprise: Infinity,
   };

@@ -30,7 +30,7 @@ To unlock advanced features, you must purchase a license by contacting Emersa La
 - Basic port scanning
 - System information gathering  
 - Simple vulnerability checks
-- **Limit:** 5 scans per day
+- **Limit:** 1 scan per day
 
 **Best For:** Testing, evaluation, personal use
 
@@ -139,7 +139,7 @@ CYBERCAT-ENT-XXXX-XXXX-XXXX-XXXX
 ## ❓ Frequently Asked Questions
 
 ### Can I try before I buy?
-Yes! The Free tier includes all basic features with a 5 scans/day limit. Test the platform before upgrading.
+Yes! The Free tier includes all basic features with a 1 scan/day limit. Test the platform before upgrading.
 
 ### How long does license activation take?
 Instant! Once you enter your valid license key, all features unlock immediately.

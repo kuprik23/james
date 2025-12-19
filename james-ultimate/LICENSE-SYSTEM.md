@@ -168,7 +168,7 @@ The server will:
 - Simple vulnerability checks
 
 **Limitations:**
-- 5 scans per day
+- 1 scan per day
 - No AI threat analysis
 - No export capabilities
 
@@ -370,7 +370,7 @@ When user attempts to use a premium feature:
 Free tier users:
 1. Each scan increments daily counter
 2. Counter resets at midnight
-3. After 5 scans, returns 429 error
+3. After 1 scan, returns 429 error
 4. Suggests upgrade to Pro
 
 ## 💳 Stripe Integration
