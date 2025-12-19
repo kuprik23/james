@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYBERCAT - Military Grade Cybersecurity Platform | Emersa Ltd</title>
+  <link rel="icon" type="image/svg+xml" href="/images/cybercat-logo.svg">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #00d4ff;
+      --secondary-color: #7c3aed;
+      --bg-dark: #0a0a0f;
+      --bg-card: #12121a;
+      --bg-input: #1a1a24;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0b0;
+      --border-color: #2a2a3a;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    
+    /* Layout */
+    .app-container {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+    
+    .logo i {
+      font-size: 2rem;
+    }
+    
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 0;
+    }
+    
+    .nav-section {
+      padding: 0 16px;
+      margin-bottom: 24px;
+    }
+    
+    .nav-section-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      padding: 0 8px;
+    }
+    
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .nav-item:hover {
+      background: var(--bg-input);
+      color: var(--text-primary);
+    }
+    
+    .nav-item.active {
+      background: linear-gradient(135deg, var(--primary-color)20, var(--secondary-color)20);
+      color: var(--primary-color);
+    }
+    
+    .nav-item i {
+      font-size: 1.25rem;
+    }
+    
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    /* Header */
+    .header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-card);
+    }
+    
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    /* Chat Area */
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+    }
+    
+    .message {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      max-width: 900px;
+    }
+    
+    .message.user {
+      flex-direction: row-reverse;
+      margin-left: auto;
+    }
+    
+    .message-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+    
+    .message.assistant .message-avatar {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    }
+    
+    .message.user .message-avatar {
+      background: var(--bg-input);
+    }
+    
+    .message-content {
+      background: var(--bg-card);
+      padding: 16px 20px;
+      border-radius: 16px;
+      max-width: 80%;
+    }
+    
+    .message.user .message-content {
+      background: linear-gradient(135deg, var(--primary-color)30, var(--secondary-color)30);
+    }
+    
+    .message-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    
+    .message-text {
+      line-height: 1.6;
+    }
+    
+    .message-text pre {
+      background: var(--bg-dark);
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+    
+    .message-text code {
+      font-family: 'Fira Code', 'Consolas', monospace;
+      font-size: 0.875rem;
+    }
+    
+    /* Chat Input */
+    .chat-input-container {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-card);
+    }
+    
+    .chat-input-wrapper {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .chat-input {
+      flex: 1;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      color: var(--text-primary);
+      font-size: 1rem;
+      resize: none;
+      min-height: 56px;
+      max-height: 200px;
+    }
+    
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+    
+    .send-btn {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      border: none;
+      border-radius: 12px;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    
+    .send-btn:hover {
+      transform: scale(1.05);
+    }
+    
+    .send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .send-btn i {
+      font-size: 1.5rem;
+      color: white;
+    }
+    
+    /* Panels */
+    .panel {
+      display: none;
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+    }
+    
+    .panel.active {
+      display: block;
+    }
+    
+    .panel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    
+    .card-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .card-body {
+      color: var(--text-secondary);
+    }
+    
+    /* Buttons */
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: var(--bg-input);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+    
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.875rem;
+    }
+    
+    /* Status indicators */
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    
+    .status-dot.online { background: var(--success-color); }
+    .status-dot.offline { background: var(--danger-color); }
+    .status-dot.warning { background: var(--warning-color); }
+    
+    /* Select dropdowns */
+    .select-wrapper {
+      position: relative;
+    }
+    
+    .custom-select {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 16px;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      cursor: pointer;
+      width: 100%;
+    }
+    
+    .custom-select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+    
+    /* Agent selector */
+    .agent-selector {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    
+    .agent-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .agent-chip:hover {
+      border-color: var(--primary-color);
+    }
+    
+    .agent-chip.active {
+      background: linear-gradient(135deg, var(--primary-color)30, var(--secondary-color)30);
+      border-color: var(--primary-color);
+    }
+    
+    /* Tool cards */
+    .tool-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .tool-card:hover {
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+    }
+    
+    .tool-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+    }
+    
+    .tool-icon.network { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+    .tool-icon.system { background: linear-gradient(135deg, #10b981, #059669); }
+    .tool-icon.threat { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .tool-icon.forensics { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    
+    /* Score display */
+    .score-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0 auto 16px;
+    }
+    
+    .score-circle.high { background: linear-gradient(135deg, #10b981, #059669); }
+    .score-circle.medium { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .score-circle.low { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    
+    /* Loading spinner */
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: -280px;
+        z-index: 1000;
+        transition: left 0.3s;
+      }
+      
+      .sidebar.open {
+        left: 0;
+      }
+      
+      .message {
+        max-width: 100%;
+      }
+      
+      .message-content {
+        max-width: 90%;
+      }
+    }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: var(--bg-dark);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo" style="display: block; text-align: center;">
+          <pre style="color: #00ff88; font-size: 10px; line-height: 1.2; margin: 0; font-family: monospace; text-shadow: 0 0 10px #00ff88;">    /\_____/\
+   /  o   o  \
+  ( ==  ^  == )
+   )         (
+  (           )
+ ( (  )   (  ) )
+(__(__)___(__)__)
+   <span style="color: #00d4ff; font-weight: bold; font-size: 12px;">CYBERCAT</span></pre>
+          <div style="margin-top: 4px; font-size: 0.65rem; color: #00ff88; font-family: monospace;">
+            v2.0 • Emersa Ltd
+          </div>
+        </div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Main</div>
+          <div class="nav-item active" data-panel="chat">
+            <i class="bi bi-chat-dots"></i>
+            <span>Chat</span>
+          </div>
+          <div class="nav-item" data-panel="dashboard">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+          </div>
+          <div class="nav-item" data-panel="tools">
+            <i class="bi bi-tools"></i>
+            <span>Security Tools</span>
+          </div>
+        </div>
+        
+        <div class="nav-section">
+          <div class="nav-section-title">Configuration</div>
+          <div class="nav-item" data-panel="agents">
+            <i class="bi bi-robot"></i>
+            <span>Agents</span>
+          </div>
+          <div class="nav-item" data-panel="llm">
+            <i class="bi bi-cpu"></i>
+            <span>LLM Providers</span>
+          </div>
+          <div class="nav-item" data-panel="iot">
+            <i class="bi bi-router"></i>
+            <span>IoT Devices</span>
+          </div>
+        </div>
+        
+        <div class="nav-section">
+          <div class="nav-section-title">Reports</div>
+          <div class="nav-item" data-panel="reports">
+            <i class="bi bi-file-earmark-text"></i>
+            <span>Security Reports</span>
+          </div>
+          <a href="/activity-monitor.html" target="_blank" class="nav-item" style="text-decoration: none;">
+            <i class="bi bi-activity"></i>
+            <span>Activity Monitor</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-title" id="panelTitle">Chat with James</div>
+        <div class="header-actions">
+          <select class="custom-select" id="agentSelect" style="width: 200px;">
+            <option value="security-analyst">🔒 Security Analyst</option>
+            <option value="network-guardian">🌐 Network Guardian</option>
+            <option value="iot-security">📡 IoT Security</option>
+            <option value="threat-hunter">🎯 Threat Hunter</option>
+            <option value="incident-responder">🚨 Incident Responder</option>
+            <option value="assistant">🤖 General Assistant</option>
+          </select>
+          <select class="custom-select" id="llmSelect" style="width: 180px;">
+            <option value="ollama">🏠 Ollama (Local)</option>
+            <option value="openai">☁️ OpenAI</option>
+            <option value="anthropic">☁️ Anthropic</option>
+            <option value="groq">☁️ Groq</option>
+          </select>
+        </div>
+      </header>
+      
+      <!-- Chat Panel -->
+      <div class="panel active" id="chatPanel">
+        <div class="chat-container">
+          <div class="chat-messages" id="chatMessages">
+            <div class="message assistant">
+              <div class="message-avatar">🔒</div>
+              <div class="message-content">
+                <div class="message-header">
+                  <span>Security Analyst</span>
+                  <span>•</span>
+                  <span>Just now</span>
+                </div>
+                <div class="message-text">
+                  <p>Hello! I'm James, your AI-powered cybersecurity assistant. I can help you with:</p>
+                  <ul>
+                    <li><strong>Security Analysis</strong> - Scan systems, networks, and applications</li>
+                    <li><strong>Threat Detection</strong> - Identify potential security threats</li>
+                    <li><strong>Incident Response</strong> - Guide you through security incidents</li>
+                    <li><strong>IoT Security</strong> - Analyze and secure IoT devices</li>
+                  </ul>
+                  <p>Try these commands:</p>
+                  <ul>
+                    <li><code>/agent list</code> - List available agents</li>
+                    <li><code>/llm list</code> - List LLM providers</li>
+                    <li><code>/tools</code> - List security tools</li>
+                    <li><code>/help</code> - Show all commands</li>
+                  </ul>
+                  <p>What would you like to analyze today?</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+              <textarea class="chat-input" id="chatInput" placeholder="Type your message... (Press Enter to send, Shift+Enter for new line)" rows="1"></textarea>
+              <button class="send-btn" id="sendBtn">
+                <i class="bi bi-send-fill"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Dashboard Panel -->
+      <div class="panel" id="dashboardPanel">
+        <div class="panel-grid">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="bi bi-shield-check"></i>
+                Security Score
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="score-circle high" id="securityScore">--</div>
+              <p class="text-center">Overall security posture</p>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="bi bi-exclamation-triangle"></i>
+                Issues Found
+              </div>
+            </div>
+            <div class="card-body">
+              <h2 id="issuesCount">--</h2>
+              <p>Security issues detected</p>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="bi bi-hdd-network"></i>
+                Network Status
+              </div>
+            </div>
+            <div class="card-body">
+              <p><span class="status-dot online"></span> <span id="connectionCount">--</span> Active Connections</p>
+              <p><span class="status-dot warning"></span> <span id="openPorts">--</span> Open Ports</p>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="bi bi-cpu"></i>
+                System Status
+              </div>
+            </div>
+            <div class="card-body">
+              <p>Memory: <span id="memoryUsage">--</span></p>
+              <p>Processes: <span id="processCount">--</span></p>
+            </div>
+          </div>
+        </div>
+        
+        <div style="margin-top: 24px;">
+          <button class="btn btn-primary" onclick="runSecurityScan()">
+            <i class="bi bi-play-fill"></i> Run Full Security Scan
+          </button>
+        </div>
+      </div>
+      
+      <!-- Tools Panel -->
+      <div class="panel" id="toolsPanel">
+        <h3 style="margin-bottom: 20px;">Security Tools</h3>
+        <div class="panel-grid" id="toolsGrid">
+          <!-- Tools will be loaded dynamically -->
+        </div>
+      </div>
+      
+      <!-- Agents Panel -->
+      <div class="panel" id="agentsPanel">
+        <h3 style="margin-bottom: 20px;">AI Agents</h3>
+        <div class="panel-grid" id="agentsGrid">
+          <!-- Agents will be loaded dynamically -->
+        </div>
+      </div>
+      
+      <!-- LLM Panel -->
+      <div class="panel" id="llmPanel">
+        <h3 style="margin-bottom: 20px;">LLM Providers</h3>
+        <div class="panel-grid" id="llmGrid">
+          <!-- Providers will be loaded dynamically -->
+        </div>
+        
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="bi bi-key"></i>
+              API Key Configuration
+            </div>
+          </div>
+          <div class="card-body">
+            <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+              <select class="custom-select" id="apiKeyProvider" style="width: 200px;">
+                <option value="openai">OpenAI</option>
+                <option value="anthropic">Anthropic</option>
+                <option value="groq">Groq</option>
+                <option value="together">Together AI</option>
+              </select>
+              <input type="password" class="chat-input" id="apiKeyInput" placeholder="Enter API Key" style="flex: 1; min-height: auto; padding: 10px 16px;">
+              <button class="btn btn-primary" onclick="setApiKey()">Save Key</button>
+            </div>
+            <p class="text-muted" style="font-size: 0.875rem;">API keys are stored locally and never sent to external servers.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- IoT Panel -->
+      <div class="panel" id="iotPanel">
+        <h3 style="margin-bottom: 20px;">IoT Devices</h3>
+        <div class="panel-grid" id="iotGrid">
+          <!-- Devices will be loaded dynamically -->
+        </div>
+        
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="bi bi-search"></i>
+              Device Discovery
+            </div>
+          </div>
+          <div class="card-body">
+            <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+              <input type="text" class="chat-input" id="subnetInput" placeholder="Subnet (e.g., 192.168.1)" value="192.168.1" style="flex: 1; min-height: auto; padding: 10px 16px;">
+              <button class="btn btn-primary" onclick="discoverDevices()">
+                <i class="bi bi-search"></i> Discover
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Reports Panel -->
+      <div class="panel" id="reportsPanel">
+        <h3 style="margin-bottom: 20px;">Security Reports</h3>
+        <div id="reportContent">
+          <p>Click "Generate Report" to create a comprehensive security report.</p>
+          <button class="btn btn-primary" onclick="generateReport()">
+            <i class="bi bi-file-earmark-text"></i> Generate Report
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/11.0.0/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Initialize Socket.IO
+    const socket = io();
+    
+    // State
+    let currentAgent = 'security-analyst';
+    let currentProvider = 'ollama';
+    let isLoading = false;
+    
+    // DOM Elements
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const agentSelect = document.getElementById('agentSelect');
+    const llmSelect = document.getElementById('llmSelect');
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadInitialData();
+      setupEventListeners();
+    });
+    
+    function setupEventListeners() {
+      // Navigation
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const panel = item.dataset.panel;
+          switchPanel(panel);
+        });
+      });
+      
+      // Chat input
+      chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+      
+      chatInput.addEventListener('input', () => {
+        chatInput.style.height = 'auto';
+        chatInput.style.height = Math.min(chatInput.scrollHeight, 200) + 'px';
+      });
+      
+      sendBtn.addEventListener('click', sendMessage);
+      
+      // Agent select
+      agentSelect.addEventListener('change', () => {
+        currentAgent = agentSelect.value;
+        socket.emit('switchAgent', { agentId: currentAgent });
+      });
+      
+      // LLM select
+      llmSelect.addEventListener('change', () => {
+        currentProvider = llmSelect.value;
+        socket.emit('switchProvider', { provider: currentProvider });
+      });
+    }
+    
+    function switchPanel(panelId) {
+      // Update nav
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.panel === panelId);
+      });
+      
+      // Update panels
+      document.querySelectorAll('.panel').forEach(panel => {
+        panel.classList.toggle('active', panel.id === panelId + 'Panel');
+      });
+      
+      // Update title
+      const titles = {
+        chat: 'Chat with James',
+        dashboard: 'Security Dashboard',
+        tools: 'Security Tools',
+        agents: 'AI Agents',
+        llm: 'LLM Providers',
+        iot: 'IoT Devices',
+        reports: 'Security Reports'
+      };
+      document.getElementById('panelTitle').textContent = titles[panelId] || 'James';
+      
+      // Load panel data
+      if (panelId === 'dashboard') loadDashboard();
+      if (panelId === 'tools') loadTools();
+      if (panelId === 'agents') loadAgents();
+      if (panelId === 'llm') loadProviders();
+      if (panelId === 'iot') loadDevices();
+    }
+    
+    async function loadInitialData() {
+      try {
+        const response = await fetch('/api/config');
+        const config = await response.json();
+        
+        if (config.agent?.activeAgent) {
+          currentAgent = config.agent.activeAgent;
+          agentSelect.value = currentAgent;
+        }
+        
+        if (config.llm?.activeProvider) {
+          currentProvider = config.llm.activeProvider;
+          llmSelect.value = currentProvider;
+        }
+      } catch (e) {
+        console.error('Failed to load config:', e);
+      }
+    }
+    
+    async function sendMessage() {
+      const message = chatInput.value.trim();
+      if (!message || isLoading) return;
+      
+      // Add user message
+      addMessage('user', message);
+      chatInput.value = '';
+      chatInput.style.height = 'auto';
+      
+      // Show loading
+      isLoading = true;
+      sendBtn.disabled = true;
+      const loadingId = addLoadingMessage();
+      
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message })
+        });
+        
+        const data = await response.json();
+        
+        // Remove loading
+        removeMessage(loadingId);
+        
+        // Add response
+        addMessage('assistant', data.response, data.agent);
+      } catch (error) {
+        removeMessage(loadingId);
+        addMessage('assistant', 'Sorry, an error occurred. Please try again.', { icon: '❌', name: 'Error' });
+      } finally {
+        isLoading = false;
+        sendBtn.disabled = false;
+      }
+    }
+    
+    function addMessage(role, content, agent = null) {
+      const id = 'msg-' + Date.now();
+      const div = document.createElement('div');
+      div.className = `message ${role}`;
+      div.id = id;
+      
+      const avatar = role === 'user' ? '👤' : (agent?.icon || '🔒');
+      const name = role === 'user' ? 'You' : (agent?.name || 'James');
+      
+      // Parse markdown
+      const htmlContent = marked.parse(content);
+      
+      div.innerHTML = `
+        <div class="message-avatar">${avatar}</div>
+        <div class="message-content">
+          <div class="message-header">
+            <span>${name}</span>
+            <span>•</span>
+            <span>Just now</span>
+          </div>
+          <div class="message-text">${htmlContent}</div>
+        </div>
+      `;
+      
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      
+      // Highlight code blocks
+      div.querySelectorAll('pre code').forEach(block => {
+        hljs.highlightElement(block);
+      });
+      
+      return id;
+    }
+    
+    function addLoadingMessage() {
+      const id = 'loading-' + Date.now();
+      const div = document.createElement('div');
+      div.className = 'message assistant';
+      div.id = id;
+      
+      div.innerHTML = `
+        <div class="message-avatar">🔒</div>
+        <div class="message-content">
+          <div class="message-header">
+            <span>James</span>
+            <span>•</span>
+            <span>Thinking...</span>
+          </div>
+          <div class="message-text">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      `;
+      
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      
+      return id;
+    }
+    
+    function removeMessage(id) {
+      const msg = document.getElementById(id);
+      if (msg) msg.remove();
+    }
+    
+    async function loadDashboard() {
+      try {
+        const response = await fetch('/api/scan/system');
+        const data = await response.json();
+        
+        document.getElementById('securityScore').textContent = data.score || '--';
+        document.getElementById('securityScore').className = 'score-circle ' + 
+          (data.score >= 80 ? 'high' : data.score >= 60 ? 'medium' : 'low');
+        document.getElementById('issuesCount').textContent = data.issues?.length || 0;
+        document.getElementById('memoryUsage').textContent = 
+          Math.round(((require('os').totalmem() - require('os').freemem()) / require('os').totalmem()) * 100) + '%';
+        document.getElementById('processCount').textContent = data.processes?.total || '--';
+      } catch (e) {
+        console.error('Failed to load dashboard:', e);
+      }
+    }
+    
+    async function loadTools() {
+      try {
+        const response = await fetch('/api/tools');
+        const tools = await response.json();
+        
+        const grid = document.getElementById('toolsGrid');
+        grid.innerHTML = tools.map(tool => `
+          <div class="tool-card" onclick="executeTool('${tool.id}')">
+            <div class="tool-icon ${tool.category}">${getCategoryIcon(tool.category)}</div>
+            <h4>${tool.name}</h4>
+            <p style="color: var(--text-secondary); font-size: 0.875rem;">${tool.description}</p>
+          </div>
+        `).join('');
+      } catch (e) {
+        console.error('Failed to load tools:', e);
+      }
+    }
+    
+    async function loadAgents() {
+      try {
+        const response = await fetch('/api/agents');
+        const agents = await response.json();
+        
+        const grid = document.getElementById('agentsGrid');
+        grid.innerHTML = agents.map(agent => `
+          <div class="card ${agent.isActive ? 'active' : ''}" onclick="switchAgent('${agent.id}')" style="cursor: pointer;">
+            <div class="card-header">
+              <div class="card-title">
+                <span style="font-size: 1.5rem;">${agent.icon}</span>
+                ${agent.name}
+              </div>
+              ${agent.isActive ? '<span class="status-dot online"></span>' : ''}
+            </div>
+            <div class="card-body">
+              <p>${agent.description}</p>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        console.error('Failed to load agents:', e);
+      }
+    }
+    
+    async function loadProviders() {
+      try {
+        const response = await fetch('/api/llm/providers');
+        const providers = await response.json();
+        
+        const grid = document.getElementById('llmGrid');
+        grid.innerHTML = providers.map(provider => `
+          <div class="card" onclick="switchProvider('${provider.id}')" style="cursor: pointer;">
+            <div class="card-header">
+              <div class="card-title">
+                ${provider.isLocal ? '🏠' : '☁️'} ${provider.name}
+              </div>
+              <span class="status-dot ${provider.hasKey || provider.isLocal ? 'online' : 'offline'}"></span>
+            </div>
+            <div class="card-body">
+              <p><strong>Models:</strong> ${provider.models.slice(0, 3).join(', ')}${provider.models.length > 3 ? '...' : ''}</p>
+              <p>${provider.hasKey || provider.isLocal ? '✓ Ready' : '⚠️ Needs API Key'}</p>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        console.error('Failed to load providers:', e);
+      }
+    }
+    
+    async function loadDevices() {
+      try {
+        const response = await fetch('/api/iot/devices');
+        const devices = await response.json();
+        
+        const grid = document.getElementById('iotGrid');
+        if (devices.length === 0) {
+          grid.innerHTML = '<p>No IoT devices registered. Use discovery or add devices manually.</p>';
+        } else {
+          grid.innerHTML = devices.map(device => `
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <i class="bi bi-router"></i> ${device.name}
+                </div>
+                <span class="status-dot ${device.status === 'connected' ? 'online' : 'offline'}"></span>
+              </div>
+              <div class="card-body">
+                <p><strong>Protocol:</strong> ${device.protocol}</p>
+                <p><strong>Host:</strong> ${device.host}:${device.port}</p>
+                <p><strong>Status:</strong> ${device.status}</p>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        console.error('Failed to load devices:', e);
+      }
+    }
+    
+    function getCategoryIcon(category) {
+      const icons = {
+        network: '🌐',
+        system: '💻',
+        threat_intel: '🎯',
+        forensics: '🔍',
+        utility: '🔧',
+        reporting: '📊'
+      };
+      return icons[category] || '🔧';
+    }
+    
+    async function executeTool(toolId) {
+      addMessage('user', `/tool ${toolId}`);
+      
+      const loadingId = addLoadingMessage();
+      
+      try {
+        const response = await fetch(`/api/tools/${toolId}/execute`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
+        });
+        
+        const result = await response.json();
+        removeMessage(loadingId);
+        
+        addMessage('assistant', '```json\n' + JSON.stringify(result, null, 2) + '\n```', { icon: '🔧', name: 'Tool Result' });
+      } catch (e) {
+        removeMessage(loadingId);
+        addMessage('assistant', 'Failed to execute tool: ' + e.message, { icon: '❌', name: 'Error' });
+      }
+    }
+    
+    function switchAgent(agentId) {
+      currentAgent = agentId;
+      agentSelect.value = agentId;
+      socket.emit('switchAgent', { agentId });
+      loadAgents();
+    }
+    
+    function switchProvider(providerId) {
+      currentProvider = providerId;
+      llmSelect.value = providerId;
+      socket.emit('switchProvider', { provider: providerId });
+      loadProviders();
+    }
+    
+    async function setApiKey() {
+      const provider = document.getElementById('apiKeyProvider').value;
+      const apiKey = document.getElementById('apiKeyInput').value;
+      
+      if (!apiKey) {
+        alert('Please enter an API key');
+        return;
+      }
+      
+      try {
+        await fetch('/api/llm/key', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ provider, apiKey })
+        });
+        
+        document.getElementById('apiKeyInput').value = '';
+        alert('API key saved successfully!');
+        loadProviders();
+      } catch (e) {
+        alert('Failed to save API key: ' + e.message);
+      }
+    }
+    
+    async function runSecurityScan() {
+      switchPanel('chat');
+      chatInput.value = 'Run a full security scan of my system';
+      sendMessage();
+    }
+    
+    async function generateReport() {
+      const reportContent = document.getElementById('reportContent');
+      reportContent.innerHTML = '<div class="spinner"></div> Generating report...';
+      
+      try {
+        const response = await fetch('/api/report');
+        const report = await response.json();
+        
+        reportContent.innerHTML = `
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Security Report - ${report.reportId}</div>
+              <span>${new Date(report.timestamp).toLocaleString()}</span>
+            </div>
+            <div class="card-body">
+              <h4>Summary</h4>
+              <div class="score-circle ${report.summary.riskLevel === 'Low' ? 'high' : report.summary.riskLevel === 'Medium' ? 'medium' : 'low'}">
+                ${report.summary.overallScore}
+              </div>
+              <p><strong>Risk Level:</strong> ${report.summary.riskLevel}</p>
+              <p><strong>Issues Found:</strong> ${report.summary.issuesFound}</p>
+              
+              <h4 style="margin-top: 20px;">Recommendations</h4>
+              <ul>
+                ${report.recommendations.map(r => `<li>${r}</li>`).join('')}
+              </ul>
+              
+              <h4 style="margin-top: 20px;">Full Report</h4>
+              <pre style="background: var(--bg-dark); padding: 16px; border-radius: 8px; overflow-x: auto;">${JSON.stringify(report, null, 2)}</pre>
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        reportContent.innerHTML = '<p>Failed to generate report: ' + e.message + '</p>';
+      }
+    }
+    
+    async function discoverDevices() {
+      const subnet = document.getElementById('subnetInput').value;
+      const grid = document.getElementById('iotGrid');
+      
+      grid.innerHTML = '<div class="spinner"></div> Discovering devices...';
+      
+      try {
+        const response = await fetch('/api/iot/discover', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ subnet })
+        });
+        
+        const devices = await response.json();
+        
+        if (devices.length === 0) {
+          grid.innerHTML = '<p>No devices found on the network.</p>';
+        } else {
+          grid.innerHTML = devices.map(device => `
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <i class="bi bi-router"></i> ${device.host}
+                </div>
+              </div>
+              <div class="card-body">
+                <p><strong>Port:</strong> ${device.port}</p>
+                <p><strong>Protocol:</strong> ${device.protocol}</p>
+                <p><strong>Service:</strong> ${device.name}</p>
+                <button class="btn btn-sm btn-secondary" onclick="registerDevice('${device.host}', ${device.port}, '${device.protocol}')">
+                  Add Device
+                </button>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        grid.innerHTML = '<p>Discovery failed: ' + e.message + '</p>';
+      }
+    }
+    
+    async function registerDevice(host, port, protocol) {
+      const id = `device-${host.replace(/\./g, '-')}-${port}`;
+      
+      try {
+        await fetch('/api/iot/devices', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id,
+            config: {
+              name: `${host}:${port}`,
+              protocol,
+              host,
+              port
+            }
+          })
+        });
+        
+        alert('Device registered successfully!');
+        loadDevices();
+      } catch (e) {
+        alert('Failed to register device: ' + e.message);
+      }
+    }
+    
+    // Socket.IO event handlers
+    socket.on('init', (data) => {
+      console.log('Connected to server', data);
+    });
+    
+    socket.on('chatResponse', (data) => {
+      addMessage('assistant', data.response, data.agent);
+    });
+    
+    socket.on('chatError', (data) => {
+      addMessage('assistant', 'Error: ' + data.error, { icon: '❌', name: 'Error' });
+    });
+    
+    socket.on('providerSwitched', (data) => {
+      console.log('Provider switched:', data);
+    });
+    
+    socket.on('agentSwitched', (data) => {
+      console.log('Agent switched:', data);
+    });
+  </script>
+</body>
+</html>

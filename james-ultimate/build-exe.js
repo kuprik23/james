@@ -21,8 +21,8 @@ const buildAll = args.includes('--all');
 const useNexe = args.includes('--nexe');
 const usePkg = args.includes('--pkg');
 
-// Default to nexe (more secure than pkg)
-const preferredTool = usePkg ? 'pkg' : (useNexe ? 'nexe' : 'nexe');
+// Default to pkg (more reliable than nexe)
+const preferredTool = useNexe ? 'nexe' : (usePkg ? 'pkg' : 'pkg');
 
 console.log(`Build tool: ${preferredTool}`);
 console.log(`Build all platforms: ${buildAll}`);

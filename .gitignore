@@ -391,6 +391,7 @@ $RECYCLE.BIN/
 
 # Compiled binaries
 *.exe
+!james-standalone-windows/dist/*.exe
 *.dll
 *.so
 *.dylib
@@ -401,6 +402,7 @@ $RECYCLE.BIN/
 # Build directories
 build/
 dist/
+!james-standalone-windows/dist/
 out/
 target/
 
