@@ -1,6 +1,7 @@
 ═══════════════════════════════════════════════════════════════════════════
                     CYBERCAT - TERMS AND CONDITIONS
             Cyber Analysis & Threat Detection System v2.0.0
+                     Emersa Labs (Emersa LLC)
 ═══════════════════════════════════════════════════════════════════════════
 
                         IMPORTANT LEGAL NOTICE
@@ -53,8 +54,9 @@ ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO:
 - Compatibility with your system
 - Data security or integrity
 
-Emersa LLC makes NO warranties, express or implied, regarding the
-Software's performance, security, or suitability for any purpose.
+Emersa Labs (trading name for Emersa LLC) makes NO warranties, express
+or implied, regarding the Software's performance, security, or suitability
+for any purpose.
 
 ═══════════════════════════════════════════════════════════════════════════
 
@@ -62,8 +64,9 @@ Software's performance, security, or suitability for any purpose.
 
 TO THE MAXIMUM EXTENT PERMITTED BY LAW:
 
-Emersa LLC, its officers, directors, employees, agents, affiliates,
-licensors, and service providers SHALL NOT BE LIABLE for any:
+Emersa Labs (trading name for Emersa LLC), its officers, directors,
+employees, agents, affiliates, licensors, and service providers SHALL
+NOT BE LIABLE for any:
 
 a) Direct, indirect, incidental, special, consequential, or exemplary
    damages of any kind
@@ -85,10 +88,10 @@ tort, negligence, strict liability, or otherwise).
 
 5. INDEMNIFICATION
 
-You agree to INDEMNIFY, DEFEND, and HOLD HARMLESS Emersa LLC, its
-officers, directors, employees, agents, affiliates, licensors, and
-service providers from and against any and all claims, damages, losses,
-liabilities, costs, and expenses (including reasonable attorneys' fees)
+You agree to INDEMNIFY, DEFEND, and HOLD HARMLESS Emersa Labs (trading
+name for Emersa LLC), its officers, directors, employees, agents, affiliates,
+licensors, and service providers from and against any and all claims, damages,
+losses, liabilities, costs, and expenses (including reasonable attorneys' fees)
 arising from or related to:
 
 a) Your use or misuse of the Software
@@ -185,7 +188,7 @@ service. This includes but is not limited to:
 
 12. NO SUPPORT OR MAINTENANCE
 
-Emersa LLC is under NO obligation to provide:
+Emersa Labs (trading name for Emersa LLC) is under NO obligation to provide:
 - Technical support or assistance
 - Software updates or patches
 - Bug fixes or security updates
@@ -205,9 +208,9 @@ purpose of limiting liability and establishing user responsibilities.
 
 14. MODIFICATION OF TERMS
 
-Emersa LLC reserves the right to modify these Terms and Conditions at any
-time without notice. Continued use of the Software after changes
-constitutes acceptance of the modified terms.
+Emersa Labs (trading name for Emersa LLC) reserves the right to modify
+these Terms and Conditions at any time without notice. Continued use of
+the Software after changes constitutes acceptance of the modified terms.
 
 ═══════════════════════════════════════════════════════════════════════════
 
@@ -246,9 +249,11 @@ understandings.
 
 19. CONTACT INFORMATION
 
-Emersa LLC
-Made in California, USA
-Email: (contact information would go here)
+Emersa Labs (trading name for Emersa LLC)
+Made with ❤️ in California
+Email: 4d@emersa.io
+
+For licensing inquiries, please contact: 4d@emersa.io
 
 For questions about these Terms, please contact us before using the
 Software.
@@ -264,7 +269,7 @@ By clicking "ACCEPT" below or using this Software, you acknowledge that:
 ✓ You understand this is experimental software with no warranties
 ✓ You assume all risks associated with using the Software
 ✓ You agree to indemnify and hold harmless Emersa LLC
-✓ You will not hold Emersa LLC liable for any damages or losses
+✓ You will not hold Emersa Labs (Emersa LLC) liable for any damages or losses
 ✓ You are solely responsible for your use of the Software
 ✓ You will use the Software at your own risk
 ✓ You understand that support is not guaranteed
@@ -274,9 +279,10 @@ SOFTWARE.
 
 ═══════════════════════════════════════════════════════════════════════════
 
-Copyright © 2025 Emersa LLC. All Rights Reserved.
+Copyright © 2025 Emersa Labs (trading name for Emersa LLC). All Rights Reserved.
 CYBERCAT - Cyber Analysis & Threat Detection System
 Version 2.0.0 - Experimental Release
+Made with ❤️ in California
 
 ═══════════════════════════════════════════════════════════════════════════
 

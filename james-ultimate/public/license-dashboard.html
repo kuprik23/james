@@ -283,6 +283,7 @@
 <body>
     <div class="header">
         <h1>🐱 CYBERCAT Dashboard</h1>
+        <div style="font-size: 0.9em; opacity: 0.9;">Emersa Labs</div>
         <div class="header-actions">
             <div class="user-info">
                 <span id="userName">Loading...</span>
@@ -523,7 +524,7 @@
                         ${tier.features.map(f => `<li>${f}</li>`).join('')}
                     </ul>
                     <button class="btn" onclick="upgradeTo('${tier.tier}', '${tier.name}', ${tier.price})">
-                        Upgrade to ${tier.name}
+                        Contact Sales - Upgrade to ${tier.name}
                     </button>
                 `;
                 
@@ -532,8 +533,15 @@
         }
 
         function upgradeTo(tier, name, price) {
-            alert(`Upgrade to ${name} - $${price}/month\n\nStripe integration coming soon!\n\nThis will redirect to Stripe checkout.`);
-            // In production, this would create a Stripe checkout session
+            const message = `Upgrade to ${name} - $${price}/month\n\n` +
+                           `To purchase a license, please contact:\n\n` +
+                           `📧 Email: 4d@emersa.io\n\n` +
+                           `Include:\n` +
+                           `- Your name and email\n` +
+                           `- Desired tier: ${name}\n` +
+                           `- Any special requirements\n\n` +
+                           `Our team will respond within 24 hours with payment instructions and your license key.`;
+            alert(message);
         }
 
         function showError(message) {
