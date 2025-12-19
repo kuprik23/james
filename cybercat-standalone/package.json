@@ -1,15 +1,18 @@
 {
   "name": "cybercat-standalone",
-  "version": "1.0.0",
-  "description": "CyberCat - AI-Powered Cybersecurity Analysis Tool",
-  "main": "cybercat.js",
+  "version": "2.0.0",
+  "description": "CYBERCAT - AI-Powered Cybersecurity Analysis Tool with License Management",
+  "main": "dist/index.js",
   "bin": {
-    "cybercat": "./cybercat.js"
+    "cybercat": "./dist/index.js"
   },
   "scripts": {
-    "start": "node cybercat.js",
-    "build": "pkg . --targets node18-win-x64 --output dist/CyberCat.exe",
-    "build-all": "pkg . --targets node18-win-x64,node18-macos-x64,node18-linux-x64 --out-path dist"
+    "build": "tsc",
+    "dev": "tsc && node dist/index.js",
+    "watch": "tsc --watch",
+    "start": "node dist/index.js",
+    "build-exe": "npm run build && pkg dist/index.js --targets node18-win-x64 --output dist/CyberCat.exe",
+    "build-all": "npm run build && pkg dist/index.js --targets node18-win-x64,node18-macos-x64,node18-linux-x64 --out-path dist"
   },
   "pkg": {
     "assets": [
@@ -25,8 +28,8 @@
     "network",
     "vulnerability"
   ],
-  "author": "CYBERCAT Security Team",
-  "license": "MIT",
+  "author": "Emersa Ltd",
+  "license": "SEE LICENSE IN TERMS-AND-CONDITIONS.txt",
   "dependencies": {
     "chalk": "^4.1.2",
     "commander": "^11.1.0",
@@ -41,6 +44,9 @@
     "ping": "^0.4.4"
   },
   "devDependencies": {
-    "pkg": "^5.8.1"
+    "pkg": "^5.8.1",
+    "typescript": "^5.3.3",
+    "@types/node": "^20.10.6",
+    "@types/inquirer": "^8.2.10"
   }
 }

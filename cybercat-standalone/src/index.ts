@@ -6,25 +6,35 @@
  * Copyright © 2025 Emersa Ltd. All Rights Reserved.
  */
 
-const chalk = require('chalk');
-const { Command } = require('commander');
-const inquirer = require('inquirer');
-const ora = require('ora');
-const boxen = require('boxen');
-const Table = require('cli-table3');
-const si = require('systeminformation');
-const dns = require('dns');
-const { exec } = require('child_process');
-const os = require('os');
-const fs = require('fs');
-const path = require('path');
-const https = require('https');
-const http = require('http');
+import chalk from 'chalk';
+import { Command } from 'commander';
+import inquirer from 'inquirer';
+import ora, { Ora } from 'ora';
+import boxen from 'boxen';
+import Table from 'cli-table3';
+import * as si from 'systeminformation';
+import * as dns from 'dns';
+import { exec } from 'child_process';
+import * as os from 'os';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as net from 'net';
 
-// Import new services
-const licenseService = require('./license-service');
-const notificationManager = require('./notification-manager');
-const settingsService = require('./settings-service');
+// Import services
+import licenseService from './license-service';
+import notificationManager from './notification-manager';
+import settingsService from './settings-service';
+
+// Import types
+import {
+  SystemInfo,
+  NetworkAnalysis,
+  OpenPort,
+  ProcessAnalysis,
+  SecurityStatus,
+  SecurityReport,
+  LicenseTier
+} from './types';
 
 // ASCII Art Logo
 const logo = `
@@ -45,27 +55,29 @@ const colors = {
   warning: chalk.yellow,
   error: chalk.red,
   info: chalk.blue,
-  highlight: chalk.magenta
+  highlight: chalk.magenta,
+  gray: chalk.gray,
+  white: chalk.white
 };
 
 // Utility functions
-function printBanner() {
+function printBanner(): void {
   console.log(colors.primary(logo));
   const license = licenseService.getLicense();
   const stats = licenseService.getScanStatistics();
-  
+
   console.log(boxen(
     colors.highlight('AI-Powered Cybersecurity Analysis Tool') + '\n' +
     colors.info(`Version ${version}`) + '\n' +
     colors.gray('━'.repeat(50)) + '\n' +
-    colors.white(`License: ${colors.cyan(license.tier.toUpperCase())}`) + '\n' +
-    colors.white(`Today's Scans: ${colors.yellow(stats.todayScans)} / ${colors.yellow(stats.dailyLimit)}`),
+    colors.white(`License: ${colors.primary(license.tier.toUpperCase())}`) + '\n' +
+    colors.white(`Today's Scans: ${colors.warning(`${stats.todayScans} / ${stats.dailyLimit}`)}`),
     { padding: 1, margin: 1, borderStyle: 'round', borderColor: 'cyan' }
   ));
   console.log(colors.gray('Emersa Labs © 2025 | 4d@emersa.io\n'));
 }
 
-function formatBytes(bytes) {
+function formatBytes(bytes: number): string {
   if (bytes === 0) return '0 Bytes';
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -74,11 +86,11 @@ function formatBytes(bytes) {
 }
 
 // Security Analysis Functions
-async function analyzeSystem() {
+async function analyzeSystem(): Promise<SystemInfo> {
   const spinner = ora('Analyzing system security...').start();
-  
+
   try {
-    const results = {
+    const results: SystemInfo = {
       os: await si.osInfo(),
       cpu: await si.cpu(),
       mem: await si.mem(),
@@ -88,7 +100,7 @@ async function analyzeSystem() {
       services: await si.services('*'),
       users: await si.users()
     };
-    
+
     spinner.succeed('System analysis complete');
     return results;
   } catch (error) {
@@ -97,11 +109,11 @@ async function analyzeSystem() {
   }
 }
 
-async function checkOpenPorts(host = 'localhost') {
+async function checkOpenPorts(host: string = 'localhost'): Promise<OpenPort[]> {
   const spinner = ora(`Scanning ports on ${host}...`).start();
   const commonPorts = [21, 22, 23, 25, 53, 80, 110, 135, 139, 143, 443, 445, 993, 995, 1433, 1521, 3306, 3389, 5432, 5900, 8080, 8443];
-  const openPorts = [];
-  
+  const openPorts: OpenPort[] = [];
+
   for (const port of commonPorts) {
     try {
       const isOpen = await checkPort(host, port);
@@ -112,26 +124,26 @@ async function checkOpenPorts(host = 'localhost') {
       // Port closed or filtered
     }
   }
-  
+
   spinner.succeed(`Port scan complete. Found ${openPorts.length} open ports`);
   return openPorts;
 }
 
-function checkPort(host, port, timeout = 1000) {
+function checkPort(host: string, port: number, timeout: number = 1000): Promise<boolean> {
   return new Promise((resolve) => {
-    const socket = require('net').createConnection({ host, port });
+    const socket = net.createConnection({ host, port });
     socket.setTimeout(timeout);
-    
+
     socket.on('connect', () => {
       socket.destroy();
       resolve(true);
     });
-    
+
     socket.on('timeout', () => {
       socket.destroy();
       resolve(false);
     });
-    
+
     socket.on('error', () => {
       socket.destroy();
       resolve(false);
@@ -139,8 +151,8 @@ function checkPort(host, port, timeout = 1000) {
   });
 }
 
-function getServiceName(port) {
-  const services = {
+function getServiceName(port: number): string {
+  const services: Record<number, string> = {
     21: 'FTP', 22: 'SSH', 23: 'Telnet', 25: 'SMTP', 53: 'DNS',
     80: 'HTTP', 110: 'POP3', 135: 'RPC', 139: 'NetBIOS', 143: 'IMAP',
     443: 'HTTPS', 445: 'SMB', 993: 'IMAPS', 995: 'POP3S', 1433: 'MSSQL',
@@ -150,31 +162,31 @@ function getServiceName(port) {
   return services[port] || 'Unknown';
 }
 
-async function checkNetworkSecurity() {
+async function checkNetworkSecurity(): Promise<NetworkAnalysis> {
   const spinner = ora('Analyzing network security...').start();
-  
+
   try {
     const interfaces = await si.networkInterfaces();
     const connections = await si.networkConnections();
     const gateway = await si.networkGatewayDefault();
-    
-    const analysis = {
+
+    const analysis: NetworkAnalysis = {
       interfaces: interfaces.map(iface => ({
         name: iface.iface,
         ip4: iface.ip4,
         ip6: iface.ip6,
         mac: iface.mac,
         type: iface.type,
-        speed: iface.speed
+        speed: iface.speed ?? undefined
       })),
       activeConnections: connections.length,
-      suspiciousConnections: connections.filter(conn => 
-        conn.state === 'ESTABLISHED' && 
-        !['127.0.0.1', '::1', 'localhost'].includes(conn.peerAddress)
+      suspiciousConnections: connections.filter(conn =>
+        conn.state === 'ESTABLISHED' &&
+        !['127.0.0.1', '::1', 'localhost'].includes(conn.peerAddress || '')
       ),
       gateway: gateway
     };
-    
+
     spinner.succeed('Network analysis complete');
     return analysis;
   } catch (error) {
@@ -183,9 +195,9 @@ async function checkNetworkSecurity() {
   }
 }
 
-async function checkProcessSecurity() {
+async function checkProcessSecurity(): Promise<ProcessAnalysis> {
   const spinner = ora('Analyzing running processes...').start();
-  
+
   try {
     const processes = await si.processes();
     const suspiciousPatterns = [
@@ -198,19 +210,19 @@ async function checkProcessSecurity() {
       /rundll32/i,
       /certutil.*-decode/i
     ];
-    
-    const analysis = {
+
+    const analysis: ProcessAnalysis = {
       total: processes.all,
       running: processes.running,
       blocked: processes.blocked,
       sleeping: processes.sleeping,
-      suspicious: processes.list.filter(proc => 
+      suspicious: processes.list.filter(proc =>
         suspiciousPatterns.some(pattern => pattern.test(proc.command || proc.name))
       ),
       highCpu: processes.list.filter(proc => proc.cpu > 50),
       highMemory: processes.list.filter(proc => proc.mem > 10)
     };
-    
+
     spinner.succeed('Process analysis complete');
     return analysis;
   } catch (error) {
@@ -219,7 +231,7 @@ async function checkProcessSecurity() {
   }
 }
 
-async function checkFirewallStatus() {
+async function checkFirewallStatus(): Promise<SecurityStatus['firewall']> {
   return new Promise((resolve) => {
     if (os.platform() === 'win32') {
       exec('netsh advfirewall show allprofiles state', (error, stdout) => {
@@ -242,14 +254,14 @@ async function checkFirewallStatus() {
   });
 }
 
-async function checkAntivirusStatus() {
+async function checkAntivirusStatus(): Promise<SecurityStatus['antivirus']> {
   return new Promise((resolve) => {
     if (os.platform() === 'win32') {
       exec('powershell -Command "Get-MpComputerStatus | Select-Object AntivirusEnabled,RealTimeProtectionEnabled,AntivirusSignatureLastUpdated"', (error, stdout) => {
         if (error) {
           resolve({ enabled: 'Unknown', details: error.message });
         } else {
-          resolve({ 
+          resolve({
             enabled: stdout.toLowerCase().includes('true'),
             details: stdout
           });
@@ -261,29 +273,49 @@ async function checkAntivirusStatus() {
   });
 }
 
-async function generateSecurityReport() {
+async function generateSecurityReport(): Promise<SecurityReport | null> {
   printBanner();
-  
+
   // Check license and scan limit
   const canScan = licenseService.canPerformScan();
   if (!canScan.allowed) {
     notificationManager.scanLimitReached(canScan.tier, licenseService.SCAN_LIMITS[canScan.tier]);
     return null;
   }
-  
+
   console.log(colors.info('\n📊 Generating Comprehensive Security Report...\n'));
   notificationManager.info(`Scans remaining today: ${canScan.remaining}`);
-  
-  const report = {
+
+  const report: SecurityReport = {
     timestamp: new Date().toISOString(),
-    system: {},
-    network: {},
-    processes: {},
-    security: {},
+    system: {
+      os: '',
+      hostname: '',
+      cpu: '',
+      memory: '',
+      memoryUsed: ''
+    },
+    network: {
+      interfaces: [],
+      activeConnections: 0,
+      suspiciousConnections: [],
+      gateway: null
+    },
+    processes: {
+      total: 0,
+      running: 0,
+      suspicious: 0,
+      highCpu: 0,
+      highMemory: 0
+    },
+    security: {
+      firewall: { enabled: false, details: '' },
+      antivirus: { enabled: false, details: '' }
+    },
     recommendations: [],
     license: licenseService.getLicense().tier
   };
-  
+
   // System Analysis
   console.log(colors.primary('\n🖥️  System Analysis'));
   console.log('─'.repeat(50));
@@ -295,7 +327,7 @@ async function generateSecurityReport() {
     memory: formatBytes(system.mem.total),
     memoryUsed: `${((system.mem.used / system.mem.total) * 100).toFixed(1)}%`
   };
-  
+
   const sysTable = new Table({
     head: [colors.primary('Property'), colors.primary('Value')],
     colWidths: [20, 50]
@@ -304,13 +336,13 @@ async function generateSecurityReport() {
     sysTable.push([key, value]);
   });
   console.log(sysTable.toString());
-  
+
   // Network Analysis
   console.log(colors.primary('\n🌐 Network Analysis'));
   console.log('─'.repeat(50));
   const network = await checkNetworkSecurity();
   report.network = network;
-  
+
   const netTable = new Table({
     head: [colors.primary('Interface'), colors.primary('IP Address'), colors.primary('MAC'), colors.primary('Type')],
     colWidths: [15, 20, 20, 15]
@@ -320,33 +352,33 @@ async function generateSecurityReport() {
   });
   console.log(netTable.toString());
   console.log(colors.info(`Active Connections: ${network.activeConnections}`));
-  
+
   if (network.suspiciousConnections.length > 0) {
     console.log(colors.warning(`⚠️  Suspicious Connections: ${network.suspiciousConnections.length}`));
     report.recommendations.push('Review suspicious network connections');
   }
-  
+
   // Port Scan
   console.log(colors.primary('\n🔍 Port Scan'));
   console.log('─'.repeat(50));
   const openPorts = await checkOpenPorts();
   report.network.openPorts = openPorts;
-  
+
   if (openPorts.length > 0) {
     const portTable = new Table({
       head: [colors.primary('Port'), colors.primary('Service'), colors.primary('Risk Level')],
       colWidths: [10, 20, 15]
     });
     openPorts.forEach(({ port, service }) => {
-      const risk = [22, 23, 3389, 5900].includes(port) ? colors.warning('Medium') : 
+      const risk = [22, 23, 3389, 5900].includes(port) ? colors.warning('Medium') :
                    [21, 445, 135, 139].includes(port) ? colors.error('High') : colors.success('Low');
-      portTable.push([port, service, risk]);
+      portTable.push([port.toString(), service, risk]);
     });
     console.log(portTable.toString());
   } else {
     console.log(colors.success('✓ No common ports open'));
   }
-  
+
   // Process Analysis
   console.log(colors.primary('\n⚙️  Process Analysis'));
   console.log('─'.repeat(50));
@@ -358,10 +390,10 @@ async function generateSecurityReport() {
     highCpu: processes.highCpu.length,
     highMemory: processes.highMemory.length
   };
-  
+
   console.log(`Total Processes: ${processes.total}`);
   console.log(`Running: ${processes.running}`);
-  
+
   if (processes.suspicious.length > 0) {
     console.log(colors.error(`⚠️  Suspicious Processes: ${processes.suspicious.length}`));
     processes.suspicious.forEach(proc => {
@@ -371,65 +403,65 @@ async function generateSecurityReport() {
   } else {
     console.log(colors.success('✓ No suspicious processes detected'));
   }
-  
+
   // Security Status
   console.log(colors.primary('\n🛡️  Security Status'));
   console.log('─'.repeat(50));
-  
+
   const firewall = await checkFirewallStatus();
   const antivirus = await checkAntivirusStatus();
-  
+
   report.security = { firewall, antivirus };
-  
+
   console.log(`Firewall: ${firewall.enabled ? colors.success('✓ Enabled') : colors.error('✗ Disabled')}`);
-  console.log(`Antivirus: ${antivirus.enabled === true ? colors.success('✓ Enabled') : 
+  console.log(`Antivirus: ${antivirus.enabled === true ? colors.success('✓ Enabled') :
                antivirus.enabled === 'N/A' ? colors.info('N/A') : colors.error('✗ Disabled')}`);
-  
+
   if (!firewall.enabled) {
     report.recommendations.push('Enable Windows Firewall');
   }
   if (antivirus.enabled === false) {
     report.recommendations.push('Enable Windows Defender or install antivirus software');
   }
-  
+
   // Recommendations
   console.log(colors.primary('\n📋 Security Recommendations'));
   console.log('─'.repeat(50));
-  
+
   if (report.recommendations.length === 0) {
     report.recommendations.push('Keep your system and software updated');
     report.recommendations.push('Use strong, unique passwords');
     report.recommendations.push('Enable two-factor authentication where possible');
     report.recommendations.push('Regularly backup important data');
   }
-  
+
   report.recommendations.forEach((rec, i) => {
     console.log(colors.warning(`${i + 1}. ${rec}`));
   });
-  
+
   // Save Report
   const settings = settingsService.getSettings();
   const outputDir = settings.scanning.outputDir || './reports';
-  
+
   // Create output directory if it doesn't exist
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
-  
+
   const reportPath = path.join(outputDir, `cybercat-report-${Date.now()}.json`);
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
   notificationManager.success(`Report saved to: ${reportPath}`);
-  
+
   // Record scan
   licenseService.recordScan();
-  
+
   return report;
 }
 
 // Interactive Menu
-async function interactiveMenu() {
+async function interactiveMenu(): Promise<void> {
   printBanner();
-  
+
   const choices = [
     { name: '🔍 Full Security Scan', value: 'full' },
     { name: '🌐 Network Analysis', value: 'network' },
@@ -441,7 +473,7 @@ async function interactiveMenu() {
     { name: '⚙️  Settings', value: 'settings' },
     { name: '❌ Exit', value: 'exit' }
   ];
-  
+
   while (true) {
     const { action } = await inquirer.prompt([
       {
@@ -451,9 +483,9 @@ async function interactiveMenu() {
         choices
       }
     ]);
-    
+
     console.log('');
-    
+
     switch (action) {
       case 'full':
         await generateSecurityReport();
@@ -503,7 +535,7 @@ async function interactiveMenu() {
         console.log(colors.gray('Emersa Labs © 2025\n'));
         process.exit(0);
     }
-    
+
     console.log('');
     await inquirer.prompt([
       {
@@ -518,18 +550,18 @@ async function interactiveMenu() {
 }
 
 // License Management
-async function manageLicense() {
+async function manageLicense(): Promise<void> {
   const license = licenseService.getLicense();
   const stats = licenseService.getScanStatistics();
-  
+
   console.log(colors.primary('\n🔑 License Management\n'));
   console.log('━'.repeat(50));
-  console.log(`Current Tier: ${colors.cyan(license.tier.toUpperCase())}`);
-  console.log(`Status: ${colors.green(license.status)}`);
+  console.log(`Current Tier: ${colors.primary(license.tier.toUpperCase())}`);
+  console.log(`Status: ${colors.success(license.status)}`);
   console.log(`License Key: ${license.key || colors.gray('None (Free Tier)')}`);
-  console.log(`Today's Scans: ${colors.yellow(stats.todayScans)} / ${colors.yellow(stats.dailyLimit)}`);
+  console.log(`Today's Scans: ${colors.warning(`${stats.todayScans} / ${stats.dailyLimit}`)}`);
   console.log('━'.repeat(50));
-  
+
   const { action } = await inquirer.prompt([
     {
       type: 'list',
@@ -544,7 +576,7 @@ async function manageLicense() {
       ]
     }
   ]);
-  
+
   switch (action) {
     case 'view':
       console.log(colors.success('\n✓ License Details:'));
@@ -576,12 +608,12 @@ async function manageLicense() {
 }
 
 // Settings Management
-async function manageSettings() {
+async function manageSettings(): Promise<void> {
   const settings = settingsService.getSettings();
-  
+
   console.log(colors.primary('\n⚙️  Settings Management\n'));
   console.log('━'.repeat(50));
-  
+
   const { action } = await inquirer.prompt([
     {
       type: 'list',
@@ -599,14 +631,14 @@ async function manageSettings() {
       ]
     }
   ]);
-  
+
   switch (action) {
     case 'scanning':
     case 'security':
     case 'display':
     case 'advanced':
       console.log(colors.info(`\nCurrent ${action} settings:`));
-      console.log(JSON.stringify(settings[action], null, 2));
+      console.log(JSON.stringify((settings as any)[action], null, 2));
       break;
     case 'export':
       const exported = settingsService.export();
@@ -630,7 +662,7 @@ async function manageSettings() {
           notificationManager.error('Failed to import settings');
         }
       } catch (error) {
-        notificationManager.error(`Import failed: ${error.message}`);
+        notificationManager.error(`Import failed: ${(error as Error).message}`);
       }
       break;
     case 'reset':
@@ -651,23 +683,23 @@ async function manageSettings() {
 }
 
 // Show Upgrade Options
-function showUpgradeOptions() {
+function showUpgradeOptions(): void {
   const message = `
-${colors.cyan('💎 CYBERCAT Pricing Tiers')}
+${colors.primary('💎 CYBERCAT Pricing Tiers')}
 
-${colors.yellow('🆓 FREE (Current)')}
+${colors.warning('🆓 FREE (Current)')}
   • Basic port scanning
   • System information
-  • ${colors.red('1 scan per day')}
+  • ${colors.error('1 scan per day')}
 
-${colors.green('💎 PRO - $29/month')}
+${colors.success('💎 PRO - $29/month')}
   ✓ Unlimited scans
   ✓ AI threat analysis
   ✓ Real-time monitoring
   ✓ Export reports
   ✓ Priority support
 
-${colors.magenta('🏢 ENTERPRISE - $99/month')}
+${colors.highlight('🏢 ENTERPRISE - $99/month')}
   ✓ All Pro features
   ✓ Custom integrations
   ✓ Advanced analytics
@@ -675,12 +707,12 @@ ${colors.magenta('🏢 ENTERPRISE - $99/month')}
   ✓ Dedicated account manager
 
 ${colors.white('📧 To Purchase:')}
-  Email: ${colors.cyan('4d@emersa.io')}
+  Email: ${colors.primary('4d@emersa.io')}
   Subject: ${colors.gray('CYBERCAT License Purchase - [Pro/Enterprise]')}
 
 ${colors.gray('See LICENSE-PURCHASE.md for full details')}
 `;
-  
+
   console.log(boxen(message, {
     padding: 1,
     margin: 1,
@@ -724,7 +756,7 @@ program
       head: ['Port', 'Service'],
       colWidths: [10, 20]
     });
-    ports.forEach(p => table.push([p.port, p.service]));
+    ports.forEach(p => table.push([p.port.toString(), p.service]));
     console.log(table.toString());
   });
 
@@ -778,9 +810,9 @@ program
       const license = licenseService.getLicense();
       const stats = licenseService.getScanStatistics();
       console.log(colors.primary('\n🔑 License Status\n'));
-      console.log(`Tier: ${colors.cyan(license.tier.toUpperCase())}`);
-      console.log(`Status: ${colors.green(license.status)}`);
-      console.log(`Today's Scans: ${colors.yellow(stats.todayScans)} / ${colors.yellow(stats.dailyLimit)}`);
+      console.log(`Tier: ${colors.primary(license.tier.toUpperCase())}`);
+      console.log(`Status: ${colors.success(license.status)}`);
+      console.log(`Today's Scans: ${colors.warning(`${stats.todayScans} / ${stats.dailyLimit}`)}`);
     } else {
       await manageLicense();
     }

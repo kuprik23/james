@@ -1,15 +1,18 @@
 {
   "name": "cybercat-scanner",
   "version": "2.0.0",
-  "description": "CyberCAT Scanner - Military-Grade Vulnerability Scanner (Node.js Edition)",
-  "main": "scanner.js",
+  "description": "CyberCAT Scanner - Military-Grade Vulnerability Scanner (TypeScript Edition)",
+  "main": "dist/scanner.js",
   "bin": {
-    "cybercat-scanner": "./scanner.js"
+    "cybercat-scanner": "./dist/scanner.js"
   },
   "scripts": {
-    "start": "node scanner.js",
-    "scan": "node scanner.js scan",
-    "sweep": "node scanner.js sweep"
+    "build": "tsc",
+    "dev": "tsc && node dist/scanner.js",
+    "watch": "tsc --watch",
+    "start": "node dist/scanner.js",
+    "scan": "node dist/scanner.js scan",
+    "sweep": "node dist/scanner.js sweep"
   },
   "keywords": [
     "security",
@@ -23,6 +26,10 @@
   "author": "CYBERCAT Security Team",
   "license": "MIT",
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "@types/node": "^20.10.6"
   }
 }

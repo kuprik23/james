@@ -1,0 +1,197 @@
+/**
+ * CyberCat Standalone - Settings Service
+ * Handles application settings with file persistence
+ * Copyright © 2025 Emersa Ltd. All Rights Reserved.
+ */
+
+const fs = require('fs');
+const path = require('path');
+
+class SettingsService {
+  constructor() {
+    this.settingsFile = path.join(process.cwd(), '.cybercat-settings.json');
+    this.settings = this.loadSettings();
+  }
+
+  /**
+   * Get default settings
+   */
+  getDefaults() {
+    return {
+      scanning: {
+        autoSave: true,
+        outputDir: './reports',
+        timeout: 5000,
+        maxConcurrent: 10
+      },
+      security: {
+        enableNotifications: true,
+        enableAutoScan: false,
+        scanInterval: 3600000 // 1 hour
+      },
+      display: {
+        colorOutput: true,
+        verboseMode: false,
+        showTimestamps: true
+      },
+      advanced: {
+        debugMode: false,
+        logLevel: 'info',
+        maxLogSize: 100
+      }
+    };
+  }
+
+  /**
+   * Load settings from file
+   */
+  loadSettings() {
+    try {
+      if (fs.existsSync(this.settingsFile)) {
+        const data = fs.readFileSync(this.settingsFile, 'utf8');
+        const loaded = JSON.parse(data);
+        // Merge with defaults to handle missing keys
+        return this.deepMerge(this.getDefaults(), loaded);
+      }
+    } catch (error) {
+      console.error('Error loading settings:', error.message);
+    }
+    return this.getDefaults();
+  }
+
+  /**
+   * Save settings to file
+   */
+  saveSettings() {
+    try {
+      fs.writeFileSync(this.settingsFile, JSON.stringify(this.settings, null, 2));
+      return true;
+    } catch (error) {
+      console.error('Error saving settings:', error.message);
+      return false;
+    }
+  }
+
+  /**
+   * Get all settings
+   */
+  getSettings() {
+    return { ...this.settings };
+  }
+
+  /**
+   * Get specific setting
+   */
+  get(key) {
+    const keys = key.split('.');
+    let value = this.settings;
+    
+    for (const k of keys) {
+      if (value && typeof value === 'object' && k in value) {
+        value = value[k];
+      } else {
+        return undefined;
+      }
+    }
+    
+    return value;
+  }
+
+  /**
+   * Set specific setting
+   */
+  set(key, value) {
+    const keys = key.split('.');
+    let current = this.settings;
+    
+    for (let i = 0; i < keys.length - 1; i++) {
+      if (!current[keys[i]]) {
+        current[keys[i]] = {};
+      }
+      current = current[keys[i]];
+    }
+    
+    current[keys[keys.length - 1]] = value;
+    return this.saveSettings();
+  }
+
+  /**
+   * Update scanning settings
+   */
+  updateScanningSettings(settings) {
+    this.settings.scanning = { ...this.settings.scanning, ...settings };
+    return this.saveSettings();
+  }
+
+  /**
+   * Update security settings
+   */
+  updateSecuritySettings(settings) {
+    this.settings.security = { ...this.settings.security, ...settings };
+    return this.saveSettings();
+  }
+
+  /**
+   * Update display settings
+   */
+  updateDisplaySettings(settings) {
+    this.settings.display = { ...this.settings.display, ...settings };
+    return this.saveSettings();
+  }
+
+  /**
+   * Update advanced settings
+   */
+  updateAdvancedSettings(settings) {
+    this.settings.advanced = { ...this.settings.advanced, ...settings };
+    return this.saveSettings();
+  }
+
+  /**
+   * Reset to defaults
+   */
+  reset() {
+    this.settings = this.getDefaults();
+    return this.saveSettings();
+  }
+
+  /**
+   * Export settings to JSON string
+   */
+  export() {
+    return JSON.stringify(this.settings, null, 2);
+  }
+
+  /**
+   * Import settings from JSON string
+   */
+  import(json) {
+    try {
+      const imported = JSON.parse(json);
+      this.settings = this.deepMerge(this.getDefaults(), imported);
+      return this.saveSettings();
+    } catch (error) {
+      console.error('Error importing settings:', error.message);
+      return false;
+    }
+  }
+
+  /**
+   * Deep merge objects
+   */
+  deepMerge(target, source) {
+    const output = { ...target };
+    
+    for (const key in source) {
+      if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+        output[key] = this.deepMerge(target[key] || {}, source[key]);
+      } else {
+        output[key] = source[key];
+      }
+    }
+    
+    return output;
+  }
+}
+
+module.exports = new SettingsService();
