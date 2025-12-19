@@ -5,6 +5,17 @@ setlocal enabledelayedexpansion
 :: CyberCAT Security Platform - Master Installer
 :: ============================================
 
+:: Check and enforce Terms acceptance FIRST
+call Accept-Terms.bat
+if %ERRORLEVEL% NEQ 0 (
+    echo.
+    echo Terms and Conditions not accepted.
+    echo Installation cannot proceed without acceptance.
+    echo.
+    pause
+    exit /b 1
+)
+
 color 0A
 title CyberCAT Security Platform - Installation
 

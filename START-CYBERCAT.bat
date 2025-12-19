@@ -4,6 +4,17 @@ REM CYBERCAT Platform - One-Click Launcher
 REM Copyright © 2024 Emersa Ltd. All Rights Reserved.
 REM ════════════════════════════════════════════════════════════════════════════
 
+:: Check and enforce Terms acceptance FIRST
+call Accept-Terms.bat
+if %ERRORLEVEL% NEQ 0 (
+    echo.
+    echo Terms and Conditions not accepted.
+    echo CYBERCAT cannot run without acceptance.
+    echo.
+    pause
+    exit /b 1
+)
+
 title CYBERCAT Platform Launcher
 
 echo.
