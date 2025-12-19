@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Deploy James AI Security Agent to Digital Ocean
 This script creates a droplet and deploys the LangGraph agent
@@ -10,6 +11,12 @@ import time
 import json
 import requests
 from dotenv import load_dotenv
+
+# Set UTF-8 encoding for Windows console
+if sys.platform == 'win32':
+    import codecs
+    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
+    sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
 
 # Load environment variables
 load_dotenv()
