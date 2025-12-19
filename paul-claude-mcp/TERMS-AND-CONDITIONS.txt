@@ -1,0 +1,283 @@
+═══════════════════════════════════════════════════════════════════════════
+                    CYBERCAT - TERMS AND CONDITIONS
+            Cyber Analysis & Threat Detection System v2.0.0
+═══════════════════════════════════════════════════════════════════════════
+
+                        IMPORTANT LEGAL NOTICE
+                     PLEASE READ CAREFULLY
+
+Before using CYBERCAT, you must read and agree to these Terms and Conditions.
+By clicking "Accept" or using this software, you acknowledge that you have
+read, understood, and agree to be bound by these terms.
+
+═══════════════════════════════════════════════════════════════════════════
+
+1. ACCEPTANCE OF TERMS
+
+By downloading, installing, or using CYBERCAT ("the Software"), you agree
+to be bound by these Terms and Conditions. If you do not agree to these
+terms, DO NOT install or use the Software. Click "Decline" and remove all
+copies of the Software from your system immediately.
+
+═══════════════════════════════════════════════════════════════════════════
+
+2. EXPERIMENTAL SOFTWARE NOTICE
+
+⚠️ WARNING: CYBERCAT IS EXPERIMENTAL SOFTWARE ⚠️
+
+This Software is provided as an EXPERIMENTAL, PROTOTYPE, and BETA VERSION
+product. It is NOT production-ready and may contain bugs, errors, security
+vulnerabilities, and incomplete features. Use at your own risk.
+
+You acknowledge and agree that:
+- This Software is in active development
+- Features may change or be removed without notice
+- The Software may not function as intended
+- Data loss or corruption may occur
+- Security vulnerabilities may exist
+- System stability may be affected
+
+═══════════════════════════════════════════════════════════════════════════
+
+3. NO WARRANTY
+
+THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTY OF
+ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO:
+
+- Warranties of merchantability
+- Fitness for a particular purpose
+- Non-infringement
+- Accuracy or reliability
+- Uninterrupted or error-free operation
+- Freedom from viruses or harmful components
+- Compatibility with your system
+- Data security or integrity
+
+Emersa LLC makes NO warranties, express or implied, regarding the
+Software's performance, security, or suitability for any purpose.
+
+═══════════════════════════════════════════════════════════════════════════
+
+4. LIMITATION OF LIABILITY
+
+TO THE MAXIMUM EXTENT PERMITTED BY LAW:
+
+Emersa LLC, its officers, directors, employees, agents, affiliates,
+licensors, and service providers SHALL NOT BE LIABLE for any:
+
+a) Direct, indirect, incidental, special, consequential, or exemplary
+   damages of any kind
+b) Loss of profits, revenue, data, or business opportunities
+c) Business interruption or loss of use
+d) Damage to computer systems or networks
+e) Data corruption, loss, or breach
+f) Security vulnerabilities or exploits
+g) Unauthorized access to systems or data
+h) Malware, viruses, or harmful code
+i) System crashes or instability
+j) Any other damages or losses
+
+This limitation applies WHETHER OR NOT Emersa LLC has been advised of the
+possibility of such damages and regardless of the legal theory (contract,
+tort, negligence, strict liability, or otherwise).
+
+═══════════════════════════════════════════════════════════════════════════
+
+5. INDEMNIFICATION
+
+You agree to INDEMNIFY, DEFEND, and HOLD HARMLESS Emersa LLC, its
+officers, directors, employees, agents, affiliates, licensors, and
+service providers from and against any and all claims, damages, losses,
+liabilities, costs, and expenses (including reasonable attorneys' fees)
+arising from or related to:
+
+a) Your use or misuse of the Software
+b) Your violation of these Terms and Conditions
+c) Your violation of any law or regulation
+d) Your violation of any third-party rights
+e) Any damage to systems, networks, or data
+f) Any security incidents or data breaches
+g) Any unauthorized access or use
+h) Any malware or harmful code introduction
+
+═══════════════════════════════════════════════════════════════════════════
+
+6. ASSUMPTION OF RISK
+
+You expressly assume all risks associated with using this experimental
+Software, including but not limited to:
+
+- System crashes, data loss, or corruption
+- Security vulnerabilities or breaches
+- Unauthorized access to systems or data
+- Network or system instability
+- Incompatibility with existing systems
+- Loss of business or revenue
+- Damage to reputation
+- Legal or regulatory violations
+- Any other foreseeable or unforeseeable risks
+
+═══════════════════════════════════════════════════════════════════════════
+
+7. NO PROFESSIONAL ADVICE
+
+CYBERCAT IS NOT A SUBSTITUTE FOR PROFESSIONAL CYBERSECURITY SERVICES.
+
+The Software provides AI-generated analysis and recommendations that may
+be inaccurate, incomplete, or misleading. DO NOT rely solely on this
+Software for critical security decisions. Always consult qualified
+cybersecurity professionals for important security matters.
+
+═══════════════════════════════════════════════════════════════════════════
+
+8. SECURITY RISKS
+
+You acknowledge that:
+
+- This Software performs security scanning and analysis
+- Scanning may trigger security alerts on your systems
+- Use may violate terms of service of third-party systems
+- Scanning third-party systems without permission may be illegal
+- The Software may contain security vulnerabilities
+- Data transmitted may not be secure
+- AI models may generate false positives or negatives
+
+═══════════════════════════════════════════════════════════════════════════
+
+9. DATA AND PRIVACY
+
+- The Software may access sensitive system information
+- API keys and credentials are stored locally
+- Data may be transmitted to third-party AI providers
+- Emersa LLC does not collect or store your data
+- You are responsible for securing your API keys
+- Review privacy policies of third-party AI providers
+- Backup important data before using the Software
+
+═══════════════════════════════════════════════════════════════════════════
+
+10. THIRD-PARTY SERVICES
+
+The Software integrates with third-party AI services (OpenAI, Anthropic,
+etc.). Your use of these services is subject to their respective terms
+and conditions. Emersa LLC is not responsible for:
+
+- Third-party service availability or performance
+- Third-party data handling or privacy practices
+- Costs incurred from third-party service usage
+- Third-party service terms or policy changes
+
+═══════════════════════════════════════════════════════════════════════════
+
+11. LEGAL COMPLIANCE
+
+You are solely responsible for ensuring that your use of the Software
+complies with all applicable laws, regulations, and third-party terms of
+service. This includes but is not limited to:
+
+- Computer fraud and abuse laws
+- Data protection and privacy laws
+- Export control laws
+- Industry-specific regulations
+- Terms of service of scanned systems
+
+═══════════════════════════════════════════════════════════════════════════
+
+12. NO SUPPORT OR MAINTENANCE
+
+Emersa LLC is under NO obligation to provide:
+- Technical support or assistance
+- Software updates or patches
+- Bug fixes or security updates
+- Documentation or training
+- Compatibility updates
+
+═══════════════════════════════════════════════════════════════════════════
+
+13. OPEN SOURCE LICENSE
+
+This Software is provided under the MIT License, which permits use,
+modification, and distribution subject to the license terms. However,
+these Terms and Conditions apply IN ADDITION to the MIT License for the
+purpose of limiting liability and establishing user responsibilities.
+
+═══════════════════════════════════════════════════════════════════════════
+
+14. MODIFICATION OF TERMS
+
+Emersa LLC reserves the right to modify these Terms and Conditions at any
+time without notice. Continued use of the Software after changes
+constitutes acceptance of the modified terms.
+
+═══════════════════════════════════════════════════════════════════════════
+
+15. TERMINATION
+
+Your right to use the Software terminates automatically if you violate
+these Terms and Conditions. Upon termination, you must immediately:
+- Cease all use of the Software
+- Delete all copies from your systems
+- Destroy all documentation and materials
+
+═══════════════════════════════════════════════════════════════════════════
+
+16. SEVERABILITY
+
+If any provision of these Terms is held invalid or unenforceable, the
+remaining provisions shall continue in full force and effect.
+
+═══════════════════════════════════════════════════════════════════════════
+
+17. GOVERNING LAW
+
+These Terms shall be governed by and construed in accordance with the laws
+of the State of California, United States, without regard to conflict of
+law principles.
+
+═══════════════════════════════════════════════════════════════════════════
+
+18. ENTIRE AGREEMENT
+
+These Terms constitute the entire agreement between you and Emersa LLC
+regarding the Software and supersede all prior agreements and
+understandings.
+
+═══════════════════════════════════════════════════════════════════════════
+
+19. CONTACT INFORMATION
+
+Emersa LLC
+Made in California, USA
+Email: (contact information would go here)
+
+For questions about these Terms, please contact us before using the
+Software.
+
+═══════════════════════════════════════════════════════════════════════════
+
+FINAL ACKNOWLEDGMENT
+
+By clicking "ACCEPT" below or using this Software, you acknowledge that:
+
+✓ You have read and understood these Terms and Conditions in their entirety
+✓ You agree to be bound by all terms herein
+✓ You understand this is experimental software with no warranties
+✓ You assume all risks associated with using the Software
+✓ You agree to indemnify and hold harmless Emersa LLC
+✓ You will not hold Emersa LLC liable for any damages or losses
+✓ You are solely responsible for your use of the Software
+✓ You will use the Software at your own risk
+✓ You understand that support is not guaranteed
+
+IF YOU DO NOT AGREE TO THESE TERMS, CLICK "DECLINE" AND DO NOT USE THIS
+SOFTWARE.
+
+═══════════════════════════════════════════════════════════════════════════
+
+Copyright © 2025 Emersa LLC. All Rights Reserved.
+CYBERCAT - Cyber Analysis & Threat Detection System
+Version 2.0.0 - Experimental Release
+
+═══════════════════════════════════════════════════════════════════════════
+
+Last Updated: December 19, 2025
