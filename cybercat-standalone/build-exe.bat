@@ -46,13 +46,23 @@ if %ERRORLEVEL% NEQ 0 (
 :: Create dist directory
 if not exist "dist" mkdir dist
 
+:: Build TypeScript first
+echo.
+echo Compiling TypeScript...
+call npm run build
+if %ERRORLEVEL% NEQ 0 (
+    echo TypeScript compilation failed!
+    pause
+    exit /b 1
+)
+
 :: Build the executable
 echo.
 echo Building CyberCat.exe...
 echo This may take a few minutes...
 echo.
 
-call npx pkg . --targets node18-win-x64 --output dist/CyberCat.exe
+call npm run build-exe
 
 if %ERRORLEVEL% EQU 0 (
     echo.
