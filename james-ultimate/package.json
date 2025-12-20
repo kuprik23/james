@@ -27,7 +27,10 @@
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts",
     "setup": "node setup-prerequisites.bat",
-    "check-deps": "node -e \"console.log('Checking dependencies...'); const deps = ['rustc', 'cargo', 'mvn', 'gradle', 'cmake', 'java', 'javac', 'kotlinc']; deps.forEach(d => { try { require('child_process').execSync(d + ' --version', {stdio: 'ignore'}); console.log('✓ ' + d); } catch(e) { console.log('✗ ' + d + ' (missing)'); } });\""
+    "check-deps": "node -e \"console.log('Checking dependencies...'); const deps = ['rustc', 'cargo', 'mvn', 'gradle', 'cmake', 'java', 'javac', 'kotlinc']; deps.forEach(d => { try { require('child_process').execSync(d + ' --version', {stdio: 'ignore'}); console.log('✓ ' + d); } catch(e) { console.log('✗ ' + d + ' (missing)'); } });\"",
+    "check-prerequisites": "node check-prerequisites.js",
+    "check": "node check-prerequisites.js",
+    "auto-install": "powershell -ExecutionPolicy Bypass -File auto-install-prerequisites.ps1"
   },
   "pkg": {
     "assets": [

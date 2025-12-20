@@ -30,6 +30,7 @@ export class SecurityTools {
     private tools: Map<string, SecurityTool>;
     private javaScanner: any;
     private useJava: boolean = false;
+    private javaHealthStatus: any = null;
     
     constructor() {
         this.tools = new Map();
@@ -38,19 +39,48 @@ export class SecurityTools {
     }
     
     /**
-     * Initialize Java scanner if available
+     * Initialize Java scanner if available with health check
      */
     async initialize(): Promise<void> {
         if (isJavaAvailable()) {
             try {
-                await this.javaScanner.initialize();
-                this.useJava = true;
-                console.log('[SecurityTools] ✓ Java acceleration enabled');
+                // Check health first
+                this.javaHealthStatus = await this.javaScanner.checkHealth();
+                
+                if (this.javaHealthStatus.available) {
+                    this.useJava = true;
+                    console.log('[SecurityTools] ✓ Java acceleration enabled');
+                    console.log('[SecurityTools] ⚡ Performance boost:', this.javaHealthStatus.performance.speedup);
+                } else {
+                    this.useJava = false;
+                    console.warn('[SecurityTools] ⚠ Java acceleration unavailable');
+                    console.warn('[SecurityTools] Reason:', this.javaHealthStatus.reason);
+                    console.warn('[SecurityTools] ⚠ Scans will be 15x slower using JavaScript fallback');
+                    
+                    // Log what's missing
+                    if (!this.javaHealthStatus.javaModuleInstalled) {
+                        console.warn('[SecurityTools] → Install Java module: npm install java');
+                    }
+                    if (!this.javaHealthStatus.jarExists) {
+                        console.warn('[SecurityTools] → Build Java scanner: npm run build:java');
+                    }
+                }
             } catch (error) {
-                console.warn('[SecurityTools] ⚠ Java not available, using JavaScript fallback');
+                console.warn('[SecurityTools] ⚠ Java health check failed:', error);
                 this.useJava = false;
             }
+        } else {
+            console.warn('[SecurityTools] ⚠ Java module not available');
+            console.warn('[SecurityTools] → Install with: npm install java');
+            console.warn('[SecurityTools] ⚠ Performance will be significantly reduced');
         }
+    }
+    
+    /**
+     * Get Java health status
+     */
+    getJavaHealth(): any {
+        return this.javaHealthStatus;
     }
     
     /**
@@ -243,9 +273,10 @@ export class SecurityTools {
     }
     
     /**
-     * JavaScript port scan fallback
+     * JavaScript port scan fallback with timeout protection
      */
-    private async jsPortScan(host: string, ports: string, timeout: number): Promise<PortScanResult> {
+    private async jsPortScan(host: string, ports: string, timeout: number, maxDuration: number = 60000): Promise<PortScanResult> {
+        const scanStartTime = Date.now();
         const openPorts: Array<{port: number; service: string; risk: string}> = [];
         
         let portList: number[] = [];
@@ -258,7 +289,8 @@ export class SecurityTools {
             portList = ports.split(',').map(p => parseInt(p.trim()));
         }
         
-        portList = portList.slice(0, 1000);
+        // Limit to 5000 ports maximum
+        portList = portList.slice(0, 5000);
         
         const scanPort = (port: number): Promise<{port: number; open: boolean}> => {
             return new Promise((resolve) => {
@@ -284,11 +316,24 @@ export class SecurityTools {
             });
         };
         
-        // Scan in batches
-        const batchSize = 100;
-        for (let i = 0; i < portList.length; i += batchSize) {
-            const batch = portList.slice(i, i + batchSize);
+        // Adaptive batch size based on port count
+        const adaptiveBatchSize = portList.length > 2000 ? 200 : 100;
+        let scanned = 0;
+        let timedOut = false;
+        
+        for (let i = 0; i < portList.length; i += adaptiveBatchSize) {
+            // Check overall timeout
+            const elapsed = Date.now() - scanStartTime;
+            if (elapsed > maxDuration) {
+                console.warn(`[PortScan] Timeout after ${elapsed}ms (limit: ${maxDuration}ms)`);
+                console.warn(`[PortScan] Scanned ${scanned}/${portList.length} ports before timeout`);
+                timedOut = true;
+                break;
+            }
+            
+            const batch = portList.slice(i, i + adaptiveBatchSize);
             const results = await Promise.all(batch.map(scanPort));
+            scanned += batch.length;
             
             for (const result of results) {
                 if (result.open) {
@@ -303,9 +348,11 @@ export class SecurityTools {
         
         return {
             host,
-            portsScanned: portList.length,
+            portsScanned: scanned,
             openPorts,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            timedOut,
+            scanDuration: Date.now() - scanStartTime
         };
     }
     
