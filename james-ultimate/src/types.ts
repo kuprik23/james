@@ -379,6 +379,8 @@ export interface PortScanResult {
     risk: string;
   }>;
   timestamp: string;
+  timedOut?: boolean;
+  scanDuration?: number;
 }
 
 export interface SystemAnalysisResult {
